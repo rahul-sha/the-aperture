@@ -16,10 +16,8 @@
 [![MIT License][license-shield]][license-url] -->
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
-
-
 <!-- PROJECT LOGO -->
-<br />
+
 <p align="center">
   <a href="https://github.com/rahul-sha/the-aperture">
     <img src="assets/z_aest-pics/logo.jpg" alt="Logo" width="80" height="100">
@@ -32,8 +30,7 @@
     <br />
     <a href="https://github.com/rahul-sha/the-aperture"><strong>Explore the docs »</strong></a>
     <br />
-    <br />
-    <!--
+        <!--
     <a href="https://github.com/rahul-sha/the-aperture">View Demo</a>
     ·
     <a href="https://github.com/rahul-sha/the-aperture/issues">Report Bug</a>
