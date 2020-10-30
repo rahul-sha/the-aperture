@@ -53,7 +53,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-Hello, this is not a project more or less an interest to move my portfolio from wix to a custom made website with images hosted here.**Not sure if it's worth using github in the sense that bandwidths might restricted to host images.**
+Hello, this is not a project more or less an interest to move my portfolio from wix to a custom made website with images hosted here. **Not sure if it's worth using github in the sense that bandwidths might restricted to host images.** For the time being, no significant progress expected.
 
 <!--### Built With
 
