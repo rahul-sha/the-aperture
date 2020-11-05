@@ -1,6 +1,10 @@
 /* --- Multicolumn --- */
 #Overview {
     display: block;
+    background-color: rgba(199, 199, 199, 0.384);
+    padding: 1%;
+    border-radius: 0 0 1rem 1rem;
+
     columns: 12rem;
     gap: 1rem;
 }
@@ -12,6 +16,10 @@
 
 #Landscape {
     display: block;
+    background-color: rgba(199, 199, 199, 0.384);
+    padding: 1%;
+    border-radius: 0 0 1rem 1rem;
+    
     columns: 12rem;
     gap: 1rem;
 }
@@ -23,6 +31,9 @@
 
 #Night-Reflections {
     display: block;
+    background-color: rgba(199, 199, 199, 0.384);
+    padding: 1%;
+    border-radius: 0 0 1rem 1rem;
     columns: 12rem;
     gap: 1rem;
 }
@@ -41,7 +52,7 @@ body {
     background-color: rgb(49, 49, 49);
     color: rgb(247, 247, 247);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 2rem calc(2vw + 2rem);
+    margin: 2rem calc(10vw + 3rem);
 }
 
 main {
@@ -79,22 +90,23 @@ h3 {
     font-size: 1rem;
 }
 
-
-p {
-    margin: 1rem 0;
-    color: #444;
-    font-weight: 400;
-}
-
-code {
-    font-size: 1.07rem;
-    color: #d45b2c;
-}
-
-input {
-    margin: 0;
-}
-
 label {
     margin: 0 1.1rem 0 0.1rem;
+}
+
+.label{
+    background-color: rgba(221, 221, 221, 0.534);
+    color: black;
+
+    width: auto;
+    line-height: normal;
+
+    border-radius: 10px 10px 0 0 ;
+
+    padding-left: 10px;
+    padding-bottom: 20px;
+    /*margin-bottom: -15px;*/
+    
+    /*position: relative;
+    z-index: 1;*/
 }
