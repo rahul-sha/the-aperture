@@ -77,7 +77,9 @@ See the [open issues](https://github.com/rahul-sha/the-aperture/issues) for a li
 
 Rahul Sharma - [@xo_rahul](https://twitter.com/xo_rahul) - rahulsharma@outlook.sg
 
-Project Link: [https://github.com/rahul-sha/the-aperture/](https://github.com/rahul-sha/the-aperture/)
+Project Link: [https://github.com/rahul-sha/the-aperture](https://github.com/rahul-sha/the-aperture)<br />
+Website Link(for now): [https://rahul-sha.github.io/the-aperture/](https://rahul-sha.github.io/the-aperture/)<br />
+Target Website link: [https://www.rahulsharma.xyz](https://www.rahulsharma.xyz)
 
 
 
