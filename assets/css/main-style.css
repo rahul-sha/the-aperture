@@ -75,6 +75,7 @@ figcaption {
     background: rgba(85, 85, 85, 0.507);
     color: rgb(255, 255, 255);
     border-radius: 1rem 1rem 0 0;
+    font-size: smaller;
     text-align: end;
 }
 
