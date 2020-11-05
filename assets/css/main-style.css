@@ -1,0 +1,100 @@
+/* --- Multicolumn --- */
+#Overview {
+    display: block;
+    columns: 12rem;
+    gap: 1rem;
+}
+
+#Overview figure {
+    margin-bottom: 1rem;
+    break-inside: avoid;
+}
+
+#Landscape {
+    display: block;
+    columns: 12rem;
+    gap: 1rem;
+}
+
+#Landscape figure {
+    margin-bottom: 1rem;
+    break-inside: avoid;
+}
+
+#Night-Reflections {
+    display: block;
+    columns: 12rem;
+    gap: 1rem;
+}
+
+#Night-Reflections figure {
+    margin-bottom: 1rem;
+    break-inside: avoid;
+}
+
+/* --- The rest of the styling --- */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: rgb(49, 49, 49);
+    color: rgb(247, 247, 247);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 2rem calc(2vw + 2rem);
+}
+
+main {
+    margin: 2rem 0;
+}
+
+img {
+    width: 100%;
+    display: block;
+    border-radius: 0 0 1rem 1rem;
+}
+
+figure {
+    margin: 0;
+}
+
+figcaption {
+    padding: 0.5rem 1rem 0.4rem;
+    background: #ddd;
+    color: #333;
+    border-radius: 1rem 1rem 0 0;
+    text-align: end;
+}
+
+h1 {
+    margin: 0;
+}
+
+h2 {
+    margin: 0;
+}
+
+h3 {
+    margin: 0.5rem 0 0;
+    font-size: 1rem;
+}
+
+
+p {
+    margin: 1rem 0;
+    color: #444;
+    font-weight: 400;
+}
+
+code {
+    font-size: 1.07rem;
+    color: #d45b2c;
+}
+
+input {
+    margin: 0;
+}
+
+label {
+    margin: 0 1.1rem 0 0.1rem;
+}
