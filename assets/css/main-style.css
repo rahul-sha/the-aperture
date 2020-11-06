@@ -4,10 +4,11 @@
     display: block;
     background-color: rgba(0, 0, 0, 0.384);
     padding: 2%;
-    border-radius: 0 0 1rem 1rem;
+    border-radius: 0 0 0.5rem 0.5rem;
 
-    columns: 12rem;
-    gap: 1rem;
+    columns: 18rem auto;
+
+    gap: 0.5rem;
 }
 
 #Overview figure {
