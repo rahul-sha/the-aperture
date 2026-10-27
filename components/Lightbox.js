@@ -30,7 +30,12 @@ export default function Lightbox({ manifest, photos, index, onStep, onClose }) {
       <div className="lightbox__img">
         <img src={photoSrc(manifest, photo)} alt={photo.title} />
       </div>
-      {photo.caption && <p className="lightbox__caption serif">{photo.caption}</p>}
+      {(photo.caption || photo.place) && (
+        <p className="lightbox__caption serif">
+          {photo.caption}
+          {photo.place && <span className="place">{photo.place}</span>}
+        </p>
+      )}
       <div className="lightbox__nav">
         <button type="button" className="btn" onClick={() => onStep(-1)}>Previous</button>
         <button type="button" className="btn btn--light" onClick={() => onStep(1)}>Next</button>

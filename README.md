@@ -75,6 +75,8 @@ Run `npm run photos:sync` whenever you change the albums. It only uploads new
 or changed photos, removes photos you took out of the albums, strips all
 location data, and writes `manifest.json` to the bucket.
 
+Location is handled in two ways. Each photo gets a place label (city and country, as worked out by Immich) shown under its caption, and the manifest carries photo counts snapped to a coarse grid (5 km cells by default, `LOCATION_GRID_KM` in `.env` changes it) for a future map tile. Exact coordinates never leave Immich, and photos without GPS data simply get no label.
+
 ## Deploying on Vercel
 
 1. Import this repository as a new Vercel project. The defaults work.

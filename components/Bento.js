@@ -94,6 +94,7 @@ export default function Bento({ manifest }) {
             <span className="featured__kicker">Featured, from {featuredSection?.name}</span>
             <span className="featured__title">{featured.title}</span>
             {featured.caption && <span className="featured__caption serif">{featured.caption}</span>}
+            {featured.place && <span className="place">{featured.place}</span>}
             {exif.length > 0 && <span className="exif">{exif.map((e) => <span key={e}>{e}</span>)}</span>}
           </div>
         </div>

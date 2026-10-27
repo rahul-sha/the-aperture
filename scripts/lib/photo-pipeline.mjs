@@ -114,7 +114,7 @@ export function hourHistogram(photos) {
 }
 
 // Assembles the final manifest the site reads.
-export function buildManifest({ base, about, sections, intro, featured, latest, latestPalette }) {
+export function buildManifest({ base, about, sections, intro, featured, latest, latestPalette, heat = [] }) {
   const all = sections.flatMap((s) => s.photos);
   return {
     generatedAt: new Date().toISOString(),
@@ -125,6 +125,7 @@ export function buildManifest({ base, about, sections, intro, featured, latest, 
     latest,
     latestPalette,
     hours: hourHistogram(all),
+    heat, // [{ lat, lon, count }] snapped to a coarse grid, never exact
     sections,
   };
 }

@@ -121,6 +121,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 .featured__kicker { font-size: 14px; color: var(--ink-soft); }
 .featured__title { font-size: 21px; font-weight: 700; }
 .featured__caption { font-size: 15px; color: var(--ink-soft); max-width: 460px; }
+.place { font-family: var(--font-sans), sans-serif; font-style: normal; font-size: 12px; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-soft); opacity: .8; }
+.lightbox__caption .place { display: block; margin-top: 6px; }
 .exif { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
 .exif span { font-size: 12px; padding: 3px 9px; border-radius: 999px; background: rgba(0, 0, 0, .5); border: 1px solid rgba(245, 243, 239, .25); }
 
