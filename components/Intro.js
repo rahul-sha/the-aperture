@@ -21,12 +21,18 @@ export default function Intro({ manifest }) {
   // p runs from 0 at the top of the page to 1 once the visitor has scrolled
   // 650px, and drives the cards spreading apart and fading.
   const [p, setP] = useState(0);
+  // s scales the whole collage to the screen: the slots are drawn for about
+  // 820 by 680 pixels, so a big screen gets bigger cards and a phone smaller.
+  const [s, setS] = useState(1);
 
   useEffect(() => {
     const onScroll = () => setP(Math.max(0, Math.min(1, (window.scrollY || 0) / 650)));
+    const onResize = () => setS(Math.max(0.6, Math.min(1.5, Math.min(window.innerWidth / 820, window.innerHeight / 680))));
     onScroll();
+    onResize();
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    window.addEventListener('resize', onResize);
+    return () => { window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onResize); };
   }, []);
 
   const photos = manifest.intro.map((id) => findPhoto(manifest, id)).filter(Boolean).slice(0, SLOTS.length);
@@ -35,7 +41,7 @@ export default function Intro({ manifest }) {
   return (
     <section className="intro" aria-label="Intro">
       {photos.map((photo, i) => {
-        const [sw, sh, x, y, z] = SLOTS[i];
+        const [sw, sh, x, y, z] = SLOTS[i].map((v, j) => (j < 4 ? v * s : v));
         // Keep the slot's area but give it the photo's own shape.
         const ratio = photo.w && photo.h ? photo.w / photo.h : sw / sh;
         const w = Math.round(Math.sqrt(sw * sh * ratio));

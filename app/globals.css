@@ -13,7 +13,7 @@
 
 * { box-sizing: border-box; }
 
-html { scroll-snap-type: y proximity; }
+html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
@@ -48,7 +48,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 .header__replay:hover { opacity: 1; }
 
 /* Intro collage */
-.intro { position: relative; height: min(900px, 100svh); overflow: hidden; perspective: 1400px; }
+.intro { position: relative; height: max(560px, 100svh); overflow: hidden; perspective: 1400px; }
 .intro__card { position: absolute; left: 50%; top: 50%; }
 .intro__fly { width: 100%; height: 100%; animation: fly 1.6s cubic-bezier(.16, .84, .24, 1) both; }
 @keyframes fly {
@@ -79,19 +79,15 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
   50% { transform: translateY(8px); opacity: .5; }
 }
 
-/* Bento */
-.work { padding: 24px clamp(14px, 3vw, 40px) 0; }
+/* Bento. The wrapper sticks to the top of the screen while the gallery
+   slides over it, and the tiles drift up more slowly than the page: a
+   parallax, driven by --p (0 = cards in view, 1 = fully covered). */
+.work { padding: 0 clamp(14px, 3vw, 40px); }
 .bento-wrap {
-  min-height: min(900px, 100svh); scroll-snap-align: start;
-  display: flex; flex-direction: column; justify-content: center; gap: 18px; padding-bottom: 12px;
+  position: sticky; top: 0; z-index: 0;
+  height: min(900px, 100svh); padding: 24px 0 12px;
+  display: flex; flex-direction: column; justify-content: center;
 }
-.bento__cue {
-  align-self: center; display: inline-flex; align-items: center; gap: 8px;
-  font-size: 13px; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-soft);
-  text-decoration: none; padding: 8px 14px; border-radius: 999px; border: 1px solid rgba(245, 243, 239, .18);
-}
-.bento__cue svg { animation: cue 1.8s ease-in-out infinite; }
-@keyframes cue { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
 .bento {
   display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
   grid-auto-rows: minmax(150px, auto); gap: 12px;
@@ -100,7 +96,9 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
    stretches the grid; the text decides the tile height. */
 .tile {
   border-radius: var(--radius); background: var(--tile);
-  animation: tile .8s var(--ease) backwards; transition: opacity .2s linear, transform .2s linear;
+  animation: tile .8s var(--ease) backwards;
+  opacity: calc(1 - var(--p, 0) * .7);
+  transform: translateY(calc(var(--p, 0) * var(--drift, -80px))) scale(calc(1 - var(--p, 0) * .04));
 }
 @keyframes tile {
   from { opacity: 0; transform: translateY(30px) scale(.97); }
@@ -164,11 +162,17 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 .swatches span { flex: 1; }
 .latest__note { font-size: 13px; color: var(--ink-soft); }
 
-/* Gallery stage */
+/* Gallery stage: sits above the sticky bento and carries its own ground so
+   it covers the cards as it slides up. */
 .stage {
-  scroll-snap-align: end; scroll-snap-stop: always;
+  position: relative; z-index: 1; background: var(--ground);
   height: clamp(560px, 100svh, 1000px); margin-top: 16px; padding: 14px 0;
   display: flex; flex-direction: column; gap: 10px;
+}
+/* A soft edge above the stage, so the cards fade under it instead of being cut. */
+.stage::before {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 100%; height: 72px; pointer-events: none;
+  background: linear-gradient(to bottom, transparent, var(--ground));
 }
 .chips { flex: none; height: clamp(80px, 12vh, 116px); display: flex; gap: 10px; }
 .chip {
@@ -228,9 +232,9 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 
 /* Small screens */
 @media (max-width: 860px) {
-  html { scroll-snap-type: none; }
   .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .bento-wrap { min-height: 0; }
+  .bento-wrap { position: static; height: auto; }
+  .tile { opacity: 1; transform: none; }
   .stage { height: auto; }
   .chips { overflow-x: auto; height: 96px; }
   .chip { flex: 0 0 150px !important; }
@@ -240,7 +244,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .intro__fly, .intro__float, .intro__cue, .tile, .chip, .cell__wipe, .cell__drift, .bento__cue svg { animation: none; }
+  .intro__fly, .intro__float, .intro__cue, .tile, .chip, .cell__wipe, .cell__drift { animation: none; }
   .row, .cell, .chip, .chip__name, .chip__quote { transition: none; }
-  html { scroll-snap-type: none; }
+  .tile { transform: none; }
+  html { scroll-behavior: auto; }
 }
