@@ -1,4 +1,5 @@
 # Runs the Immich to R2 sync as a one-shot container (see docker-compose.sync.yml).
+# Published to ghcr.io/rahul-sha/the-aperture-sync by the GitHub workflow.
 FROM node:22-bookworm-slim
 WORKDIR /app
 COPY package.json package-lock.json ./

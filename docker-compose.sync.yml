@@ -1,17 +1,21 @@
 # One-shot sync from Immich to Cloudflare R2, for running on the NAS.
 #
+# The image is built by GitHub (.github/workflows/sync-image.yml) whenever
+# the sync code changes, so the NAS only has to pull it.
+#
 # In Dockhand: create a stack, paste this file, fill in the environment
 # variables in the stack's Environment panel, and deploy. The container runs
 # once, prints its progress, and exits. Deploy (run) it again whenever you
-# have added or removed photos in the "Portfolio - ..." albums.
+# have added or removed photos in the "Portfolio - ..." albums. Use "pull"
+# or re-create the stack to pick up a newer image.
 #
 # IMMICH_URL must be reachable from inside Docker, so use the NAS's address,
 # e.g. http://192.168.1.10:2283, rather than localhost.
 
 services:
   photos-sync:
-    build:
-      context: https://github.com/rahul-sha/the-aperture.git
+    image: ghcr.io/rahul-sha/the-aperture-sync:latest
+    pull_policy: always
     restart: "no"
     environment:
       IMMICH_URL: ${IMMICH_URL}
