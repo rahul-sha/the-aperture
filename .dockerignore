@@ -1,0 +1,8 @@
+node_modules
+.next
+.env
+.sync-state.json
+assets
+public
+tests
+.claude

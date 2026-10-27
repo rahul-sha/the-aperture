@@ -64,14 +64,25 @@ Set up once, in Cloudflare:
    domain to it, such as `photos.rahulll.com`.
 2. Create an R2 API token with edit access to that bucket.
 
-Then on your home computer:
+Then run the sync, either as a container on the NAS (no Node.js needed) or
+on your computer.
+
+**On the NAS, with Dockhand or any Docker host:** create a stack from
+`docker-compose.sync.yml`, fill in the environment variables it lists
+(`IMMICH_URL` must be the NAS's LAN address, such as
+`http://192.168.1.10:2283`), and deploy. The container builds itself from
+this repository, runs once, prints its progress, and exits. Deploy it again
+whenever you change the albums. Its memory of what was uploaded lives in the
+`sync-state` volume.
+
+**On your computer, with Node.js installed:**
 
 ```bash
 cp .env.example .env     # fill in the values
 npm run photos:sync
 ```
 
-Run `npm run photos:sync` whenever you change the albums. It only uploads new
+Run the sync whenever you change the albums. It only uploads new
 or changed photos, removes photos you took out of the albums, strips all
 location data, and writes `manifest.json` to the bucket.
 
