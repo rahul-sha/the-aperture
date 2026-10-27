@@ -11,7 +11,7 @@ export default function Site({ manifest }) {
   const [lightbox, setLightbox] = useState(null); // { photos, index }
 
   const replay = () => {
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'instant' });
     setIntroKey((k) => k + 1);
   };
 

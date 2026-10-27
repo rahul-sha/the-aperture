@@ -13,6 +13,8 @@
 
 * { box-sizing: border-box; }
 
+html { scroll-behavior: smooth; }
+
 body {
   margin: 0;
   background: var(--ground);
@@ -245,4 +247,5 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
   .intro__fly, .intro__float, .intro__cue, .tile, .chip, .cell__wipe, .cell__drift { animation: none; }
   .row, .cell, .chip, .chip__name, .chip__quote { transition: none; }
   .tile { transform: none; }
+  html { scroll-behavior: auto; }
 }
