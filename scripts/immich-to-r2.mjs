@@ -17,7 +17,8 @@
 //   - every album named "Portfolio - <Section>" becomes a section
 //   - the album description becomes the section quote (if an album has none,
 //     the line for that section in content/sections.json is used)
-//   - each photo's description becomes its caption
+//   - each photo's description becomes its title (first line) and caption;
+//     without one, the title is "City, Month Year" or "Section, no. N"
 //   - the city and country Immich worked out for a photo become a short
 //     place label; exact coordinates are never published. The manifest also
 //     carries photo counts per rough 5 km cell for a future map tile.
@@ -201,7 +202,7 @@ async function main() {
         section: slug,
         w,
         h,
-        title: (info.description || '').split('\n')[0].trim() || asset.originalFileName.replace(/\.[^.]+$/, ''),
+        title: (info.description || '').split('\n')[0].trim(), // filled in below when empty
         caption: (info.description || '').split('\n').slice(1).join('\n').trim(),
         place,
         takenAt,
@@ -209,6 +210,15 @@ async function main() {
       });
     }
     photos.sort((a, b) => String(b.takenAt).localeCompare(String(a.takenAt)));
+    // Photos without a description get a gentle title instead of a file name:
+    // "Singapore, May 2024" when the place is known, else "Reflections, no. 3".
+    photos.forEach((p, i) => {
+      if (p.title) return;
+      const city = (p.place || '').split(',')[0].trim();
+      const when = p.takenAt ? new Date(p.takenAt) : null;
+      const month = when && !Number.isNaN(when.getTime()) ? when.toLocaleString('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' }) : '';
+      p.title = city ? [city, month].filter(Boolean).join(', ') : `${name}, no. ${i + 1}`;
+    });
     if (!photos.length) {
       process.stdout.write(`Skipping "${album.albumName}" because it has no photos.\n`);
       continue;

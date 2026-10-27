@@ -52,8 +52,10 @@ Set up once, in Immich:
    `Portfolio - Reflections`, and so on. The order on the site is Overview,
    Reflections, Landscapes, Nature, Abstract, Portraits, Miscellaneous.
 2. Give each album a description. It becomes the quote under the section name.
-3. Give each photo a description. The first line is its title, any further
-   lines are the caption shown in the lightbox.
+3. Optionally give a photo a description. The first line is its title, any
+   further lines are the caption shown in the lightbox. Photos without one
+   are titled "City, Month Year" (or "Section, no. N" when there is no
+   location), so file names never show.
 4. Create an album `Portfolio - Intro` with the nine or more photos you want
    flying in on the landing screen.
 5. In Immich, open Account settings, then API keys, and create a key.
