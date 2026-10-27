@@ -48,7 +48,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 .header__replay:hover { opacity: 1; }
 
 /* Intro collage */
-.intro { position: relative; height: min(900px, 100svh); overflow: hidden; perspective: 1400px; }
+.intro { position: relative; height: max(560px, 100svh); overflow: hidden; perspective: 1400px; }
 .intro__card { position: absolute; left: 50%; top: 50%; }
 .intro__fly { width: 100%; height: 100%; animation: fly 1.6s cubic-bezier(.16, .84, .24, 1) both; }
 @keyframes fly {
