@@ -28,6 +28,8 @@ repository is committed, so the site works straight away.
 
 ## Editing the words on the page
 
+The About card reads `content/about.json` from this repository at build time, so edit it, commit, and Vercel redeploys with the new text. No sync run is needed for that.
+
 These files are plain text. Change them, save, and reload:
 
 - `content/about.json`: your name, city, headline, bio, quote, the "Now" line,
