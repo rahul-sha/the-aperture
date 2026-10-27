@@ -15,8 +15,13 @@
 //
 // How it decides what is public:
 //   - every album named "Portfolio - <Section>" becomes a section
-//   - the album description becomes the section quote
+//   - the album description becomes the section quote (if an album has none,
+//     the line for that section in content/sections.json is used)
 //   - each photo's description becomes its caption
+//   - the city and country Immich worked out for a photo become a short
+//     place label; exact coordinates are never published. The manifest also
+//     carries photo counts per rough 5 km cell for a future map tile.
+//     Photos without GPS simply get no label and are left off the map.
 //   - the album "Portfolio - Intro" picks the collage on the landing screen
 //   - removing a photo from an album removes it from the site on the next run
 //
@@ -60,6 +65,23 @@ async function immich(pathname, { raw = false } = {}) {
   return raw ? Buffer.from(await res.arrayBuffer()) : res.json();
 }
 
+// Snaps a coordinate to a grid so the published map can show "around here"
+// without pointing at a street. Cell size defaults to 5 km; set
+// LOCATION_GRID_KM in .env to change it (e.g. 2 for a small city, 50 for a
+// country-level view).
+const CELL = Number(process.env.LOCATION_GRID_KM || 5) / 111; // 1 degree is about 111 km
+function addToHeat(heat, lat, lon) {
+  const snap = (v) => Number((Math.round(v / CELL) * CELL).toFixed(4));
+  const key = `${snap(lat)},${snap(lon)}`;
+  heat.set(key, (heat.get(key) || 0) + 1);
+}
+function heatList(heat) {
+  return [...heat.entries()].map(([key, count]) => {
+    const [lat, lon] = key.split(',').map(Number);
+    return { lat, lon, count };
+  }).sort((a, b) => b.count - a.count);
+}
+
 async function readJson(file, fallback) {
   try {
     return JSON.parse(await fs.readFile(file, 'utf8'));
@@ -80,6 +102,7 @@ async function main() {
   const bucket = process.env.R2_BUCKET;
   const state = await readJson(STATE_FILE, {}); // { assetId: checksum }
   const about = await readJson(path.join(ROOT, 'content', 'about.json'), {});
+  const sectionText = await readJson(path.join(ROOT, 'content', 'sections.json'), {});
 
   // 1. Find the public albums.
   const albums = (await immich('/albums')).filter((a) => /^Portfolio - /i.test(a.albumName));
@@ -91,6 +114,7 @@ async function main() {
   const sections = [];
   let intro = [];
   const keep = new Set(); // object keys that should exist in the bucket after this run
+  const heat = new Map(); // coarse cell -> photo count, for a future map tile
 
   for (const summary of albums) {
     const album = await immich(`/albums/${summary.id}`);
@@ -122,6 +146,8 @@ async function main() {
         focal: info.focalLength ? `${Math.round(info.focalLength)} mm` : null,
       };
       let takenAt = info.dateTimeOriginal || asset.fileCreatedAt || null;
+      const place = [info.city, info.country].filter(Boolean).join(', ') || null;
+      if (Number.isFinite(info.latitude) && Number.isFinite(info.longitude)) addToHeat(heat, info.latitude, info.longitude);
 
       const changed = state[asset.id] !== asset.checksum;
       if (changed) {
@@ -149,12 +175,13 @@ async function main() {
         h,
         title: (info.description || '').split('\n')[0].trim() || asset.originalFileName.replace(/\.[^.]+$/, ''),
         caption: (info.description || '').split('\n').slice(1).join('\n').trim(),
+        place,
         takenAt,
         exif,
       });
     }
     photos.sort((a, b) => String(b.takenAt).localeCompare(String(a.takenAt)));
-    sections.push({ slug, name, quote: (album.description || '').trim(), photos });
+    sections.push({ slug, name, quote: (album.description || '').trim() || sectionText[name] || '', photos });
   }
 
   sections.sort((a, b) => {
@@ -190,7 +217,7 @@ async function main() {
   const latestBuffer = await immich(`/assets/${latest}/thumbnail?size=preview`, { raw: true });
   const latestPalette = await palette(latestBuffer);
 
-  const manifest = buildManifest({ base: process.env.PHOTOS_BASE_URL.replace(/\/$/, ''), about, sections, intro, featured, latest, latestPalette });
+  const manifest = buildManifest({ base: process.env.PHOTOS_BASE_URL.replace(/\/$/, ''), about, sections, intro, featured, latest, latestPalette, heat: heatList(heat) });
   await s3.send(new PutObjectCommand({ Bucket: bucket, Key: 'manifest.json', Body: JSON.stringify(manifest), ContentType: 'application/json', CacheControl: 'public, max-age=300' }));
   await fs.writeFile(path.join(ROOT, 'content', 'photos.json'), JSON.stringify(manifest, null, 2));
   process.stdout.write(`Done: ${all.length} photos in ${sections.length} sections. Manifest at ${process.env.PHOTOS_BASE_URL}/manifest.json\n`);

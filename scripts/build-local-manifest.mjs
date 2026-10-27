@@ -62,6 +62,7 @@ async function main() {
         h,
         title: text.title || titleFromFilename(file),
         caption: text.caption || '',
+        place: text.place || null,
         takenAt: exif.takenAt,
         exif: { camera: exif.camera, lens: exif.lens, aperture: exif.aperture, shutter: exif.shutter, iso: exif.iso, focal: exif.focal },
       });
