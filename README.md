@@ -1,102 +1,97 @@
-# the-aperture
+# The Aperture
 
-<!-- PROJECT SHIELDS -->
-<!--
-*** I'm using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
+Rahul Sharma's photography portfolio. A Next.js site hosted on Vercel, with
+web-sized photos served from Cloudflare R2 and the originals managed privately
+in Immich at home.
 
-<!--[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url] -->
-[![LinkedIn][linkedin-shield]][linkedin-url]
+How the pieces fit together:
 
-<!-- PROJECT LOGO -->
+```
+Immich (home, private)  --npm run photos:sync-->  Cloudflare R2 (public photos + manifest.json)
+                                                        |
+                                                        v
+                                        Vercel builds the site from this repo
+                                        and reads manifest.json once an hour
+```
 
-<p align="center">
-  <a href="https://github.com/rahul-sha/the-aperture">
-    <img src="assets/z_aest-pics/logo.jpg" alt="Logo" width="80" height="100">
-  </a>
+## Running the site on your computer
 
-  <h3 align="center">The Aperture</h3>
+You need Node.js 22 or newer.
 
-  <p align="center">
-    A dedicated place for my photos.
-    <br />
-    <a href="https://github.com/rahul-sha/the-aperture"><strong>Explore the docs »</strong></a>
-    <br />
-        <!--
-    <a href="https://github.com/rahul-sha/the-aperture">View Demo</a>
-    ·
-    <a href="https://github.com/rahul-sha/the-aperture/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/rahul-sha/the-aperture/issues">Request Feature</a>-->
-  </p>
-</p>
+```bash
+npm install          # first time only
+npm run dev          # then open http://localhost:3000
+```
 
+The site reads `content/photos.json`. A copy built from the photos in this
+repository is committed, so the site works straight away.
 
+## Editing the words on the page
 
-<!-- TABLE OF CONTENTS -->
-## Table of Contents
+These files are plain text. Change them, save, and reload:
 
-* [About the Project](#about-the-project)
-* [Usage](#usage)
-* [Roadmap](#roadmap)
-* [Contact](#contact)
+- `content/about.json`: your name, city, headline, bio, quote, the "Now" line,
+  email, and social links.
+- `content/sections.json`: the one-line quote under each section name. When
+  Immich is connected, the album description replaces this.
+- `content/captions.json`: titles and captions for the photos in the
+  repository, keyed by file name. When Immich is connected, each photo's
+  description replaces this (first line is the title, the rest is the caption).
+- `content/curated.json`: which photos go in the intro collage, which is
+  featured, and which is "latest". When Immich is connected, the album
+  "Portfolio - Intro" picks the collage instead.
 
+After changing `captions.json`, `sections.json`, or `curated.json`, rebuild
+the manifest with `npm run photos:local`.
 
-<!-- ABOUT THE PROJECT -->
-## About The Project
+## Publishing photos from Immich
 
-Hello, this is not a project more or less an interest to move my portfolio from wix to a custom made website with images hosted here. **Not sure if it's worth using github in the sense that bandwidths might restricted to host images.** For the time being, no significant progress expected.
+Set up once, in Immich:
 
-<!--### Built With
+1. Create one album per section, named exactly `Portfolio - Overview`,
+   `Portfolio - Reflections`, and so on. The order on the site is Overview,
+   Reflections, Landscapes, Nature, Abstract, Portraits, Miscellaneous.
+2. Give each album a description. It becomes the quote under the section name.
+3. Give each photo a description. The first line is its title, any further
+   lines are the caption shown in the lightbox.
+4. Create an album `Portfolio - Intro` with the nine or more photos you want
+   flying in on the landing screen.
+5. In Immich, open Account settings, then API keys, and create a key.
 
-* []()
-* []()
-* []()
+Set up once, in Cloudflare:
 
+1. Create an R2 bucket (for example `aperture-photos`) and connect a custom
+   domain to it, such as `photos.rahulll.com`.
+2. Create an R2 API token with edit access to that bucket.
 
-<!-- USAGE EXAMPLES -->
-## Usage
+Then on your home computer:
 
-More or less a typical css made website.
+```bash
+cp .env.example .env     # fill in the values
+npm run photos:sync
+```
 
-<!-- ROADMAP -->
-## Roadmap (Pending)
+Run `npm run photos:sync` whenever you change the albums. It only uploads new
+or changed photos, removes photos you took out of the albums, strips all
+location data, and writes `manifest.json` to the bucket.
 
-See the [open issues](https://github.com/rahul-sha/the-aperture/issues) for a list of proposed features (and known issues).
+## Deploying on Vercel
 
-<!-- CONTACT -->
-## Contact
+1. Import this repository as a new Vercel project. The defaults work.
+2. Add one environment variable: `PHOTOS_MANIFEST_URL` set to
+   `https://photos.rahulll.com/manifest.json` (your bucket's domain).
+3. Deploy. The site re-reads the manifest at most once an hour, so new photos
+   appear without another deploy.
 
-Rahul Sharma - [@xo_rahul](https://twitter.com/xo_rahul) - rahulsharma@outlook.sg
+Without `PHOTOS_MANIFEST_URL` the site uses the committed `content/photos.json`.
 
-Project Link: [https://github.com/rahul-sha/the-aperture](https://github.com/rahul-sha/the-aperture)<br />
-Website Link(for now): [https://rahul-sha.github.io/the-aperture/](https://rahul-sha.github.io/the-aperture/)<br />
-Target Website link: [https://www.rahulsharma.xyz](https://www.rahulsharma.xyz)
+## Checking that it works
 
+```bash
+npm run build && npm test
+```
 
-
-
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/rahul-sha/repo.svg?style=flat-square
-[contributors-url]: https://github.com/rahul-sha/repo/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/rahul-sha/repo.svg?style=flat-square
-[forks-url]: https://github.com/rahul-sha/repo/network/members
-[stars-shield]: https://img.shields.io/github/stars/rahul-sha/repo.svg?style=flat-square
-[stars-url]: https://github.com/rahul-sha/repo/stargazers
-[issues-shield]: https://img.shields.io/github/issues/rahul-sha/repo.svg?style=flat-square
-[issues-url]: https://github.com/rahul-sha/repo/issues
-[license-shield]: https://img.shields.io/github/license/rahul-sha/repo.svg?style=flat-square
-[license-url]: https://github.com/rahul-sha/repo/blob/master/LICENSE.txt
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/rahul-sha
-[product-screenshot]: images/screenshot.png
+This starts the built site, drives it with a real browser (Playwright), checks
+the intro, the bento tiles, section switching, hover, the lightbox, and the
+phone layout, and saves screenshots in `tests/screenshots/`. The first time on
+a new computer run `npx playwright install chromium`.

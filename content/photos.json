@@ -1,0 +1,1365 @@
+{
+  "generatedAt": "2026-10-27T09:02:28.043Z",
+  "base": "/photos",
+  "about": {
+    "name": "Rahul Sharma",
+    "city": "[your city]",
+    "headline": "I photograph cities after dark, and the quiet things in between.",
+    "bio": "[A few lines about you and how you photograph.]",
+    "quote": "[A favourite quote about photography, and who said it]",
+    "now": "[what you are shooting at the moment]. Carrying [camera] and [lens].",
+    "email": "hello@example.com",
+    "instagram": "https://www.instagram.com/",
+    "bluesky": "https://bsky.app/",
+    "projectsUrl": "https://rahulll.com",
+    "portrait": "silouette"
+  },
+  "intro": [
+    "img-4628",
+    "img-3892",
+    "img-2212",
+    "canonball-flower",
+    "img-0410",
+    "img-3688",
+    "img-1699",
+    "img-3795",
+    "img-2420"
+  ],
+  "featured": "img-2439-e",
+  "latest": "img-3892",
+  "latestPalette": [
+    "#221107",
+    "#6E320A",
+    "#B3620E",
+    "#F2AF14",
+    "#FDE728"
+  ],
+  "hours": [
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    4,
+    2,
+    3,
+    4,
+    8,
+    4,
+    0,
+    0,
+    0,
+    2,
+    1,
+    8,
+    11,
+    9,
+    3,
+    4,
+    2,
+    0
+  ],
+  "sections": [
+    {
+      "slug": "overview",
+      "name": "Overview",
+      "quote": "A few favourites from across the years.",
+      "photos": [
+        {
+          "id": "img-2196",
+          "section": "overview",
+          "w": 1600,
+          "h": 938,
+          "title": "Not so lonely street",
+          "caption": "",
+          "takenAt": "2017-01-07T06:41:13.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/4",
+            "shutter": "1/99 s",
+            "iso": "ISO 6400",
+            "focal": "24 mm"
+          }
+        },
+        {
+          "id": "img-2439-e",
+          "section": "overview",
+          "w": 1500,
+          "h": 1000,
+          "title": "Rising Pier",
+          "caption": "",
+          "takenAt": null,
+          "exif": {
+            "camera": null,
+            "lens": null,
+            "aperture": null,
+            "shutter": null,
+            "iso": null,
+            "focal": null
+          }
+        },
+        {
+          "id": "img-2801",
+          "section": "overview",
+          "w": 1600,
+          "h": 899,
+          "title": "Subway Lapse",
+          "caption": "",
+          "takenAt": null,
+          "exif": {
+            "camera": null,
+            "lens": null,
+            "aperture": null,
+            "shutter": null,
+            "iso": null,
+            "focal": null
+          }
+        },
+        {
+          "id": "img-3340",
+          "section": "overview",
+          "w": 1600,
+          "h": 1067,
+          "title": "Rising Pink",
+          "caption": "",
+          "takenAt": "2016-11-20T06:37:33.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/3.5",
+            "shutter": "1/25 s",
+            "iso": "ISO 100",
+            "focal": "18 mm"
+          }
+        },
+        {
+          "id": "img-4628",
+          "section": "overview",
+          "w": 1421,
+          "h": 1600,
+          "title": "Sunset by the pier",
+          "caption": "",
+          "takenAt": "2017-01-27T19:06:26.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/5.7",
+            "shutter": "1/49 s",
+            "iso": "ISO 100",
+            "focal": "55 mm"
+          }
+        },
+        {
+          "id": "picsart-08-27-10-46-20",
+          "section": "overview",
+          "w": 1300,
+          "h": 804,
+          "title": "Time travel",
+          "caption": "",
+          "takenAt": "2017-08-27T22:46:21.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/25.8",
+            "shutter": "6.2 s",
+            "iso": "ISO 100",
+            "focal": "26 mm"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "reflections",
+      "name": "Reflections",
+      "quote": "Cities after dark, doubled in water and glass.",
+      "photos": [
+        {
+          "id": "img-1801-2",
+          "section": "reflections",
+          "w": 1600,
+          "h": 735,
+          "title": "IMG 1801 2",
+          "caption": "",
+          "takenAt": "2016-05-27T19:25:45.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": "EF-S18-55mm f/3.5-5.6 IS STM",
+            "aperture": "f/16",
+            "shutter": "8 s",
+            "iso": "ISO 100",
+            "focal": "33 mm"
+          }
+        },
+        {
+          "id": "img-3688",
+          "section": "reflections",
+          "w": 1600,
+          "h": 933,
+          "title": "IMG 3688",
+          "caption": "",
+          "takenAt": "2016-12-19T19:53:52.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/3.5",
+            "shutter": "2 s",
+            "iso": "ISO 100",
+            "focal": "18 mm"
+          }
+        },
+        {
+          "id": "img-3795",
+          "section": "reflections",
+          "w": 1067,
+          "h": 1600,
+          "title": "IMG 3795",
+          "caption": "",
+          "takenAt": "2016-12-21T19:25:05.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/5",
+            "shutter": "1/10 s",
+            "iso": "ISO 100",
+            "focal": "43 mm"
+          }
+        },
+        {
+          "id": "img-3892",
+          "section": "reflections",
+          "w": 1600,
+          "h": 994,
+          "title": "Lanterns",
+          "caption": "",
+          "takenAt": "2016-12-21T21:13:00.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/14.1",
+            "shutter": "5.2 s",
+            "iso": "ISO 100",
+            "focal": "28 mm"
+          }
+        },
+        {
+          "id": "img-3906",
+          "section": "reflections",
+          "w": 1600,
+          "h": 1000,
+          "title": "IMG 3906",
+          "caption": "",
+          "takenAt": "2016-12-21T21:38:51.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/5",
+            "shutter": "4 s",
+            "iso": "ISO 100",
+            "focal": "21 mm"
+          }
+        },
+        {
+          "id": "img-3926",
+          "section": "reflections",
+          "w": 1025,
+          "h": 1600,
+          "title": "IMG 3926",
+          "caption": "",
+          "takenAt": "2016-12-24T18:30:05.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/5.7",
+            "shutter": "1/83 s",
+            "iso": "ISO 2500",
+            "focal": "55 mm"
+          }
+        },
+        {
+          "id": "img-3940",
+          "section": "reflections",
+          "w": 1114,
+          "h": 1600,
+          "title": "IMG 3940",
+          "caption": "",
+          "takenAt": "2016-12-24T18:34:57.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/5",
+            "shutter": "1/25 s",
+            "iso": "ISO 400",
+            "focal": "20 mm"
+          }
+        },
+        {
+          "id": "img-3951",
+          "section": "reflections",
+          "w": 1600,
+          "h": 1111,
+          "title": "IMG 3951",
+          "caption": "",
+          "takenAt": "2016-12-24T18:45:57.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/5",
+            "shutter": "1/32 s",
+            "iso": "ISO 250",
+            "focal": "25 mm"
+          }
+        },
+        {
+          "id": "img-3986",
+          "section": "reflections",
+          "w": 1600,
+          "h": 904,
+          "title": "IMG 3986",
+          "caption": "",
+          "takenAt": "2016-12-24T19:13:04.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/4",
+            "shutter": "1 s",
+            "iso": "ISO 100",
+            "focal": "25 mm"
+          }
+        },
+        {
+          "id": "img-3987",
+          "section": "reflections",
+          "w": 1600,
+          "h": 1567,
+          "title": "IMG 3987",
+          "caption": "",
+          "takenAt": "2016-12-24T19:13:51.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/18.2",
+            "shutter": "6.2 s",
+            "iso": "ISO 100",
+            "focal": "25 mm"
+          }
+        },
+        {
+          "id": "img-4102",
+          "section": "reflections",
+          "w": 1600,
+          "h": 900,
+          "title": "IMG 4102",
+          "caption": "",
+          "takenAt": "2017-01-01T00:52:29.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/6.4",
+            "shutter": "8 s",
+            "iso": "ISO 100",
+            "focal": "18 mm"
+          }
+        },
+        {
+          "id": "img-5610",
+          "section": "reflections",
+          "w": 1600,
+          "h": 1067,
+          "title": "IMG 5610",
+          "caption": "",
+          "takenAt": "2017-12-31T22:57:22.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/7",
+            "shutter": "1/21 s",
+            "iso": "ISO 12800",
+            "focal": "18 mm"
+          }
+        },
+        {
+          "id": "img-5626",
+          "section": "reflections",
+          "w": 1600,
+          "h": 968,
+          "title": "IMG 5626",
+          "caption": "",
+          "takenAt": null,
+          "exif": {
+            "camera": null,
+            "lens": null,
+            "aperture": null,
+            "shutter": null,
+            "iso": null,
+            "focal": null
+          }
+        }
+      ]
+    },
+    {
+      "slug": "landscapes",
+      "name": "Landscapes",
+      "quote": "Wide skies and the quiet edges of places.",
+      "photos": [
+        {
+          "id": "20-1-17-2729",
+          "section": "landscapes",
+          "w": 1080,
+          "h": 1080,
+          "title": "20 1 17 2729",
+          "caption": "",
+          "takenAt": null,
+          "exif": {
+            "camera": null,
+            "lens": null,
+            "aperture": null,
+            "shutter": null,
+            "iso": null,
+            "focal": null
+          }
+        },
+        {
+          "id": "img-0410",
+          "section": "landscapes",
+          "w": 1600,
+          "h": 1067,
+          "title": "IMG 0410",
+          "caption": "",
+          "takenAt": "2016-06-19T17:52:32.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": "EF-S18-55mm f/3.5-5.6 IS STM",
+            "aperture": "f/13",
+            "shutter": "1/160 s",
+            "iso": "ISO 100",
+            "focal": "18 mm"
+          }
+        },
+        {
+          "id": "img-0788",
+          "section": "landscapes",
+          "w": 1600,
+          "h": 548,
+          "title": "IMG 0788",
+          "caption": "",
+          "takenAt": "2016-06-26T15:08:29.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/6.4",
+            "shutter": "1/1328 s",
+            "iso": "ISO 160",
+            "focal": "25 mm"
+          }
+        },
+        {
+          "id": "img-1699",
+          "section": "landscapes",
+          "w": 1600,
+          "h": 1067,
+          "title": "IMG 1699",
+          "caption": "",
+          "takenAt": "2016-05-27T18:01:44.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/6.4",
+            "shutter": "1/4098 s",
+            "iso": "ISO 1000",
+            "focal": "18 mm"
+          }
+        },
+        {
+          "id": "img-2038",
+          "section": "landscapes",
+          "w": 1600,
+          "h": 1061,
+          "title": "IMG 2038",
+          "caption": "",
+          "takenAt": "2016-06-12T17:21:43.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": "EF-S18-55mm f/3.5-5.6 IS STM",
+            "aperture": "f/5",
+            "shutter": "1/1000 s",
+            "iso": "ISO 125",
+            "focal": "27 mm"
+          }
+        },
+        {
+          "id": "img-2083",
+          "section": "landscapes",
+          "w": 1600,
+          "h": 830,
+          "title": "IMG 2083",
+          "caption": "",
+          "takenAt": "2016-06-12T17:40:12.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/5",
+            "shutter": "1/664 s",
+            "iso": "ISO 100",
+            "focal": "37 mm"
+          }
+        },
+        {
+          "id": "img-2155",
+          "section": "landscapes",
+          "w": 1600,
+          "h": 977,
+          "title": "IMG 2155",
+          "caption": "",
+          "takenAt": "2016-06-12T19:45:56.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": "EF-S18-55mm f/3.5-5.6 IS STM",
+            "aperture": "f/18",
+            "shutter": "30 s",
+            "iso": "ISO 100",
+            "focal": "40 mm"
+          }
+        },
+        {
+          "id": "img-2420",
+          "section": "landscapes",
+          "w": 1600,
+          "h": 1067,
+          "title": "IMG 2420",
+          "caption": "",
+          "takenAt": "2016-08-25T08:09:13.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": "EF-S18-55mm f/3.5-5.6 IS STM",
+            "aperture": "f/16",
+            "shutter": "1/80 s",
+            "iso": "ISO 100",
+            "focal": "46 mm"
+          }
+        },
+        {
+          "id": "img-2684",
+          "section": "landscapes",
+          "w": 1600,
+          "h": 1067,
+          "title": "IMG 2684",
+          "caption": "",
+          "takenAt": "2016-09-29T18:27:52.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/5.7",
+            "shutter": "1/1328 s",
+            "iso": "ISO 320",
+            "focal": "47 mm"
+          }
+        },
+        {
+          "id": "img-3324",
+          "section": "landscapes",
+          "w": 1600,
+          "h": 1067,
+          "title": "IMG 3324",
+          "caption": "",
+          "takenAt": "2016-11-20T06:33:16.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/4",
+            "shutter": "1/8 s",
+            "iso": "ISO 100",
+            "focal": "18 mm"
+          }
+        },
+        {
+          "id": "img-3338",
+          "section": "landscapes",
+          "w": 1600,
+          "h": 1067,
+          "title": "IMG 3338",
+          "caption": "",
+          "takenAt": "2016-11-20T06:36:58.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/22",
+            "shutter": "3.2 s",
+            "iso": "ISO 100",
+            "focal": "18 mm"
+          }
+        },
+        {
+          "id": "img-3748",
+          "section": "landscapes",
+          "w": 1600,
+          "h": 1067,
+          "title": "IMG 3748",
+          "caption": "",
+          "takenAt": "2016-12-21T19:11:51.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/3.5",
+            "shutter": "1/256 s",
+            "iso": "ISO 400",
+            "focal": "18 mm"
+          }
+        },
+        {
+          "id": "img-4018",
+          "section": "landscapes",
+          "w": 1600,
+          "h": 1067,
+          "title": "IMG 4018",
+          "caption": "",
+          "takenAt": "2016-12-24T20:53:52.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/5.7",
+            "shutter": "1/64 s",
+            "iso": "ISO 6400",
+            "focal": "55 mm"
+          }
+        },
+        {
+          "id": "beach",
+          "section": "landscapes",
+          "w": 640,
+          "h": 360,
+          "title": "Beach",
+          "caption": "",
+          "takenAt": null,
+          "exif": {
+            "camera": null,
+            "lens": null,
+            "aperture": null,
+            "shutter": null,
+            "iso": null,
+            "focal": null
+          }
+        }
+      ]
+    },
+    {
+      "slug": "nature",
+      "name": "Nature",
+      "quote": "Small things, close up, given time.",
+      "photos": [
+        {
+          "id": "canonball-flower",
+          "section": "nature",
+          "w": 1600,
+          "h": 872,
+          "title": "Canonball Flower",
+          "caption": "",
+          "takenAt": "2017-01-12T08:39:04.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/5.7",
+            "shutter": "1/99 s",
+            "iso": "ISO 400",
+            "focal": "55 mm"
+          }
+        },
+        {
+          "id": "img-4146",
+          "section": "nature",
+          "w": 1600,
+          "h": 860,
+          "title": "IMG 4146",
+          "caption": "",
+          "takenAt": "2017-01-12T07:49:08.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/5.7",
+            "shutter": "1/83 s",
+            "iso": "ISO 100",
+            "focal": "55 mm"
+          }
+        },
+        {
+          "id": "img-4164",
+          "section": "nature",
+          "w": 1600,
+          "h": 619,
+          "title": "IMG 4164",
+          "caption": "",
+          "takenAt": "2017-01-12T07:55:14.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/4",
+            "shutter": "1/99 s",
+            "iso": "ISO 100",
+            "focal": "30 mm"
+          }
+        },
+        {
+          "id": "img-4184",
+          "section": "nature",
+          "w": 1600,
+          "h": 968,
+          "title": "IMG 4184",
+          "caption": "",
+          "takenAt": "2017-01-12T08:00:08.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/5.7",
+            "shutter": "1/83 s",
+            "iso": "ISO 100",
+            "focal": "55 mm"
+          }
+        },
+        {
+          "id": "img-4217",
+          "section": "nature",
+          "w": 1600,
+          "h": 1067,
+          "title": "IMG 4217",
+          "caption": "",
+          "takenAt": "2017-01-12T09:31:48.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/5.7",
+            "shutter": "1/664 s",
+            "iso": "ISO 100",
+            "focal": "55 mm"
+          }
+        },
+        {
+          "id": "img-4224",
+          "section": "nature",
+          "w": 1600,
+          "h": 894,
+          "title": "IMG 4224",
+          "caption": "",
+          "takenAt": "2017-01-12T09:38:59.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/5.7",
+            "shutter": "1/99 s",
+            "iso": "ISO 100",
+            "focal": "55 mm"
+          }
+        },
+        {
+          "id": "img-4237",
+          "section": "nature",
+          "w": 1600,
+          "h": 1067,
+          "title": "IMG 4237",
+          "caption": "",
+          "takenAt": "2017-01-12T09:48:13.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/4.6",
+            "shutter": "1/128 s",
+            "iso": "ISO 100",
+            "focal": "35 mm"
+          }
+        },
+        {
+          "id": "img-4238",
+          "section": "nature",
+          "w": 1600,
+          "h": 1067,
+          "title": "IMG 4238",
+          "caption": "",
+          "takenAt": "2017-01-12T09:49:29.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/5.7",
+            "shutter": "1/128 s",
+            "iso": "ISO 100",
+            "focal": "55 mm"
+          }
+        },
+        {
+          "id": "img-4268n",
+          "section": "nature",
+          "w": 1600,
+          "h": 1067,
+          "title": "IMG 4268n",
+          "caption": "",
+          "takenAt": "2017-01-12T10:10:22.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/5.7",
+            "shutter": "1/83 s",
+            "iso": "ISO 200",
+            "focal": "55 mm"
+          }
+        },
+        {
+          "id": "img-4284",
+          "section": "nature",
+          "w": 1067,
+          "h": 1600,
+          "title": "IMG 4284",
+          "caption": "",
+          "takenAt": "2017-01-12T10:14:00.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/4.6",
+            "shutter": "1/64 s",
+            "iso": "ISO 500",
+            "focal": "33 mm"
+          }
+        },
+        {
+          "id": "img-4288",
+          "section": "nature",
+          "w": 1600,
+          "h": 1067,
+          "title": "IMG 4288",
+          "caption": "",
+          "takenAt": "2017-01-12T10:14:49.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/5",
+            "shutter": "1/83 s",
+            "iso": "ISO 160",
+            "focal": "46 mm"
+          }
+        },
+        {
+          "id": "img-4299n",
+          "section": "nature",
+          "w": 1600,
+          "h": 1067,
+          "title": "IMG 4299n",
+          "caption": "",
+          "takenAt": "2017-01-12T10:20:23.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/3.5",
+            "shutter": "1/512 s",
+            "iso": "ISO 100",
+            "focal": "18 mm"
+          }
+        },
+        {
+          "id": "img-4301",
+          "section": "nature",
+          "w": 1600,
+          "h": 1067,
+          "title": "IMG 4301",
+          "caption": "",
+          "takenAt": "2017-01-12T10:20:50.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/3.5",
+            "shutter": "1/512 s",
+            "iso": "ISO 100",
+            "focal": "18 mm"
+          }
+        },
+        {
+          "id": "img-4302",
+          "section": "nature",
+          "w": 1600,
+          "h": 1067,
+          "title": "IMG 4302",
+          "caption": "",
+          "takenAt": "2017-01-12T10:21:44.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/4",
+            "shutter": "1/49 s",
+            "iso": "ISO 250",
+            "focal": "26 mm"
+          }
+        },
+        {
+          "id": "img-4307",
+          "section": "nature",
+          "w": 1067,
+          "h": 1600,
+          "title": "IMG 4307",
+          "caption": "",
+          "takenAt": "2017-01-12T10:24:09.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/5.7",
+            "shutter": "1/83 s",
+            "iso": "ISO 400",
+            "focal": "55 mm"
+          }
+        },
+        {
+          "id": "img-4312",
+          "section": "nature",
+          "w": 1600,
+          "h": 1067,
+          "title": "IMG 4312",
+          "caption": "",
+          "takenAt": "2017-01-12T10:25:57.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/3.5",
+            "shutter": "1/2049 s",
+            "iso": "ISO 100",
+            "focal": "18 mm"
+          }
+        },
+        {
+          "id": "img-4381",
+          "section": "nature",
+          "w": 1600,
+          "h": 1067,
+          "title": "IMG 4381",
+          "caption": "",
+          "takenAt": "2017-01-12T11:02:28.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/1.4",
+            "shutter": "1/4098 s",
+            "iso": "ISO 100",
+            "focal": "35 mm"
+          }
+        },
+        {
+          "id": "img-4386",
+          "section": "nature",
+          "w": 1600,
+          "h": 1067,
+          "title": "IMG 4386",
+          "caption": "",
+          "takenAt": "2017-01-12T11:03:23.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/1.4",
+            "shutter": "1/256 s",
+            "iso": "ISO 100",
+            "focal": "35 mm"
+          }
+        },
+        {
+          "id": "img-4424",
+          "section": "nature",
+          "w": 1600,
+          "h": 883,
+          "title": "IMG 4424",
+          "caption": "",
+          "takenAt": "2017-01-12T11:28:32.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/1.8",
+            "shutter": "1/395 s",
+            "iso": "ISO 100",
+            "focal": "35 mm"
+          }
+        },
+        {
+          "id": "img-4428",
+          "section": "nature",
+          "w": 1600,
+          "h": 904,
+          "title": "IMG 4428",
+          "caption": "",
+          "takenAt": "2017-01-12T11:29:19.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/1.8",
+            "shutter": "1/790 s",
+            "iso": "ISO 100",
+            "focal": "35 mm"
+          }
+        },
+        {
+          "id": "img-4518",
+          "section": "nature",
+          "w": 1015,
+          "h": 1600,
+          "title": "IMG 4518",
+          "caption": "",
+          "takenAt": "2017-01-27T18:21:40.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/9.9",
+            "shutter": "1/16 s",
+            "iso": "ISO 100",
+            "focal": "45 mm"
+          }
+        },
+        {
+          "id": "img-4522",
+          "section": "nature",
+          "w": 1015,
+          "h": 1600,
+          "title": "IMG 4522",
+          "caption": "",
+          "takenAt": "2017-01-27T18:22:54.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/5.7",
+            "shutter": "1/25 s",
+            "iso": "ISO 100",
+            "focal": "34 mm"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "abstract",
+      "name": "Abstract",
+      "quote": "Shapes first, subjects second.",
+      "photos": [
+        {
+          "id": "img-2212",
+          "section": "abstract",
+          "w": 1600,
+          "h": 1067,
+          "title": "IMG 2212",
+          "caption": "",
+          "takenAt": "2016-07-04T21:03:19.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/4",
+            "shutter": "1/99 s",
+            "iso": "ISO 1000",
+            "focal": "18 mm"
+          }
+        },
+        {
+          "id": "img-2301",
+          "section": "abstract",
+          "w": 1600,
+          "h": 1208,
+          "title": "IMG 2301",
+          "caption": "",
+          "takenAt": "2016-07-27T18:49:20.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/18.2",
+            "shutter": "1/49 s",
+            "iso": "ISO 6400",
+            "focal": "18 mm"
+          }
+        },
+        {
+          "id": "img-2714",
+          "section": "abstract",
+          "w": 1600,
+          "h": 1067,
+          "title": "IMG 2714",
+          "caption": "",
+          "takenAt": "2016-09-29T19:10:00.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/5",
+            "shutter": "1/10 s",
+            "iso": "ISO 200",
+            "focal": "37 mm"
+          }
+        },
+        {
+          "id": "img-2811",
+          "section": "abstract",
+          "w": 1600,
+          "h": 1111,
+          "title": "IMG 2811",
+          "caption": "",
+          "takenAt": "2016-10-24T15:55:02.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/6.4",
+            "shutter": "1/25 s",
+            "iso": "ISO 400",
+            "focal": "43 mm"
+          }
+        },
+        {
+          "id": "img-2832",
+          "section": "abstract",
+          "w": 1600,
+          "h": 899,
+          "title": "IMG 2832",
+          "caption": "",
+          "takenAt": "2016-10-24T16:03:12.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/5",
+            "shutter": "1/166 s",
+            "iso": "ISO 100",
+            "focal": "39 mm"
+          }
+        },
+        {
+          "id": "img-2939",
+          "section": "abstract",
+          "w": 1600,
+          "h": 1111,
+          "title": "IMG 2939",
+          "caption": "",
+          "takenAt": "2016-10-24T18:29:44.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/5.7",
+            "shutter": "1/32 s",
+            "iso": "ISO 500",
+            "focal": "18 mm"
+          }
+        },
+        {
+          "id": "img-3635",
+          "section": "abstract",
+          "w": 1215,
+          "h": 1600,
+          "title": "IMG 3635",
+          "caption": "",
+          "takenAt": "2016-12-15T17:10:25.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/8",
+            "shutter": "1/197 s",
+            "iso": "ISO 100",
+            "focal": "18 mm"
+          }
+        },
+        {
+          "id": "img-3642",
+          "section": "abstract",
+          "w": 1600,
+          "h": 1088,
+          "title": "IMG 3642",
+          "caption": "",
+          "takenAt": "2016-12-15T17:13:11.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/3.5",
+            "shutter": "1/41 s",
+            "iso": "ISO 100",
+            "focal": "18 mm"
+          }
+        },
+        {
+          "id": "img-3644",
+          "section": "abstract",
+          "w": 1600,
+          "h": 1213,
+          "title": "IMG 3644",
+          "caption": "",
+          "takenAt": "2016-12-15T17:13:58.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/3.5",
+            "shutter": "1/32 s",
+            "iso": "ISO 500",
+            "focal": "18 mm"
+          }
+        },
+        {
+          "id": "img-3712",
+          "section": "abstract",
+          "w": 1600,
+          "h": 992,
+          "title": "IMG 3712",
+          "caption": "",
+          "takenAt": "2016-12-19T20:40:42.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/3.5",
+            "shutter": "1/25 s",
+            "iso": "ISO 400",
+            "focal": "18 mm"
+          }
+        },
+        {
+          "id": "img-3712",
+          "section": "abstract",
+          "w": 1600,
+          "h": 1067,
+          "title": "IMG 3712",
+          "caption": "",
+          "takenAt": null,
+          "exif": {
+            "camera": null,
+            "lens": null,
+            "aperture": null,
+            "shutter": null,
+            "iso": null,
+            "focal": null
+          }
+        },
+        {
+          "id": "img-3889",
+          "section": "abstract",
+          "w": 1200,
+          "h": 1600,
+          "title": "IMG 3889",
+          "caption": "",
+          "takenAt": "2016-12-21T21:06:41.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/3.5",
+            "shutter": "1/32 s",
+            "iso": "ISO 800",
+            "focal": "18 mm"
+          }
+        },
+        {
+          "id": "img-3924",
+          "section": "abstract",
+          "w": 1147,
+          "h": 1600,
+          "title": "IMG 3924",
+          "caption": "",
+          "takenAt": "2016-12-24T18:29:53.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/4.6",
+            "shutter": "1/41 s",
+            "iso": "ISO 1000",
+            "focal": "26 mm"
+          }
+        },
+        {
+          "id": "img-4456",
+          "section": "abstract",
+          "w": 1600,
+          "h": 822,
+          "title": "IMG 4456",
+          "caption": "",
+          "takenAt": "2017-01-27T17:42:28.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/16",
+            "shutter": "1/395 s",
+            "iso": "ISO 640",
+            "focal": "55 mm"
+          }
+        },
+        {
+          "id": "img-4463",
+          "section": "abstract",
+          "w": 1600,
+          "h": 965,
+          "title": "IMG 4463",
+          "caption": "",
+          "takenAt": "2017-01-27T17:45:19.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/5.7",
+            "shutter": "1/395 s",
+            "iso": "ISO 100",
+            "focal": "55 mm"
+          }
+        },
+        {
+          "id": "img-4580",
+          "section": "abstract",
+          "w": 1600,
+          "h": 788,
+          "title": "IMG 4580",
+          "caption": "",
+          "takenAt": "2017-01-27T18:47:22.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/5.7",
+            "shutter": "1/256 s",
+            "iso": "ISO 100",
+            "focal": "55 mm"
+          }
+        },
+        {
+          "id": "img-4870",
+          "section": "abstract",
+          "w": 1025,
+          "h": 1600,
+          "title": "IMG 4870",
+          "caption": "",
+          "takenAt": "2017-04-27T20:06:39.000Z",
+          "exif": {
+            "camera": "Canon EOS 70D",
+            "lens": null,
+            "aperture": "f/3.5",
+            "shutter": "1/12 s",
+            "iso": "ISO 100",
+            "focal": "18 mm"
+          }
+        },
+        {
+          "id": "mural",
+          "section": "abstract",
+          "w": 640,
+          "h": 516,
+          "title": "Mural",
+          "caption": "",
+          "takenAt": null,
+          "exif": {
+            "camera": null,
+            "lens": null,
+            "aperture": null,
+            "shutter": null,
+            "iso": null,
+            "focal": null
+          }
+        }
+      ]
+    },
+    {
+      "slug": "portraits",
+      "name": "Portraits",
+      "quote": "People, mostly in silhouette.",
+      "photos": [
+        {
+          "id": "silouette",
+          "section": "portraits",
+          "w": 640,
+          "h": 426,
+          "title": "Silhouette",
+          "caption": "",
+          "takenAt": null,
+          "exif": {
+            "camera": null,
+            "lens": null,
+            "aperture": null,
+            "shutter": null,
+            "iso": null,
+            "focal": null
+          }
+        }
+      ]
+    }
+  ]
+}

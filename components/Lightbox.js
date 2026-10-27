@@ -1,0 +1,40 @@
+'use client';
+
+import { useEffect } from 'react';
+import { photoSrc } from '../lib/photos';
+
+export default function Lightbox({ manifest, photos, index, onStep, onClose }) {
+  const photo = photos[index];
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowRight') onStep(1);
+      if (e.key === 'ArrowLeft') onStep(-1);
+    };
+    window.addEventListener('keydown', onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [onClose, onStep]);
+
+  return (
+    <div className="lightbox" role="dialog" aria-modal="true" aria-label={photo.title}>
+      <div className="lightbox__bar">
+        <span>{photo.title} <small>{index + 1} of {photos.length}</small></span>
+        <button type="button" className="btn" onClick={onClose}>Close</button>
+      </div>
+      <div className="lightbox__img">
+        <img src={photoSrc(manifest, photo)} alt={photo.title} />
+      </div>
+      {photo.caption && <p className="lightbox__caption serif">{photo.caption}</p>}
+      <div className="lightbox__nav">
+        <button type="button" className="btn" onClick={() => onStep(-1)}>Previous</button>
+        <button type="button" className="btn btn--light" onClick={() => onStep(1)}>Next</button>
+      </div>
+    </div>
+  );
+}
