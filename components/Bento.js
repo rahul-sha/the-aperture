@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
 import { findPhoto, photoSrc, thumbSrc } from '../lib/photos';
 
 function hourLabel(h) {
@@ -61,17 +64,39 @@ export default function Bento({ manifest }) {
   const dark = (manifest.latestPalette || [])[0] || '#301406';
   const light = (manifest.latestPalette || [])[3] || '#F0AB16';
 
+  // q runs from 0 while the cards are in view to 1 once the gallery has
+  // pushed them off the top; the cards shrink, fade, and fall back as it does.
+  const wrapRef = useRef(null);
+  const [q, setQ] = useState(0);
+  useEffect(() => {
+    const onScroll = () => {
+      const el = wrapRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      setQ(Math.max(0, Math.min(1, -r.top / (r.height * 0.75))));
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => { window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); };
+  }, []);
+  const leaving = (i) => ({
+    opacity: (1 - q * 0.9).toFixed(3),
+    transform: `translateY(${Math.round(q * (30 + i * 18))}px) scale(${(1 - q * 0.06).toFixed(3)})`,
+  });
+
   return (
+    <section ref={wrapRef} className="bento-wrap" aria-label="About and highlights">
     <div className="bento">
-      <div id="about" className="tile tile--about">
+      <div id="about" className="tile tile--about" style={leaving(0)}>
         <div className="about__row">
           <div className="about__who">
             {portrait && <img src={thumbSrc(manifest, portrait)} alt="" />}
             <span><strong style={{ color: 'var(--ink)' }}>About</strong> · {about.name}, {about.city}</span>
           </div>
           <div className="about__links">
-            {about.instagram && <a href={about.instagram}>Instagram</a>}
-            {about.bluesky && <a href={about.bluesky}>Bluesky</a>}
+            {about.instagram && <a href={about.instagram} target="_blank" rel="noopener noreferrer">Instagram</a>}
+            {about.bluesky && <a href={about.bluesky} target="_blank" rel="noopener noreferrer">Bluesky</a>}
           </div>
         </div>
         <div className="about__text">
@@ -83,13 +108,14 @@ export default function Bento({ manifest }) {
         <div className="about__actions">
           <a className="btn btn--primary" href="#gallery">See the work</a>
           {about.email && <a className="btn" href={`mailto:${about.email}`}>Email me</a>}
-          {about.projectsUrl && <a className="about__projects" href={about.projectsUrl}>Other projects on rahulll.com</a>}
+          {about.projectsUrl && <a className="about__projects" href={about.projectsUrl} target="_blank" rel="noopener noreferrer">Other projects on rahulll.com</a>}
         </div>
       </div>
 
       {featured && (
-        <div className="tile tile--featured">
-          <img src={photoSrc(manifest, featured)} alt={featured.title} />
+        <div className="tile tile--featured" style={leaving(1)}>
+          <img className="featured__backdrop" src={thumbSrc(manifest, featured)} alt="" aria-hidden="true" />
+          <img className="featured__img" src={photoSrc(manifest, featured)} alt={featured.title} />
           <div className="featured__text">
             <span className="featured__kicker">Featured, from {featuredSection?.name}</span>
             <span className="featured__title">{featured.title}</span>
@@ -100,7 +126,7 @@ export default function Bento({ manifest }) {
         </div>
       )}
 
-      <div className="tile tile--clock">
+      <div className="tile tile--clock" style={leaving(2)}>
         <div className="clock__text">
           <span className="clock__label">When I shoot</span>
           <span className="clock__big">{peakWindow(manifest.hours)}</span>
@@ -110,8 +136,8 @@ export default function Bento({ manifest }) {
       </div>
 
       {latest && (
-        <div className="tile tile--latest" style={{ background: dark }}>
-          <img src={thumbSrc(manifest, latest)} alt={latest.title} />
+        <div className="tile tile--latest" style={{ background: dark, ...leaving(3) }}>
+          <div className="latest__img"><img src={thumbSrc(manifest, latest)} alt={latest.title} /></div>
           <div className="latest__body">
             <div className="latest__row">
               <span className="latest__kicker" style={{ color: light }}>Latest, in {latestSection?.name}</span>
@@ -125,5 +151,10 @@ export default function Bento({ manifest }) {
         </div>
       )}
     </div>
+    <a className="bento__cue" href="#gallery" aria-label="Scroll to the photos" style={{ opacity: (1 - q * 2).toFixed(2) }}>
+      <span>The work</span>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+    </a>
+    </section>
   );
 }

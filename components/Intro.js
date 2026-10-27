@@ -35,7 +35,11 @@ export default function Intro({ manifest }) {
   return (
     <section className="intro" aria-label="Intro">
       {photos.map((photo, i) => {
-        const [w, h, x, y, z] = SLOTS[i];
+        const [sw, sh, x, y, z] = SLOTS[i];
+        // Keep the slot's area but give it the photo's own shape.
+        const ratio = photo.w && photo.h ? photo.w / photo.h : sw / sh;
+        const w = Math.round(Math.sqrt(sw * sh * ratio));
+        const h = Math.round(Math.sqrt((sw * sh) / ratio));
         const outer = {
           width: w,
           height: h,

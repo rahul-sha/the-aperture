@@ -37,7 +37,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
   display: flex; justify-content: space-between; align-items: center;
   padding: 22px clamp(20px, 4vw, 56px);
 }
-.header__name { font-weight: 700; font-size: 17px; }
+.header__name { font-weight: 700; font-size: 17px; display: inline-flex; align-items: center; gap: 10px; }
+.header__mark { width: 26px; height: 26px; border-radius: 7px; display: block; }
 .header__replay {
   width: 44px; height: 44px; padding: 0; border: 0; border-radius: 999px;
   background: none; color: var(--ink); opacity: .55;
@@ -80,13 +81,26 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 
 /* Bento */
 .work { padding: 24px clamp(14px, 3vw, 40px) 0; }
+.bento-wrap {
+  min-height: min(900px, 100svh); scroll-snap-align: start;
+  display: flex; flex-direction: column; justify-content: center; gap: 18px; padding-bottom: 12px;
+}
+.bento__cue {
+  align-self: center; display: inline-flex; align-items: center; gap: 8px;
+  font-size: 13px; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-soft);
+  text-decoration: none; padding: 8px 14px; border-radius: 999px; border: 1px solid rgba(245, 243, 239, .18);
+}
+.bento__cue svg { animation: cue 1.8s ease-in-out infinite; }
+@keyframes cue { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(4px); } }
 .bento {
   display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
   grid-auto-rows: minmax(150px, auto); gap: 12px;
 }
+/* Photos inside tiles are absolutely positioned so their pixel size never
+   stretches the grid; the text decides the tile height. */
 .tile {
   border-radius: var(--radius); background: var(--tile);
-  animation: tile .8s var(--ease) both;
+  animation: tile .8s var(--ease) backwards; transition: opacity .2s linear, transform .2s linear;
 }
 @keyframes tile {
   from { opacity: 0; transform: translateY(30px) scale(.97); }
@@ -110,10 +124,13 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 .btn--primary:hover { color: var(--orange-ink); }
 .about__projects { font-size: 15px; padding: 0 6px; min-height: 44px; display: inline-flex; align-items: center; }
 
-.tile--featured { grid-column: span 2; grid-row: span 2; overflow: hidden; position: relative; animation-delay: .08s; }
-.tile--featured > img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .8s cubic-bezier(.2, .75, .2, 1); }
-.tile--featured:hover > img { transform: scale(1.05); }
+.tile--featured { grid-column: span 2; grid-row: span 2; min-height: 320px; overflow: hidden; position: relative; animation-delay: .08s; }
+.tile--featured > img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.featured__backdrop { object-fit: cover; filter: blur(28px) brightness(.55); transform: scale(1.15); }
+.featured__img { object-fit: contain; transition: transform .8s cubic-bezier(.2, .75, .2, 1); }
+.tile--featured:hover .featured__img { transform: scale(1.03); }
 .featured__text {
+  z-index: 1;
   position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 22px;
   background: linear-gradient(0deg, rgba(0, 0, 0, .75), rgba(0, 0, 0, 0));
   display: flex; flex-direction: column; gap: 4px;
@@ -137,7 +154,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 .tile--clock svg { height: 100%; max-height: 124px; flex: none; }
 
 .tile--latest { grid-column: span 2; padding: 16px; display: flex; gap: 16px; align-items: stretch; animation-delay: .22s; }
-.tile--latest > img { width: 30%; min-width: 0; border-radius: 12px; object-fit: cover; }
+.latest__img { width: 30%; min-width: 0; position: relative; border-radius: 12px; overflow: hidden; background: rgba(0, 0, 0, .35); }
+.latest__img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
 .latest__body { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; }
 .latest__row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
 .latest__kicker { font-size: 15px; font-weight: 500; }
@@ -157,7 +175,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
   position: relative; flex: 1 1 0px; min-width: 0; padding: 0;
   border: 2px solid transparent; border-radius: 18px; overflow: hidden;
   background: var(--tile); color: var(--ink); text-align: left;
-  animation: tile .8s var(--ease) both;
+  animation: tile .8s var(--ease) backwards; transition: opacity .2s linear, transform .2s linear;
   transition: flex-grow .6s var(--ease), border-color .3s ease;
 }
 .chip[aria-pressed="true"] { flex-grow: 3.4; border-color: var(--pink); }
@@ -175,11 +193,11 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 .chip[aria-pressed="true"] .chip__quote { opacity: 1; max-height: 40px; }
 
 .rows { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; }
-.row { display: flex; gap: 8px; min-height: 0; transition: flex-grow .65s var(--ease); }
+.row { display: flex; gap: 8px; min-height: 0; transition: flex .65s var(--ease); }
 .cell {
   position: relative; margin: 0; padding: 0; border: 0; background: var(--tile);
   border-radius: 12px; overflow: hidden; min-width: 0;
-  transition: flex-grow .65s var(--ease), filter .5s ease;
+  transition: flex .65s var(--ease), filter .5s ease;
 }
 .cell--dim { filter: grayscale(.95) brightness(.62); }
 .cell__wipe { position: absolute; inset: 0; animation: wipe 1s cubic-bezier(.65, 0, .2, 1) both; }
@@ -212,16 +230,17 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 @media (max-width: 860px) {
   html { scroll-snap-type: none; }
   .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bento-wrap { min-height: 0; }
   .stage { height: auto; }
   .chips { overflow-x: auto; height: 96px; }
   .chip { flex: 0 0 150px !important; }
   .chip[aria-pressed="true"] { flex-basis: 260px !important; }
   .row { flex: none !important; flex-wrap: wrap; }
-  .cell { flex: 1 1 45% !important; height: 200px; }
+  .cell { flex: 1 1 45% !important; aspect-ratio: var(--ar, 1.5); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .intro__fly, .intro__float, .intro__cue, .tile, .chip, .cell__wipe, .cell__drift { animation: none; }
+  .intro__fly, .intro__float, .intro__cue, .tile, .chip, .cell__wipe, .cell__drift, .bento__cue svg { animation: none; }
   .row, .cell, .chip, .chip__name, .chip__quote { transition: none; }
   html { scroll-snap-type: none; }
 }

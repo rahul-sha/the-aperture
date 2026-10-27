@@ -1,37 +1,71 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { photoSrc, thumbSrc } from '../lib/photos';
 
-// How many photos go in each row, cycling, and how wide each one is
-// relative to its neighbours. The variety is the point.
-const SIZES = [4, 3, 5, 4, 6, 3];
-const WIDTHS = { 2: [1.7, 1], 3: [2.4, 0.75, 1.3], 4: [0.7, 1.9, 1, 1.25], 5: [1, 0.6, 2.1, 0.85, 1.3], 6: [1.6, 0.7, 1, 0.65, 1.9, 1] };
-const FALLBACK = [1, 0.7, 1.6, 0.9, 1.3, 0.75, 1.2];
-const HEIGHTS = [180, 236, 150, 210];
+const GAP = 8;
 
-function buildRows(photos) {
-  const rows = [];
-  let idx = 0;
-  let r = 0;
-  while (idx < photos.length) {
-    let n = Math.min(SIZES[r % SIZES.length], photos.length - idx);
-    if (photos.length - idx - n === 1) n += 1; // never leave one photo alone
-    const widths = WIDTHS[n] && photos.length > 1 ? WIDTHS[n] : Array.from({ length: n }, (_, k) => FALLBACK[k % FALLBACK.length]);
-    rows.push({ items: photos.slice(idx, idx + n).map((p, j) => ({ photo: p, w: widths[j], gi: idx + j })), base: HEIGHTS[r % HEIGHTS.length] / 180 });
-    idx += n;
-    r += 1;
+function ratioOf(p) {
+  return p.w && p.h ? p.w / p.h : 1.5;
+}
+
+// Packs photos into rows so that, at the stage's width and height, every
+// photo is shown at its own aspect ratio. Rows get a weight equal to their
+// natural height (width divided by the sum of the ratios in the row), and
+// cells a weight equal to their ratio, so flexbox lays everything out at
+// scale. The number of rows is chosen so the natural total height is as
+// close as possible to the space available.
+function buildRows(photos, width, height) {
+  if (!photos.length) return [];
+  const ratios = photos.map(ratioOf);
+  const total = ratios.reduce((a, b) => a + b, 0);
+  let best = null;
+  const maxRows = Math.min(photos.length, 8);
+  for (let k = 1; k <= maxRows; k += 1) {
+    const target = total / k;
+    const rows = [];
+    let cur = [];
+    let sum = 0;
+    photos.forEach((p, i) => {
+      const r = ratios[i];
+      const remainingRows = k - rows.length - 1;
+      if (cur.length && remainingRows > 0 && sum + r / 2 > target && photos.length - i >= remainingRows) {
+        rows.push({ items: cur, sum });
+        cur = [];
+        sum = 0;
+      }
+      cur.push({ photo: p, r, gi: i });
+      sum += r;
+    });
+    if (cur.length) rows.push({ items: cur, sum });
+    if (rows.some((row) => row.items.length === 1 && photos.length > 1 && k > 1)) continue;
+    const natural = rows.reduce((h, row) => h + (width - GAP * (row.items.length - 1)) / row.sum, 0) + GAP * (rows.length - 1);
+    const score = Math.abs(Math.log(natural / height));
+    if (!best || score < best.score) best = { rows, score };
   }
-  return rows;
+  return best.rows.map((row) => ({ ...row, natural: (width - GAP * (row.items.length - 1)) / row.sum }));
 }
 
 export default function Gallery({ manifest, onOpen }) {
   const [sec, setSec] = useState(manifest.sections[0]?.slug);
   const [hover, setHover] = useState(null); // { r, j }
   const [epoch, setEpoch] = useState(0); // bumping this replays the reveal
+  const [size, setSize] = useState({ w: 1200, h: 720 });
+  const rowsRef = useRef(null);
+
+  useEffect(() => {
+    const el = rowsRef.current;
+    if (!el) return undefined;
+    const update = () => setSize({ w: el.clientWidth || 1200, h: el.clientHeight || 720 });
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   const section = manifest.sections.find((s) => s.slug === sec) || manifest.sections[0];
-  const rows = buildRows(section.photos);
+  const rows = buildRows(section.photos, size.w, size.h);
+  const GROW = 2.2; // a hovered photo and its row both grow by this, so its shape holds
 
   const switchTo = (slug) => {
     const el = document.getElementById('gallery');
@@ -70,11 +104,11 @@ export default function Gallery({ manifest, onOpen }) {
         })}
       </div>
 
-      <div key={epoch} className="rows" onMouseLeave={() => setHover(null)}>
+      <div key={epoch} ref={rowsRef} className="rows" onMouseLeave={() => setHover(null)}>
         {rows.map((row, r) => {
           const rowHover = hover && hover.r === r;
           return (
-            <div key={r} className="row" style={{ flex: `${hover ? (rowHover ? 2.6 : 0.6) : row.base.toFixed(2)} 1 0px` }}>
+            <div key={r} className="row" style={{ flex: `${(row.natural * (rowHover ? GROW : 1)).toFixed(2)} 1 0px` }}>
               {row.items.map((it, j) => {
                 const on = rowHover && hover.j === j;
                 const dim = hover && !on;
@@ -84,7 +118,7 @@ export default function Gallery({ manifest, onOpen }) {
                     key={it.photo.id}
                     type="button"
                     className={`cell${dim ? ' cell--dim' : ''}`}
-                    style={{ flex: `${on ? (it.w * 3).toFixed(2) : it.w} 1 0px` }}
+                    style={{ flex: `${(it.r * (on ? GROW : 1)).toFixed(3)} 1 0px`, '--ar': it.r.toFixed(3) }}
                     onMouseEnter={() => setHover({ r, j })}
                     onFocus={() => setHover({ r, j })}
                     onClick={() => onOpen(section.photos, it.gi)}
