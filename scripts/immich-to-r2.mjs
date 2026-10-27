@@ -33,7 +33,9 @@ import { S3Client, PutObjectCommand, ListObjectsV2Command, DeleteObjectsCommand 
 import { readExif, resizeBoth, palette, buildManifest, slugify, SECTION_ORDER } from './lib/photo-pipeline.mjs';
 
 const ROOT = path.resolve(new URL('..', import.meta.url).pathname);
-const STATE_FILE = path.join(ROOT, '.sync-state.json'); // remembers what was uploaded
+// Remembers what was uploaded. SYNC_STATE_DIR lets the Docker image keep it on a volume.
+const STATE_DIR = process.env.SYNC_STATE_DIR || ROOT;
+const STATE_FILE = path.join(STATE_DIR, '.sync-state.json');
 
 // Minimal .env loader so there is no extra dependency.
 async function loadEnv() {
@@ -51,7 +53,7 @@ async function loadEnv() {
 function need(name) {
   const v = process.env[name];
   if (!v) {
-    console.error(`Missing setting ${name}. Add it to .env (see .env.example).`);
+    console.error(`Missing setting ${name}. Add it to .env, or to the container's environment (see .env.example).`);
     process.exit(1);
   }
   return v;
@@ -100,6 +102,7 @@ async function main() {
     credentials: { accessKeyId: process.env.R2_ACCESS_KEY_ID, secretAccessKey: process.env.R2_SECRET_ACCESS_KEY },
   });
   const bucket = process.env.R2_BUCKET;
+  await fs.mkdir(STATE_DIR, { recursive: true });
   const state = await readJson(STATE_FILE, {}); // { assetId: checksum }
   const about = await readJson(path.join(ROOT, 'content', 'about.json'), {});
   const sectionText = await readJson(path.join(ROOT, 'content', 'sections.json'), {});
@@ -219,7 +222,7 @@ async function main() {
 
   const manifest = buildManifest({ base: process.env.PHOTOS_BASE_URL.replace(/\/$/, ''), about, sections, intro, featured, latest, latestPalette, heat: heatList(heat) });
   await s3.send(new PutObjectCommand({ Bucket: bucket, Key: 'manifest.json', Body: JSON.stringify(manifest), ContentType: 'application/json', CacheControl: 'public, max-age=300' }));
-  await fs.writeFile(path.join(ROOT, 'content', 'photos.json'), JSON.stringify(manifest, null, 2));
+  await fs.writeFile(path.join(STATE_DIR === ROOT ? path.join(ROOT, 'content') : STATE_DIR, 'photos.json'), JSON.stringify(manifest, null, 2));
   process.stdout.write(`Done: ${all.length} photos in ${sections.length} sections. Manifest at ${process.env.PHOTOS_BASE_URL}/manifest.json\n`);
 }
 
