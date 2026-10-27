@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { findPhoto, photoSrc, thumbSrc } from '../lib/photos';
 
 function hourLabel(h) {
@@ -64,26 +64,26 @@ export default function Bento({ manifest }) {
   const dark = (manifest.latestPalette || [])[0] || '#301406';
   const light = (manifest.latestPalette || [])[3] || '#F0AB16';
 
-  // q runs from 0 while the cards are in view to 1 once the gallery has
-  // pushed them off the top; the cards shrink, fade, and fall back as it does.
+  // The wrapper is sticky, so the gallery (its next sibling) slides over it.
+  // --p goes from 0 while the cards are fully in view to 1 once the gallery
+  // has covered them; the tiles drift up at a fraction of the scroll speed.
   const wrapRef = useRef(null);
-  const [q, setQ] = useState(0);
   useEffect(() => {
+    const el = wrapRef.current;
+    const next = el?.nextElementSibling;
+    if (!el || !next) return undefined;
     const onScroll = () => {
-      const el = wrapRef.current;
-      if (!el) return;
-      const r = el.getBoundingClientRect();
-      setQ(Math.max(0, Math.min(1, -r.top / (r.height * 0.75))));
+      const top = next.getBoundingClientRect().top;
+      const p = Math.max(0, Math.min(1, 1 - top / window.innerHeight));
+      el.style.setProperty('--p', p.toFixed(3));
     };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
     return () => { window.removeEventListener('scroll', onScroll); window.removeEventListener('resize', onScroll); };
   }, []);
-  const leaving = (i) => ({
-    opacity: (1 - q * 0.9).toFixed(3),
-    transform: `translateY(${Math.round(q * (30 + i * 18))}px) scale(${(1 - q * 0.06).toFixed(3)})`,
-  });
+  // Each tile drifts a different distance, so the layer has some depth.
+  const leaving = (i) => ({ '--drift': `${-(60 + i * 30)}px` });
 
   return (
     <section ref={wrapRef} className="bento-wrap" aria-label="About and highlights">
@@ -151,10 +151,6 @@ export default function Bento({ manifest }) {
         </div>
       )}
     </div>
-    <a className="bento__cue" href="#gallery" aria-label="Scroll to the photos" style={{ opacity: (1 - q * 2).toFixed(2) }}>
-      <span>The work</span>
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
-    </a>
     </section>
   );
 }
