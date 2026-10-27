@@ -70,8 +70,9 @@ on your computer.
 **On the NAS, with Dockhand or any Docker host:** create a stack from
 `docker-compose.sync.yml`, fill in the environment variables it lists
 (`IMMICH_URL` must be the NAS's LAN address, such as
-`http://192.168.1.10:2283`), and deploy. The container builds itself from
-this repository, runs once, prints its progress, and exits. Deploy it again
+`http://192.168.1.10:2283`), and deploy. GitHub builds the image
+(`ghcr.io/rahul-sha/the-aperture-sync`) whenever the sync code changes; the
+NAS pulls it, runs it once, prints its progress, and exits. Deploy it again
 whenever you change the albums. Its memory of what was uploaded lives in the
 `sync-state` volume.
 
