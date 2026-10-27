@@ -9,7 +9,7 @@
     "start": "next start",
     "photos:local": "node scripts/build-local-manifest.mjs",
     "photos:sync": "node scripts/immich-to-r2.mjs",
-    "test": "python3 .claude/skills/webapp-testing/scripts/with_server.py --server \"npm run start\" --port 3000 -- node tests/e2e.mjs"
+    "test": "node tests/run.mjs"
   },
   "dependencies": {
     "next": "16.4.3",
