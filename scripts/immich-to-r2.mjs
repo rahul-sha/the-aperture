@@ -175,7 +175,9 @@ async function main() {
       const place = [info.city, info.country].filter(Boolean).join(', ') || null;
       if (Number.isFinite(info.latitude) && Number.isFinite(info.longitude)) addToHeat(heat, info.latitude, info.longitude);
 
-      const changed = state[asset.id] !== asset.checksum;
+      // State is kept per section copy, so a photo that sits in several
+      // albums is uploaded into each section folder.
+      const changed = state[largeKey] !== asset.checksum;
       if (changed) {
         process.stdout.write(`Uploading ${slug}/${asset.originalFileName}\n`);
         const original = await immich(`/assets/${asset.id}/original`, { raw: true });
@@ -187,7 +189,7 @@ async function main() {
         h = out.h;
         await s3.send(new PutObjectCommand({ Bucket: bucket, Key: largeKey, Body: out.large, ContentType: 'image/jpeg', CacheControl: 'public, max-age=31536000, immutable' }));
         await s3.send(new PutObjectCommand({ Bucket: bucket, Key: thumbKey, Body: out.thumb, ContentType: 'image/jpeg', CacheControl: 'public, max-age=31536000, immutable' }));
-        state[asset.id] = asset.checksum;
+        state[largeKey] = asset.checksum;
         state[`${asset.id}:size`] = [w, h];
         await fs.writeFile(STATE_FILE, JSON.stringify(state, null, 2));
       } else if (state[`${asset.id}:size`]) {
