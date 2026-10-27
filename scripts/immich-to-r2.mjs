@@ -15,7 +15,8 @@
 //
 // How it decides what is public:
 //   - every album named "Portfolio - <Section>" becomes a section
-//   - the album description becomes the section quote
+//   - the album description becomes the section quote (if an album has none,
+//     the line for that section in content/sections.json is used)
 //   - each photo's description becomes its caption
 //   - the album "Portfolio - Intro" picks the collage on the landing screen
 //   - removing a photo from an album removes it from the site on the next run
@@ -80,6 +81,7 @@ async function main() {
   const bucket = process.env.R2_BUCKET;
   const state = await readJson(STATE_FILE, {}); // { assetId: checksum }
   const about = await readJson(path.join(ROOT, 'content', 'about.json'), {});
+  const sectionText = await readJson(path.join(ROOT, 'content', 'sections.json'), {});
 
   // 1. Find the public albums.
   const albums = (await immich('/albums')).filter((a) => /^Portfolio - /i.test(a.albumName));
@@ -154,7 +156,7 @@ async function main() {
       });
     }
     photos.sort((a, b) => String(b.takenAt).localeCompare(String(a.takenAt)));
-    sections.push({ slug, name, quote: (album.description || '').trim(), photos });
+    sections.push({ slug, name, quote: (album.description || '').trim() || sectionText[name] || '', photos });
   }
 
   sections.sort((a, b) => {
