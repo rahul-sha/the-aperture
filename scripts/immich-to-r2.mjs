@@ -59,12 +59,34 @@ function need(name) {
   return v;
 }
 
-async function immich(pathname, { raw = false } = {}) {
+async function immich(pathname, { raw = false, body = null } = {}) {
   const res = await fetch(`${process.env.IMMICH_URL.replace(/\/$/, '')}/api${pathname}`, {
-    headers: { 'x-api-key': process.env.IMMICH_API_KEY, Accept: raw ? '*/*' : 'application/json' },
+    method: body ? 'POST' : 'GET',
+    headers: {
+      'x-api-key': process.env.IMMICH_API_KEY,
+      Accept: raw ? '*/*' : 'application/json',
+      ...(body ? { 'Content-Type': 'application/json' } : {}),
+    },
+    body: body ? JSON.stringify(body) : undefined,
   });
   if (!res.ok) throw new Error(`Immich ${pathname} failed: ${res.status} ${res.statusText}`);
   return raw ? Buffer.from(await res.arrayBuffer()) : res.json();
+}
+
+// Lists the photos in an album. Newer Immich versions leave the photo list
+// out of the album response, so fall back to the search endpoint, page by
+// page, when it is empty.
+async function albumPhotos(album) {
+  let assets = (album.assets || []).filter((a) => a.type === 'IMAGE');
+  if (assets.length) return assets;
+  assets = [];
+  for (let page = 1; page < 100; page += 1) {
+    const result = await immich('/search/metadata', { body: { albumIds: [album.id], type: 'IMAGE', withExif: true, size: 250, page } });
+    const items = result?.assets?.items || [];
+    assets.push(...items);
+    if (!result?.assets?.nextPage) break;
+  }
+  return assets;
 }
 
 // Snaps a coordinate to a grid so the published map can show "around here"
@@ -122,7 +144,8 @@ async function main() {
   for (const summary of albums) {
     const album = await immich(`/albums/${summary.id}`);
     const name = album.albumName.replace(/^Portfolio - /i, '').trim();
-    const assets = (album.assets || []).filter((a) => a.type === 'IMAGE');
+    const assets = await albumPhotos(album);
+    process.stdout.write(`Album "${album.albumName}": ${assets.length} photo(s)\n`);
 
     if (name.toLowerCase() === 'intro') {
       intro = assets.map((a) => a.id);
@@ -184,6 +207,10 @@ async function main() {
       });
     }
     photos.sort((a, b) => String(b.takenAt).localeCompare(String(a.takenAt)));
+    if (!photos.length) {
+      process.stdout.write(`Skipping "${album.albumName}" because it has no photos.\n`);
+      continue;
+    }
     sections.push({ slug, name, quote: (album.description || '').trim() || sectionText[name] || '', photos });
   }
 
@@ -209,6 +236,10 @@ async function main() {
 
   // 3. Write the manifest the site reads.
   const all = sections.flatMap((s) => s.photos);
+  if (!all.length) {
+    console.error('No photos found in any "Portfolio - <Section>" album. Add photos to the albums in Immich, then run the sync again.');
+    process.exit(1);
+  }
   const byId = Object.fromEntries(all.map((p) => [p.id, p]));
   intro = intro.filter((id) => byId[id]);
   if (intro.length < 9) {
