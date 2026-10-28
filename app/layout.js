@@ -27,7 +27,7 @@ export const viewport = { themeColor: '#000000' };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${onest.variable} ${newsreader.variable}`}>
+    <html lang="en-GB" className={`${onest.variable} ${newsreader.variable}`}>
       <body>{children}</body>
     </html>
   );

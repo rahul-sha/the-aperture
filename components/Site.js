@@ -7,12 +7,17 @@ import Lightbox from './Lightbox';
 import Cursor from './Cursor';
 import ContextMenu from './ContextMenu';
 
+// Anyone who asked their device for less motion starts the drift themselves.
+const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 export default function Site({ manifest }) {
   // Drift starts from the welcome after the collage, or the header switch.
   const [drift, setDrift] = useState(false);
   const [replayKey, setReplayKey] = useState(0);
   const [grid, setGrid] = useState(false);
   const [lightbox, setLightbox] = useState(null); // { photos, index }
+  // Without WebGL there is no walk to draw, so the page becomes All photos.
+  const [noWalk, setNoWalk] = useState(false);
   const railRef = useRef(null);
   const walkRef = useRef(null);
 
@@ -26,9 +31,9 @@ export default function Site({ manifest }) {
   return (
     <>
       <header className="header">
-        <button type="button" className="header__name" onClick={backToStart} title="Back to the start"><img className="header__mark" src="/logo.png" alt="" width="26" height="26" />The Aperture</button>
+        <button type="button" className="header__name" onClick={backToStart} title="Back to the start"><img className="header__mark" src="/logo-mark.webp" alt="" width="26" height="26" />The Aperture</button>
         <Timeline manifest={manifest} railRef={railRef} onHome={backToStart} />
-        <div className="header__tools">
+        {!noWalk && <div className="header__tools">
           <button type="button" className="header__btn" onClick={() => setGrid(true)}>All photos</button>
           <button
             type="button"
@@ -45,20 +50,26 @@ export default function Site({ manifest }) {
               <path d="M3 4v5h5" />
             </svg>
           </button>
-        </div>
+        </div>}
       </header>
 
       <main>
-        <Walk
-          manifest={manifest}
-          drift={drift}
-          paused={grid || !!lightbox}
-          replayKey={replayKey}
-          railRef={railRef}
-          controlRef={walkRef}
-          onGo={() => setDrift(true)}
-          onOpen={(photos, index) => setLightbox({ photos, index })}
-        />
+        <h1 className="visually-hidden">The Aperture: photographs by {manifest.about.name}</h1>
+        {noWalk ? (
+          <AllPhotos manifest={manifest} standalone onOpen={(photos, index) => setLightbox({ photos, index })} />
+        ) : (
+          <Walk
+            manifest={manifest}
+            drift={drift}
+            paused={grid || !!lightbox}
+            replayKey={replayKey}
+            railRef={railRef}
+            controlRef={walkRef}
+            onGo={() => { if (!reducedMotion()) setDrift(true); }}
+            onOpen={(photos, index) => setLightbox({ photos, index })}
+            onNoWalk={() => setNoWalk(true)}
+          />
+        )}
       </main>
 
       {grid && <AllPhotos manifest={manifest} onOpen={(photos, index) => setLightbox({ photos, index })} onClose={() => setGrid(false)} />}
