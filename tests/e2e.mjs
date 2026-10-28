@@ -33,16 +33,30 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
   await page.goto(SITE, { waitUntil: 'networkidle' });
   check('page title', (await page.title()) === 'The Aperture');
   check('walk canvas present', (await page.locator('canvas.walk__canvas').count()) === 1);
-  check('drift is on by default', (await page.locator('.header__drift').getAttribute('aria-pressed')) === 'true');
+  check('drift is off on arrival', (await page.locator('.header__drift').getAttribute('aria-pressed')) === 'false');
   check('page is tall enough to walk through', await page.evaluate(() => document.body.scrollHeight > window.innerHeight * 10));
   await page.waitForTimeout(2200); // the fly-in
   await page.screenshot({ path: `${SHOTS}01-intro.png` });
+  await page.waitForTimeout(2000);
+  check('page rests on the collage', (await scrollY(page)) === 0);
 
-  // The drift starts once the fly-in has settled.
-  const before = await scrollY(page);
-  await page.waitForTimeout(2500);
+  // One scroll down glides to the card with the headline.
+  await page.mouse.move(700, 450);
+  await page.mouse.wheel(0, 120);
+  await page.waitForTimeout(2600);
+  const card = await scrollY(page);
+  const cardOpacity = await page.locator('.walk__threshold').evaluate((el) => +el.style.opacity);
+  check('one scroll lands on the card', card > 0 && cardOpacity > 0.95, `y=${card} opacity=${cardOpacity}`);
+  await page.waitForTimeout(1500);
+  check('the card waits for you', (await scrollY(page)) === card);
+  await page.screenshot({ path: `${SHOTS}02-card.png` });
+
+  // "Let's go" starts the drift.
+  await page.locator('.walk__go').click();
+  check('drift switches on', (await page.locator('.header__drift').getAttribute('aria-pressed')) === 'true');
+  await page.waitForTimeout(2000);
   const after = await scrollY(page);
-  check('drift moves the page on its own', after > before + 40, `${before} to ${after}`);
+  check('drift moves the page on its own', after > card + 40, `${card} to ${after}`);
 
   // Scrolling yourself pauses it for a few seconds, then it carries on.
   await page.mouse.move(700, 450);
@@ -53,7 +67,6 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
   check('your scroll pauses the drift', Math.abs((await scrollY(page)) - held) < 5);
   await page.waitForTimeout(3500);
   check('drift resumes after a pause', (await scrollY(page)) > held + 20);
-  await page.screenshot({ path: `${SHOTS}02-threshold.png` });
 
   // The switch turns it off entirely.
   await page.locator('.header__drift').click();
@@ -101,14 +114,6 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
   const wide = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
   check('no sideways scroll on a phone', !wide);
   await page.screenshot({ path: `${SHOTS}06-phone-intro.png` });
-  await page.close();
-}
-
-// Less motion: no drift unless asked for.
-{
-  const page = await browser.newPage({ viewport: { width: 1280, height: 800 }, reducedMotion: 'reduce' });
-  await page.goto(SITE, { waitUntil: 'networkidle' });
-  check('drift starts off with reduced motion', (await page.locator('.header__drift').getAttribute('aria-pressed')) === 'false');
   await page.close();
 }
 

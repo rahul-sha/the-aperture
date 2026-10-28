@@ -20,6 +20,8 @@ const PHOTO_RADIUS = 0.055; // corner radius of every photo, in scene units
 const DRIFT_SPEED = 0.3; // units per second while drifting
 const DRIFT_RESUME = 4000; // ms to wait after you scroll before drifting again
 const FLY_DONE = 2.6; // seconds until the intro fly-in has settled
+const CARD_Z = -10; // where the camera rests on the "I photograph..." card
+const GLIDE = 1.8; // seconds for the glide from the collage to that card
 const FAR = 22; // photos further than this have faded into the dark
 
 // Where each of the nine collage cards sits, in the same pixel units as the
@@ -72,7 +74,7 @@ const smooth = (a, b, v) => { const t = clamp01((v - a) / (b - a)); return t * t
 const easeOut = (t) => 1 - (1 - t) ** 4;
 const rnd = (i) => { const x = Math.sin(i * 91.7 + 13.1) * 43758.5; return x - Math.floor(x); };
 
-export default function Walk({ manifest, drift, paused, replayKey, onOpen }) {
+export default function Walk({ manifest, drift, paused, replayKey, onOpen, onGo }) {
   const rootRef = useRef(null);
   const canvasRef = useRef(null);
   const ui = useRef({});
@@ -120,6 +122,7 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen }) {
       return mesh;
     }
     // Small copies first; the full-size file once the photo is close.
+    let heroLoaded = 0;
     function load(mesh, quality) {
       if (mesh.userData.quality >= quality) return;
       mesh.userData.quality = quality;
@@ -130,6 +133,7 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen }) {
         const old = mesh.material.uniforms.map.value;
         mesh.material.uniforms.map.value = t;
         mesh.material.uniforms.ready.value = 1;
+        if (mesh.userData.card != null && quality === 1) heroLoaded += 1;
         if (old !== blank) old.dispose();
       });
     }
@@ -244,18 +248,58 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen }) {
     canvas.addEventListener('pointerdown', onDown);
     canvas.addEventListener('pointerup', onUp);
 
-    // The drift scrolls the page for you. Anything you do to scroll pauses it
-    // for a few seconds, then it carries on from wherever you are.
-    let flyStart = performance.now() / 1000;
-    let pausedUntil = performance.now() + FLY_DONE * 1000;
+    // The page rests on the collage after it loads. The first scroll down
+    // glides you to the card with your words; its "Let's go" button starts the
+    // drift. The drift scrolls the page for you, and anything you do to scroll
+    // pauses it for a few seconds, then it carries on from wherever you are.
+    // The collage waits for its nine photos (or three seconds at most), so the
+    // cards fly in whole; everything else loads only once they have.
+    let flyStart = null;
+    const flyDeadline = performance.now() + 3000;
+    let pausedUntil = 0;
     let expected = null;
     let acc = 0;
     let looping = false;
+    let glide = null; // { from, to, start }
+    let touchY = null;
+    const cardY = () => Math.round(root.offsetTop - CARD_Z * pxPerUnit);
+    const onHero = () => window.scrollY < cardY() - 4;
     const pause = () => { pausedUntil = performance.now() + DRIFT_RESUME; expected = null; };
-    const onKey = (e) => { if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', ' ', 'Home', 'End'].includes(e.key)) pause(); };
+    function glideToCard() {
+      if (glide) return;
+      glide = { from: window.scrollY, to: cardY(), start: performance.now() };
+    }
+    // From the collage, one push down is enough: take the visitor to the card.
+    const onWheel = (e) => {
+      if (glide || (onHero() && e.deltaY > 0 && !live.current.drift)) {
+        e.preventDefault();
+        glideToCard();
+        return;
+      }
+      pause();
+    };
+    const onTouchStart = (e) => { touchY = e.touches[0]?.clientY ?? null; pause(); };
+    const onTouchMove = (e) => {
+      const y = e.touches[0]?.clientY;
+      if (glide || (onHero() && touchY != null && y != null && touchY - y > 8 && !live.current.drift)) {
+        e.preventDefault();
+        glideToCard();
+      }
+    };
+    const onKey = (e) => {
+      if (!['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', ' ', 'Home', 'End'].includes(e.key)) return;
+      if (e.target instanceof Element && e.target.closest('button, a, input')) return;
+      if (glide || (onHero() && ['ArrowDown', 'PageDown', ' '].includes(e.key) && !live.current.drift)) {
+        e.preventDefault();
+        glideToCard();
+        return;
+      }
+      pause();
+    };
     const onScroll = () => { if (expected !== null && Math.abs(window.scrollY - expected) > 2) pause(); };
-    window.addEventListener('wheel', pause, { passive: true });
-    window.addEventListener('touchstart', pause, { passive: true });
+    window.addEventListener('wheel', onWheel, { passive: false });
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
     window.addEventListener('keydown', onKey);
     window.addEventListener('scroll', onScroll, { passive: true });
 
@@ -265,6 +309,7 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen }) {
       window.scrollTo({ top: 0, behavior: 'instant' });
       camZ = 0;
       flyStart = performance.now() / 1000;
+      glide = null;
       pausedUntil = performance.now() + FLY_DONE * 1000 + (top ? 0 : 1000);
     }
     // At the end of the walk, rest on the last screen, then fade to black and
@@ -280,7 +325,11 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen }) {
         }, 900);
       }, 6000);
     }
-    api.current = { replay: () => replay(true) };
+    api.current = {
+      replay: () => replay(true),
+      go: () => { pausedUntil = 0; if (onHero()) glideToCard(); },
+      toCard: glideToCard,
+    };
 
     let current = null;
     let last = performance.now();
@@ -292,9 +341,21 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen }) {
       const now = nowMs / 1000;
       const maxScroll = root.offsetTop + root.offsetHeight - window.innerHeight;
 
+      // The glide from the collage to the card: eased, so it starts and
+      // lands softly.
+      if (glide) {
+        const t = clamp01((nowMs - glide.start) / (reduced ? 1 : GLIDE * 1000));
+        const e = t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
+        expected = Math.round(glide.from + (glide.to - glide.from) * e);
+        window.scrollTo({ top: expected, behavior: 'instant' });
+        if (t >= 1) { glide = null; acc = expected; }
+      }
+
       // Drift.
       const { drift: driftOn, paused: held } = live.current;
-      if (driftOn && !held && !looping && nowMs > pausedUntil && document.visibilityState === 'visible') {
+      if (glide) {
+        // the glide is moving the page
+      } else if (driftOn && !held && !looping && nowMs > pausedUntil && document.visibilityState === 'visible') {
         if (expected === null) acc = window.scrollY;
         acc += DRIFT_SPEED * pxPerUnit * dt;
         if (acc >= maxScroll - 1) {
@@ -317,15 +378,18 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen }) {
       camera.position.set(look.x, look.y, camZ);
       camera.lookAt(look.x * 0.4, look.y * 0.4, camZ - 10);
 
+      if (flyStart == null && (heroLoaded >= cards.length || nowMs > flyDeadline)) flyStart = now;
+      const heroIn = flyStart != null && now - flyStart > 1.2;
+
       // The collage: fly in, float, then part gently as you walk into it.
       const part = smooth(0, -COLLAGE_Z, -camZ);
       cards.forEach((mesh, i) => {
         const b = mesh.userData.base;
         const delay = i === 0 ? 0.2 : 0.35 + i * 0.12;
-        const t = reduced ? 1 : easeOut(clamp01((now - flyStart - delay) / 1.6));
+        const t = flyStart == null ? 0 : reduced ? 1 : easeOut(clamp01((now - flyStart - delay) / 1.6));
         const fx = (i % 2 ? 1 : -1) * (400 + i * 40) * k;
         const fy = ((i % 3) - 1) * 260 * k;
-        const f = reduced ? 0 : now - flyStart;
+        const f = reduced || flyStart == null ? 0 : now - flyStart;
         const floatX = Math.sin(f / (4.2 + (i % 4) * 0.9) + i) * (6 + (i % 3) * 4) * k;
         const floatY = Math.cos(f / (5 + (i % 3)) + i * 2) * (8 + (i % 4) * 3) * k;
         const spread = 1 + part * part * 0.9;
@@ -343,7 +407,9 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen }) {
       // The corridor: each photo arrives out of the dark and fades as you pass.
       items.forEach((mesh) => {
         const d = camZ - mesh.position.z;
-        mesh.material.uniforms.opacity.value = smooth(0, 0.7, d);
+        // Kept out of sight behind the collage until you start walking.
+        mesh.material.uniforms.opacity.value = smooth(0, 0.7, d) * smooth(0.5, 3, -camZ);
+        if (!heroIn) return;
         if (d > -2 && d < FAR) load(mesh, 1);
         if (d > 0 && d < 10) load(mesh, 2);
       });
@@ -383,7 +449,11 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen }) {
         railButtons.forEach((b, i) => b.setAttribute('aria-current', String(marks[i] === current)));
       }
       const tz = -camZ;
-      if (threshold) threshold.style.opacity = (smooth(6.8, 8.8, tz) * (1 - smooth(11.5, 14, tz))).toFixed(3);
+      if (threshold) {
+        const op = smooth(6.8, 8.8, tz) * (1 - smooth(11.5, 14, tz));
+        threshold.style.opacity = op.toFixed(3);
+        threshold.style.visibility = op > 0.02 ? 'visible' : 'hidden';
+      }
       if (cue) cue.style.opacity = (1 - smooth(0, 0.8, tz)).toFixed(3);
       if (rail) rail.style.opacity = smooth(-START - 4, -START, tz).toFixed(3);
       if (exit) {
@@ -400,8 +470,9 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen }) {
       cancelAnimationFrame(raf);
       window.removeEventListener('resize', layout);
       window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('wheel', pause);
-      window.removeEventListener('touchstart', pause);
+      window.removeEventListener('wheel', onWheel);
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
       window.removeEventListener('keydown', onKey);
       window.removeEventListener('scroll', onScroll);
       canvas.removeEventListener('pointerdown', onDown);
@@ -416,6 +487,11 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen }) {
     if (replayKey && api.current) api.current.replay();
   }, [replayKey]);
 
+  // Turning the drift on (with "Let's go" or the header switch) starts it now.
+  useEffect(() => {
+    if (drift && api.current) api.current.go();
+  }, [drift]);
+
   const set = (key) => (el) => { ui.current[key] = el; };
   return (
     <section ref={rootRef} className="walk" aria-label="Every photo, one after another">
@@ -423,13 +499,16 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen }) {
         <canvas ref={canvasRef} className="walk__canvas" aria-label="Photos floating in a dark space. Click one to open it." />
 
         <div ref={set('cue')} className="walk__cue">
-          <svg role="img" aria-label="Scroll down" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M6 9l6 6 6-6" /></svg>
+          <button type="button" onClick={() => api.current?.toCard()} aria-label="Continue">
+            <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M6 9l6 6 6-6" /></svg>
+          </button>
         </div>
 
         <div ref={set('threshold')} className="walk__threshold" style={{ opacity: 0 }}>
           <div className="walk__panel">
             <h1>{about.headline}</h1>
             {about.bio && <p>{about.bio}</p>}
+            {!drift && <button type="button" className="btn btn--primary walk__go" onClick={onGo}>Let&apos;s go</button>}
           </div>
         </div>
 

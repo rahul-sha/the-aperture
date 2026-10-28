@@ -55,6 +55,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
   display: inline-flex; align-items: center; text-decoration: none; font-weight: 500;
   border: 1px solid rgba(245, 243, 239, .35); color: var(--ink); background: rgba(0, 0, 0, .35);
 }
+.btn--primary { background: var(--orange); color: var(--orange-ink); border-color: var(--orange); }
+.btn--primary:hover { color: var(--orange-ink); }
 .header__tools { display: flex; align-items: center; gap: 6px; }
 .header__btn {
   min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line);
@@ -73,7 +75,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 .walk { position: relative; height: 100svh; }
 .walk__view { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
 .walk__canvas { display: block; width: 100%; height: 100%; touch-action: pan-y; }
-.walk__cue { position: absolute; left: 0; right: 0; bottom: 40px; display: flex; justify-content: center; color: var(--ink); pointer-events: none; }
+.walk__cue { position: absolute; left: 0; right: 0; bottom: 28px; display: flex; justify-content: center; pointer-events: none; }
+.walk__cue button { pointer-events: auto; width: 48px; height: 48px; border: 0; border-radius: 999px; background: none; color: var(--ink); display: inline-flex; align-items: center; justify-content: center; }
 .walk__cue svg { animation: cue 1.8s ease-in-out 2.6s infinite both; }
 @keyframes cue { 0%, 100% { transform: translateY(0); opacity: .9; } 50% { transform: translateY(8px); opacity: .5; } }
 
@@ -91,7 +94,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 }
 .walk__panel h1 { margin: 0; font-size: clamp(26px, 3vw, 36px); font-weight: 700; letter-spacing: -.025em; line-height: 1.1; text-wrap: balance; }
 .walk__panel p { margin: 0; color: var(--ink-muted); font-size: 16px; line-height: 1.55; }
-.walk__exit .walk__panel { pointer-events: auto; }
+.walk__panel { pointer-events: auto; }
+.walk__go { margin-top: 4px; }
 .walk__words { font-size: clamp(26px, 3.4vw, 42px) !important; line-height: 1.15 !important; color: var(--ink) !important; }
 .walk__links { display: flex; flex-wrap: wrap; gap: 10px; }
 
