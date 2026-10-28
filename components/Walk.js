@@ -13,15 +13,16 @@ import { findPhoto, photoSrc, thumbSrc } from '../lib/photos';
 // the negative z axis; each unit of depth is PX_PER_UNIT of page scroll.
 
 const COLLAGE_Z = -6; // the collage hangs this far in front of the camera
-const START = -15; // where the first section begins
+const START = -19; // where the first section begins
 const GAP = 3.2; // between photos in a section
 const PAUSE = 7; // extra space between sections
 const PHOTO_RADIUS = 0.055; // corner radius of every photo, in scene units
 const DRIFT_SPEED = 0.3; // units per second while drifting
 const DRIFT_RESUME = 4000; // ms to wait after you scroll before drifting again
 const FLY_DONE = 2.6; // seconds until the intro fly-in has settled
-const CARD_Z = -10; // where the camera rests on the "I photograph..." card
-const GLIDE = 1.8; // seconds for the glide from the collage to that card
+const CARD_Z = -10; // where the camera rests on the welcome
+const GLIDE = 1.8; // seconds for the glide from the collage to the welcome
+const TITLE_LEAD = 6.5; // a section's name appears this far before its first photo
 const FAR = 22; // photos further than this have faded into the dark
 
 // Where each of the nine collage cards sits, in the same pixel units as the
@@ -74,13 +75,13 @@ const smooth = (a, b, v) => { const t = clamp01((v - a) / (b - a)); return t * t
 const easeOut = (t) => 1 - (1 - t) ** 4;
 const rnd = (i) => { const x = Math.sin(i * 91.7 + 13.1) * 43758.5; return x - Math.floor(x); };
 
-export default function Walk({ manifest, drift, paused, replayKey, onOpen, onGo }) {
+export default function Walk({ manifest, drift, paused, replayKey, railRef, onOpen, onGo }) {
   const rootRef = useRef(null);
   const canvasRef = useRef(null);
   const ui = useRef({});
   // Read live by the frame loop, so changing them never rebuilds the scene.
   const live = useRef({});
-  live.current = { drift, paused, onOpen };
+  live.current = { drift, paused, onOpen, onGo };
   const api = useRef(null);
 
   const { about } = manifest;
@@ -223,7 +224,8 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen, onGo 
     window.addEventListener('resize', layout);
 
     // Overlays and the rail, updated straight from the frame loop.
-    const { threshold, title, titleName, titleQuote, exit, cue, veil, caption, rail } = ui.current;
+    const { threshold, title, titleName, titleQuote, exit, cue, veil, caption } = ui.current;
+    const rail = railRef?.current;
 
     // Hover and click.
     const mouse = new THREE.Vector2(9, 9);
@@ -231,10 +233,12 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen, onGo 
     const ray = new THREE.Raycaster();
     let hover = null;
     let downAt = null;
+    let welcomeUp = false; // photos behind the welcome can't be picked
+
     const onMove = (e) => { mouse.x = (e.clientX / window.innerWidth) * 2 - 1; mouse.y = -(e.clientY / window.innerHeight) * 2 + 1; };
     const onDown = (e) => { downAt = { x: e.clientX, y: e.clientY }; onMove(e); };
     const onUp = (e) => {
-      if (!downAt || Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) > 8) return;
+      if (welcomeUp || !downAt || Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) > 8) return;
       onMove(e);
       ray.setFromCamera(mouse, camera);
       const hit = ray.intersectObjects(photos).find((h) => h.object.material.uniforms.opacity.value > 0.5);
@@ -245,9 +249,10 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen, onGo 
     canvas.addEventListener('pointerup', onUp);
 
     // The page rests on the collage after it loads. The first scroll down
-    // glides you to the card with your words; its "Let's go" button starts the
-    // drift. The drift scrolls the page for you, and anything you do to scroll
-    // pauses it for a few seconds, then it carries on from wherever you are.
+    // glides you to the welcome; the next one (or its arrow) glides on to the
+    // first section and starts the drift. The drift scrolls the page for you,
+    // and anything you do to scroll pauses it for a few seconds, then it
+    // carries on from wherever you are.
     // The collage waits for its nine photos (or three seconds at most), so the
     // cards fly in whole; everything else loads only once they have.
     let flyStart = null;
@@ -257,39 +262,41 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen, onGo 
     let acc = 0;
     let looping = false;
     let glide = null; // { from, to, start }
+    let quietUntil = 0; // trackpads keep sending a little scroll after a glide
     let touchY = null;
-    const cardY = () => Math.round(root.offsetTop - CARD_Z * pxPerUnit);
+    const yAt = (zz) => Math.round(root.offsetTop - zz * pxPerUnit);
+    const cardY = () => yAt(CARD_Z);
+    const startY = () => yAt(START + TITLE_LEAD - 0.5);
     const onHero = () => window.scrollY < cardY() - 4;
+    const atWelcome = () => !onHero() && window.scrollY < startY() - 4;
     const pause = () => { pausedUntil = performance.now() + DRIFT_RESUME; expected = null; };
-    function glideToCard() {
+    function glideTo(to) {
       if (glide) return;
-      glide = { from: window.scrollY, to: cardY(), start: performance.now() };
+      glide = { from: window.scrollY, to, start: performance.now() };
     }
-    // From the collage, one push down is enough: take the visitor to the card.
+    const begin = () => { live.current.onGo?.(); glideTo(startY()); };
+    // A push down from the collage or the welcome takes you to the next step.
+    // Returns true when it did, so the browser's own scroll is held back.
+    function step() {
+      if (glide || performance.now() < quietUntil) return true;
+      if (live.current.drift) return false;
+      if (onHero()) { glideTo(cardY()); return true; }
+      if (atWelcome()) { begin(); return true; }
+      return false;
+    }
     const onWheel = (e) => {
-      if (glide || (onHero() && e.deltaY > 0 && !live.current.drift)) {
-        e.preventDefault();
-        glideToCard();
-        return;
-      }
+      if (glide || performance.now() < quietUntil || (e.deltaY > 0 && step())) { e.preventDefault(); return; }
       pause();
     };
     const onTouchStart = (e) => { touchY = e.touches[0]?.clientY ?? null; pause(); };
     const onTouchMove = (e) => {
       const y = e.touches[0]?.clientY;
-      if (glide || (onHero() && touchY != null && y != null && touchY - y > 8 && !live.current.drift)) {
-        e.preventDefault();
-        glideToCard();
-      }
+      if (glide || (touchY != null && y != null && touchY - y > 8 && step())) e.preventDefault();
     };
     const onKey = (e) => {
       if (!['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', ' ', 'Home', 'End'].includes(e.key)) return;
-      if (e.target instanceof Element && e.target.closest('button, a, input')) return;
-      if (glide || (onHero() && ['ArrowDown', 'PageDown', ' '].includes(e.key) && !live.current.drift)) {
-        e.preventDefault();
-        glideToCard();
-        return;
-      }
+      if (e.target instanceof Element && e.target.closest('button, a, input, [role="slider"]')) return;
+      if (glide || (['ArrowDown', 'PageDown', ' '].includes(e.key) && step())) { e.preventDefault(); return; }
       pause();
     };
     const onScroll = () => { if (expected !== null && Math.abs(window.scrollY - expected) > 2) pause(); };
@@ -301,7 +308,7 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen, onGo 
 
     // The timeline along the top: one segment per section, a tick per photo,
     // and a marker for where you are. Click or drag along it to move.
-    const zFrom = START + 2;
+    const zFrom = START + TITLE_LEAD;
     const zTo = items.length ? items[items.length - 1].position.z : END;
     const uOf = (zz) => clamp01((zFrom - zz) / (zFrom - zTo));
     const segs = rail ? [...rail.querySelectorAll('.walk__seg')] : [];
@@ -309,8 +316,8 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen, onGo 
     const head = rail?.querySelector('.walk__head');
     const track = rail?.querySelector('.walk__track');
     segs.forEach((el, i) => {
-      const a = uOf(marks[i].z + 2);
-      const b = i + 1 < marks.length ? uOf(marks[i + 1].z + 2) : 1;
+      const a = uOf(marks[i].z + TITLE_LEAD);
+      const b = i + 1 < marks.length ? uOf(marks[i + 1].z + TITLE_LEAD) : 1;
       el.style.flex = `${Math.max(0.001, b - a)} 1 0px`;
     });
     if (ticks) {
@@ -379,8 +386,11 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen, onGo 
     }
     api.current = {
       replay: () => replay(true),
-      go: () => { pausedUntil = 0; if (onHero()) glideToCard(); },
-      toCard: glideToCard,
+      // Turning the drift on from the collage or the welcome first glides to
+      // the first section.
+      go: () => { pausedUntil = 0; if (window.scrollY < startY() - 4) glideTo(startY()); },
+      toCard: () => glideTo(cardY()),
+      begin,
     };
 
     let current = null;
@@ -400,7 +410,7 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen, onGo 
         const e = t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
         expected = Math.round(glide.from + (glide.to - glide.from) * e);
         window.scrollTo({ top: expected, behavior: 'instant' });
-        if (t >= 1) { glide = null; acc = expected; }
+        if (t >= 1) { glide = null; acc = expected; quietUntil = nowMs + 700; }
       }
 
       // Drift.
@@ -467,7 +477,7 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen, onGo 
       });
 
       ray.setFromCamera(mouse, camera);
-      const hit = mouse.x <= 1 ? ray.intersectObjects(photos).find((h) => h.object.material.uniforms.opacity.value > 0.5) : null;
+      const hit = mouse.x <= 1 && !welcomeUp ? ray.intersectObjects(photos).find((h) => h.object.material.uniforms.opacity.value > 0.5) : null;
       hover = hit ? hit.object : null;
       canvas.style.cursor = hover ? 'pointer' : '';
       photos.forEach((mesh) => {
@@ -487,7 +497,7 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen, onGo 
 
       // Which section are we walking through?
       let now2 = null;
-      marks.forEach((mk) => { if (camZ < mk.z + 3) now2 = mk; });
+      marks.forEach((mk) => { if (camZ < mk.z + TITLE_LEAD) now2 = mk; });
       if (now2 !== current && title) {
         current = now2;
         title.classList.add('is-out');
@@ -503,12 +513,13 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen, onGo 
       const tz = -camZ;
       if (threshold) {
         const op = smooth(6.8, 8.8, tz) * (1 - smooth(10.6, 11.9, tz));
+        welcomeUp = op > 0.3;
         threshold.style.opacity = op.toFixed(3);
         threshold.style.visibility = op > 0.02 ? 'visible' : 'hidden';
       }
       if (cue) cue.style.opacity = (1 - smooth(0, 0.8, tz)).toFixed(3);
       if (rail) {
-        const op = smooth(-START - 4, -START, tz);
+        const op = smooth(-START - TITLE_LEAD - 1.2, -START - TITLE_LEAD, tz);
         rail.style.opacity = op.toFixed(3);
         rail.style.visibility = op > 0.02 ? 'visible' : 'hidden';
         const u = uOf(camZ);
@@ -553,7 +564,7 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen, onGo 
     if (replayKey && api.current) api.current.replay();
   }, [replayKey]);
 
-  // Turning the drift on (with "Let's go" or the header switch) starts it now.
+  // Turning the drift on (from the welcome or the header switch) starts it now.
   useEffect(() => {
     if (drift && api.current) api.current.go();
   }, [drift]);
@@ -570,11 +581,15 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen, onGo 
           </button>
         </div>
 
-        <div ref={set('threshold')} className="walk__threshold" style={{ opacity: 0 }}>
-          <div className="walk__panel">
-            <h1>{about.headline}</h1>
-            {about.bio && <p>{about.bio}</p>}
-            {!drift && <button type="button" className="btn btn--primary walk__go" onClick={onGo}>Let&apos;s go</button>}
+        <div ref={set('threshold')} className="walk__threshold" style={{ opacity: 0, visibility: 'hidden' }}>
+          <div className="walk__welcome">
+            <p className="walk__by">Photographs by {[about.name, about.city].filter(Boolean).join(', ')}</p>
+            <h1>{about.welcome || 'Welcome to The Aperture'}</h1>
+            <p className="walk__line serif">{about.welcomeLine || 'Here lies my collection.'}</p>
+            {about.headline && <p className="walk__sub">{about.headline}</p>}
+            <button type="button" className="walk__next" onClick={() => api.current?.begin()} aria-label="Begin the walk">
+              <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M6 9l6 6 6-6" /></svg>
+            </button>
           </div>
         </div>
 
@@ -588,28 +603,10 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen, onGo 
           <span className="place" />
         </div>
 
-        <div
-          ref={set('rail')}
-          className="walk__timeline"
-          role="slider"
-          tabIndex={0}
-          aria-label="Timeline of every photo. Drag, or use the left and right arrow keys."
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={0}
-        >
-          <div className="walk__track">
-            {sections.map((s) => (
-              <div key={s.slug} className="walk__seg"><span>{s.name}</span></div>
-            ))}
-            <div className="walk__ticks" aria-hidden="true" />
-            <div className="walk__head" aria-hidden="true" />
-          </div>
-        </div>
-
         <div ref={set('exit')} className="walk__exit" style={{ opacity: 0, visibility: 'hidden' }}>
           <div className="walk__panel">
             {about.quote && <p className="walk__words">{about.quote}</p>}
+            {about.bio && <p>{about.bio}</p>}
             {about.now && <p><span style={{ color: 'var(--pink)', fontWeight: 500 }}>Now:</span> {about.now}</p>}
             <div className="walk__links">
               {about.instagram && <a className="btn" href={about.instagram} target="_blank" rel="noopener noreferrer">Instagram</a>}
@@ -623,5 +620,32 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen, onGo 
         <div ref={set('veil')} className="walk__veil" aria-hidden="true" />
       </div>
     </section>
+  );
+}
+
+// The timeline in the header: one segment per section, a tick per photo,
+// and a marker for where you are. Walk wires it up through railRef.
+export function Timeline({ manifest, railRef }) {
+  const sections = manifest.sections.filter((s) => s.photos.length);
+  return (
+    <div
+      ref={railRef}
+      className="walk__timeline"
+      role="slider"
+      tabIndex={0}
+      aria-label="Timeline of every photo. Drag, or use the left and right arrow keys."
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={0}
+      style={{ opacity: 0, visibility: 'hidden' }}
+    >
+      <div className="walk__track">
+        {sections.map((s) => (
+          <div key={s.slug} className="walk__seg"><span>{s.name}</span></div>
+        ))}
+        <div className="walk__ticks" aria-hidden="true" />
+        <div className="walk__head" aria-hidden="true" />
+      </div>
+    </div>
   );
 }

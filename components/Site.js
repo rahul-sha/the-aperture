@@ -1,17 +1,17 @@
 'use client';
 
-import { useState } from 'react';
-import Walk from './Walk';
+import { useRef, useState } from 'react';
+import Walk, { Timeline } from './Walk';
 import AllPhotos from './AllPhotos';
 import Lightbox from './Lightbox';
 
 export default function Site({ manifest }) {
-  // Drift starts with "Let's go" on the card after the collage, or the
-  // header switch.
+  // Drift starts from the welcome after the collage, or the header switch.
   const [drift, setDrift] = useState(false);
   const [replayKey, setReplayKey] = useState(0);
   const [grid, setGrid] = useState(false);
   const [lightbox, setLightbox] = useState(null); // { photos, index }
+  const railRef = useRef(null);
 
   const backToStart = () => {
     setDrift(false);
@@ -22,6 +22,7 @@ export default function Site({ manifest }) {
     <>
       <header className="header">
         <button type="button" className="header__name" onClick={backToStart} title="Back to the start"><img className="header__mark" src="/logo.png" alt="" width="26" height="26" />The Aperture</button>
+        <Timeline manifest={manifest} railRef={railRef} />
         <div className="header__tools">
           <button type="button" className="header__btn" onClick={() => setGrid(true)}>All photos</button>
           <button
@@ -48,6 +49,7 @@ export default function Site({ manifest }) {
           drift={drift}
           paused={grid || !!lightbox}
           replayKey={replayKey}
+          railRef={railRef}
           onGo={() => setDrift(true)}
           onOpen={(photos, index) => setLightbox({ photos, index })}
         />

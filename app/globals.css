@@ -34,10 +34,10 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 /* Header */
 .header {
   position: fixed; top: 0; left: 0; right: 0; z-index: 10;
-  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  display: flex; align-items: center; gap: clamp(16px, 2.4vw, 32px);
   padding: 18px clamp(16px, 4vw, 56px);
 }
-.header__name { font-weight: 700; font-size: 17px; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0; border: 0; background: none; color: var(--ink); }
+.header__name { flex: none; font-weight: 700; font-size: 17px; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0; border: 0; background: none; color: var(--ink); }
 .header__name:hover { color: var(--pink); }
 .header__mark { width: 26px; height: 26px; border-radius: var(--photo-radius); display: block; }
 .header__replay {
@@ -58,16 +58,19 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 }
 .btn--primary { background: var(--orange); color: var(--orange-ink); border-color: var(--orange); }
 .btn--primary:hover { color: var(--orange-ink); }
-.header__tools { display: flex; align-items: center; gap: 6px; }
+.header__tools { flex: none; margin-left: auto; display: flex; align-items: center; gap: 18px; }
+/* All photos and Drift read like the timeline: small type over a hairline. */
 .header__btn {
-  min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line);
-  background: rgba(0, 0, 0, .45); backdrop-filter: blur(8px); color: var(--ink-soft); font-size: 14px;
+  min-height: 44px; padding: 0 0 10px; border: 0; border-bottom: 1px solid rgba(245, 243, 239, .28); border-radius: 0;
+  display: inline-flex; align-items: flex-end; background: none;
+  color: rgba(245, 243, 239, .62); font-size: 13px; text-shadow: 0 1px 8px rgba(0, 0, 0, .9);
+  transition: color .3s ease, border-color .3s ease;
 }
-.header__btn:hover { color: var(--ink); border-color: rgba(245, 243, 239, .4); }
+.header__btn:hover { color: var(--ink); border-bottom-color: rgba(245, 243, 239, .6); }
 /* The dot shows whether the page is drifting on its own. */
-.header__drift { display: inline-flex; align-items: center; gap: 8px; }
-.header__drift::before { content: ''; width: 7px; height: 7px; border-radius: 999px; background: var(--ink-muted); opacity: .45; transition: background .3s ease, opacity .3s ease; }
-.header__drift[aria-pressed="true"] { color: var(--ink); }
+.header__drift { gap: 8px; }
+.header__drift::before { content: ''; width: 6px; height: 6px; margin-bottom: 5px; border-radius: 999px; background: var(--ink-muted); opacity: .45; transition: background .3s ease, opacity .3s ease; }
+.header__drift[aria-pressed="true"] { color: var(--ink); border-bottom-color: var(--pink); }
 .header__drift[aria-pressed="true"]::before { background: var(--pink); opacity: 1; animation: breathe 3s ease-in-out infinite; }
 @keyframes breathe { 50% { opacity: .35; } }
 
@@ -81,11 +84,29 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 .walk__cue svg { animation: cue 1.8s ease-in-out 2.6s infinite both; }
 @keyframes cue { 0%, 100% { transform: translateY(0); opacity: .9; } 50% { transform: translateY(8px); opacity: .5; } }
 
-.walk__threshold, .walk__exit {
+.walk__exit {
   position: absolute; inset: 0; pointer-events: none;
   display: flex; align-items: flex-end;
   padding: 0 clamp(20px, 4vw, 56px) 36px;
 }
+/* The welcome: centred over the walk, which waits behind it mostly in the dark. */
+.walk__threshold {
+  position: absolute; inset: 0; pointer-events: none; background: rgba(0, 0, 0, .8);
+  display: flex; align-items: center; justify-content: center; padding: 96px 24px 40px;
+}
+.walk__welcome {
+  max-width: 720px; pointer-events: auto; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.walk__by { margin: 0; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
+.walk__welcome h1 {
+  margin: 0; font-family: var(--font-serif), Georgia, serif; font-style: italic; font-weight: 400;
+  font-size: clamp(40px, 6.4vw, 84px); line-height: 1; letter-spacing: -.01em; text-wrap: balance;
+}
+.walk__line { margin: 0; font-size: clamp(22px, 2.4vw, 30px); color: var(--pink); }
+.walk__sub { margin: 4px 0 0; max-width: 520px; color: var(--ink-muted); font-size: 16px; line-height: 1.5; text-wrap: balance; }
+.walk__next { margin-top: 18px; width: 48px; height: 48px; border: 0; border-radius: 999px; background: none; color: var(--ink); display: inline-flex; align-items: center; justify-content: center; }
+.walk__next svg { animation: cue 1.8s ease-in-out infinite both; }
 /* Your words sit in the walk the same way the section names do: large
    italic type at the bottom left, with a line of plain text beneath. */
 .walk__panel {
@@ -93,12 +114,11 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
   display: flex; flex-direction: column; gap: 12px; align-items: flex-start;
   text-shadow: 0 2px 24px rgba(0, 0, 0, .9), 0 0 4px rgba(0, 0, 0, .6);
 }
-.walk__panel h1, .walk__panel .walk__words {
+.walk__panel .walk__words {
   margin: 0; font-family: var(--font-serif), Georgia, serif; font-style: italic; font-weight: 400;
   font-size: clamp(36px, 5.2vw, 68px); line-height: 1; letter-spacing: -.01em; text-wrap: balance;
 }
 .walk__panel p { margin: 0; color: var(--ink-muted); font-size: 16px; line-height: 1.5; max-width: 560px; }
-.walk__go { margin-top: 6px; text-shadow: none; }
 .walk__links .btn { text-shadow: none; }
 .walk__links { display: flex; flex-wrap: wrap; gap: 10px; }
 
@@ -120,12 +140,15 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 }
 .walk__cap-title { font-size: 14px; font-weight: 500; }
 
-/* The timeline: sections laid end to end at their real length, a tick for
-   every photo, and a marker that follows you. Drag it to scrub. */
+/* The timeline, in the header: sections laid end to end at their real
+   length, a tick for every photo, and a marker that follows you. Drag it
+   to scrub. */
 .walk__timeline {
-  position: absolute; left: clamp(16px, 4vw, 56px); right: clamp(16px, 4vw, 56px); top: 76px;
-  padding: 6px 0 12px; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none;
+  flex: 1 1 auto; min-width: 0; min-height: 44px; display: flex; align-items: flex-end;
+  cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none;
+  transition: opacity .3s ease;
 }
+.walk__track { flex: 1; }
 .walk__timeline.is-scrubbing { cursor: grabbing; }
 .walk__timeline:focus-visible { outline: 2px solid var(--pink); outline-offset: 4px; border-radius: 6px; }
 .walk__track { position: relative; display: flex; gap: 4px; }
@@ -191,14 +214,14 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
   .walk__seg { font-size: 0; }
   .walk__seg[aria-current="true"] { font-size: 12px; }
   .walk__seg[aria-current="true"] span { overflow: visible; }
-  .walk__timeline { top: 72px; }
-  .walk__caption { left: 20px; right: auto; text-align: left; bottom: auto; top: 76px; }
+  .header { flex-wrap: wrap; row-gap: 0; }
+  .walk__timeline { order: 3; flex-basis: 100%; min-height: 36px; }
+  .walk__caption { left: 20px; right: auto; text-align: left; bottom: auto; top: 120px; }
   .header__name { font-size: 0; gap: 0; }
-  .header__btn { padding: 0 12px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .walk__cue svg, .develop, .header__drift::before { animation: none !important; }
+  .walk__cue svg, .walk__next svg, .develop, .header__drift::before { animation: none !important; }
   .all__cell img, .walk__title { transition: none; }
 }
 

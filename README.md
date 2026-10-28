@@ -28,7 +28,7 @@ repository is committed, so the site works straight away.
 
 ## Editing the words on the page
 
-The words in the walk-through (your headline and bio near the start, the quote, Now line, and links at the end) come from `content/about.json`. The site reads it from this repository at build time, so edit it, commit, and Vercel redeploys with the new text. No sync run is needed for that.
+The words in the walk-through (the welcome, its line, and your headline near the start; the quote, bio, Now line, and links at the end) come from `content/about.json`. The site reads it from this repository at build time, so edit it, commit, and Vercel redeploys with the new text. No sync run is needed for that.
 
 These files are plain text. Change them, save, and reload:
 

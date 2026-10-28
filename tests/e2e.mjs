@@ -40,23 +40,28 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
   await page.waitForTimeout(2000);
   check('page rests on the collage', (await scrollY(page)) === 0);
 
-  // One scroll down glides to the card with the headline.
+  // One scroll down glides to the welcome.
   await page.mouse.move(700, 450);
   await page.mouse.wheel(0, 120);
   await page.waitForTimeout(2600);
   const card = await scrollY(page);
   const cardOpacity = await page.locator('.walk__threshold').evaluate((el) => +el.style.opacity);
-  check('one scroll lands on the card', card > 0 && cardOpacity > 0.95, `y=${card} opacity=${cardOpacity}`);
+  check('one scroll lands on the welcome', card > 0 && cardOpacity > 0.95, `y=${card} opacity=${cardOpacity}`);
+  check('the welcome is centred', await page.locator('.walk__welcome').evaluate((el) => { const r = el.getBoundingClientRect(); return Math.abs(r.left + r.width / 2 - innerWidth / 2) < 4; }));
+  check('the timeline sits in the header', await page.evaluate(() => !!document.querySelector('.header .walk__timeline')));
   await page.waitForTimeout(1500);
-  check('the card waits for you', (await scrollY(page)) === card);
-  await page.screenshot({ path: `${SHOTS}02-card.png` });
+  check('the welcome waits for you', (await scrollY(page)) === card);
+  await page.screenshot({ path: `${SHOTS}02-welcome.png` });
 
-  // "Let's go" starts the drift.
-  await page.locator('.walk__go').click();
+  // The next scroll starts the walk: the first section name, then the drift.
+  await page.mouse.wheel(0, 120);
   check('drift switches on', (await page.locator('.header__drift').getAttribute('aria-pressed')) === 'true');
+  await page.waitForTimeout(2600);
+  check('first section name shows', (await page.locator('.walk__name').innerText()) === 'Overview');
+  const begun = await scrollY(page);
   await page.waitForTimeout(2000);
   const after = await scrollY(page);
-  check('drift moves the page on its own', after > card + 40, `${card} to ${after}`);
+  check('drift moves the page on its own', after > begun + 40, `${begun} to ${after}`);
 
   // Scrolling yourself pauses it for a few seconds, then it carries on.
   await page.mouse.move(700, 450);
