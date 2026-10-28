@@ -113,7 +113,7 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
   await page.screenshot({ path: `${SHOTS}05-lightbox.png` });
   await page.keyboard.press('Escape');
   check('lightbox closes with Escape', (await page.locator('.lightbox').count()) === 0);
-  await page.locator('.all__bar .btn').click();
+  await page.locator('.all__bar .header__btn').click();
   check('back to the walk', (await page.locator('.all').count()) === 0);
 
   await page.locator('.header__replay').click();

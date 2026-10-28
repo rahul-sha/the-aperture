@@ -24,7 +24,7 @@ export default function AllPhotos({ manifest, onOpen, onClose }) {
     <div className="all" role="dialog" aria-modal="true" aria-label="All photos">
       <div className="all__bar">
         <span>All photos</span>
-        <button ref={closeRef} type="button" className="btn" onClick={onClose}>Back to the walk</button>
+        <button ref={closeRef} type="button" className="header__btn" onClick={onClose}>Back to the walk</button>
       </div>
       {manifest.sections.filter((s) => s.photos.length).map((s) => (
         <section key={s.slug} className="all__section" aria-label={s.name}>

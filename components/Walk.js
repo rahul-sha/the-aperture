@@ -345,14 +345,19 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, onOp
         ticks.appendChild(t);
       });
     }
-    // A soft mechanical click each time the scrub passes a photo, like
-    // turning a dial on a camera. The sound is made in the browser, and only
+    // A soft mechanical click (and on a phone, a tiny vibration) each time
+    // the scrub passes a photo, like turning a dial on a camera. The sound is made in the browser, and only
     // after you touch the timeline (browsers allow audio after a gesture).
     let audio = null;
     let clickBuf = null;
     let lastTick = -1;
     let lastClickAt = 0;
     function click() {
+      const t0 = performance.now();
+      if (t0 - lastClickAt < 28) return; // a fast drag shouldn't buzz
+      lastClickAt = t0;
+      // On phones that allow it (Android, not iPhone), a tiny tap of vibration too.
+      try { navigator.vibrate?.(6); } catch { /* fine without */ }
       try {
         if (!audio) {
           const AC = window.AudioContext || window.webkitAudioContext;
@@ -366,9 +371,6 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, onOp
             d[i] = ((Math.random() * 2 - 1) * Math.exp(-t * 520) + Math.sin(2 * Math.PI * 2300 * t) * Math.exp(-t * 900) * 0.6) * 0.5;
           }
         }
-        const t0 = performance.now();
-        if (t0 - lastClickAt < 28) return; // a fast drag shouldn't buzz
-        lastClickAt = t0;
         if (audio.state === 'suspended') audio.resume();
         const src = audio.createBufferSource();
         src.buffer = clickBuf;
