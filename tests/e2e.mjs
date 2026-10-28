@@ -18,60 +18,76 @@ function check(name, ok, detail = '') {
   if (!ok) failures += 1;
 }
 
-const browser = await chromium.launch({ headless: true });
+// WebGL in a headless browser needs the software renderer.
+const browser = await chromium.launch({ headless: true, args: ['--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'] });
+const scrollY = (page) => page.evaluate(() => window.scrollY);
+const noise = (t) => /GPU stall|GL Driver/.test(t);
 
 // Desktop
 {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
+  page.on('console', (m) => { if (m.type() === 'error' && !noise(m.text())) errors.push(m.text()); });
 
   await page.goto(SITE, { waitUntil: 'networkidle' });
   check('page title', (await page.title()) === 'The Aperture');
-  check('nine intro cards', (await page.locator('.intro__card').count()) === 9);
-  await page.waitForTimeout(2200); // let the fly-in finish
+  check('walk canvas present', (await page.locator('canvas.walk__canvas').count()) === 1);
+  check('drift is on by default', (await page.locator('.header__drift').getAttribute('aria-pressed')) === 'true');
+  check('page is tall enough to walk through', await page.evaluate(() => document.body.scrollHeight > window.innerHeight * 10));
+  await page.waitForTimeout(2200); // the fly-in
   await page.screenshot({ path: `${SHOTS}01-intro.png` });
 
-  await page.locator('#about').scrollIntoViewIfNeeded();
-  check('about card headline', (await page.locator('#about h1').count()) === 1);
-  check('clock tile present', (await page.locator('.tile--clock svg line').count()) === 24);
-  check('palette has 5 swatches', (await page.locator('.swatches span').count()) === 5);
-  await page.waitForTimeout(900);
-  await page.screenshot({ path: `${SHOTS}02-bento.png` });
+  // The drift starts once the fly-in has settled.
+  const before = await scrollY(page);
+  await page.waitForTimeout(2500);
+  const after = await scrollY(page);
+  check('drift moves the page on its own', after > before + 40, `${before} to ${after}`);
 
-  const chips = page.locator('.chip');
-  check('six section chips', (await chips.count()) === 6);
-  check('Overview selected first', (await chips.nth(0).getAttribute('aria-pressed')) === 'true');
-  check('Overview shows 6 photos', (await page.locator('.cell').count()) === 6);
+  // Scrolling yourself pauses it for a few seconds, then it carries on.
+  await page.mouse.move(700, 450);
+  await page.mouse.wheel(0, 2400);
+  await page.waitForTimeout(400);
+  const held = await scrollY(page);
+  await page.waitForTimeout(2000);
+  check('your scroll pauses the drift', Math.abs((await scrollY(page)) - held) < 5);
+  await page.waitForTimeout(3500);
+  check('drift resumes after a pause', (await scrollY(page)) > held + 20);
+  await page.screenshot({ path: `${SHOTS}02-threshold.png` });
 
-  await chips.filter({ hasText: 'Reflections' }).click();
+  // The switch turns it off entirely.
+  await page.locator('.header__drift').click();
+  check('drift switches off', (await page.locator('.header__drift').getAttribute('aria-pressed')) === 'false');
+  const off = await scrollY(page);
   await page.waitForTimeout(1500);
-  check('Reflections selected', (await chips.filter({ hasText: 'Reflections' }).getAttribute('aria-pressed')) === 'true');
-  check('Reflections shows 13 photos', (await page.locator('.cell').count()) === 13);
-  const stageTop = await page.locator('#gallery').evaluate((el) => Math.round(el.getBoundingClientRect().top));
-  check('gallery scrolled to top of screen', Math.abs(stageTop) <= 2, `top=${stageTop}`);
-  const stageHeight = await page.locator('#gallery').evaluate((el) => el.getBoundingClientRect().height);
-  check('gallery fits one screen', stageHeight <= 900, `height=${stageHeight}`);
-  await page.screenshot({ path: `${SHOTS}03-gallery.png` });
+  check('page stays still with drift off', Math.abs((await scrollY(page)) - off) < 3);
 
-  await page.locator('.cell').nth(3).hover();
-  await page.waitForTimeout(800);
-  check('hovered cell stays in colour', !(await page.locator('.cell').nth(3).evaluate((el) => el.classList.contains('cell--dim'))));
-  check('other cells dim', await page.locator('.cell').nth(0).evaluate((el) => el.classList.contains('cell--dim')));
-  await page.screenshot({ path: `${SHOTS}04-hover.png` });
+  const rail = page.locator('.walk__rail button');
+  check('rail lists six sections', (await rail.count()) === 6);
+  await rail.nth(1).click();
+  await page.waitForTimeout(3500);
+  check('rail marks Reflections', (await rail.nth(1).getAttribute('aria-current')) === 'true');
+  check('section title shows Reflections', (await page.locator('.walk__name').innerText()) === 'Reflections');
+  await page.screenshot({ path: `${SHOTS}03-walk.png` });
 
-  await page.locator('.cell').nth(3).click();
-  check('lightbox opens', (await page.locator('[role="dialog"]').count()) === 1);
+  await page.locator('.header__btn', { hasText: 'All photos' }).click();
+  check('all photos opens', (await page.locator('.all').count()) === 1);
+  check('all photos shows every photo', (await page.locator('.all__cell').count()) > 20);
+  await page.screenshot({ path: `${SHOTS}04-all.png` });
+  await page.locator('.all__cell').nth(3).click();
+  check('lightbox opens', (await page.locator('.lightbox').count()) === 1);
   await page.keyboard.press('ArrowRight');
-  check('lightbox steps forward', (await page.locator('.lightbox__bar small').innerText()) === '5 of 13');
+  check('lightbox steps forward', (await page.locator('.lightbox__bar small').innerText()).startsWith('5 of'));
+  await page.waitForTimeout(1700);
   await page.screenshot({ path: `${SHOTS}05-lightbox.png` });
   await page.keyboard.press('Escape');
-  check('lightbox closes with Escape', (await page.locator('[role="dialog"]').count()) === 0);
+  check('lightbox closes with Escape', (await page.locator('.lightbox').count()) === 0);
+  await page.locator('.all__bar .btn').click();
+  check('back to the walk', (await page.locator('.all').count()) === 0);
 
   await page.locator('.header__replay').click();
   await page.waitForTimeout(300);
-  check('replay returns to top', (await page.evaluate(() => window.scrollY)) === 0);
+  check('back to the start', (await scrollY(page)) === 0);
 
   check('no console or page errors', errors.length === 0, errors.join(' | ').slice(0, 300));
   await page.close();
@@ -84,9 +100,15 @@ const browser = await chromium.launch({ headless: true });
   await page.waitForTimeout(2200);
   const wide = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
   check('no sideways scroll on a phone', !wide);
-  await page.locator('#gallery').scrollIntoViewIfNeeded();
-  await page.waitForTimeout(1200);
-  await page.screenshot({ path: `${SHOTS}06-phone-gallery.png` });
+  await page.screenshot({ path: `${SHOTS}06-phone-intro.png` });
+  await page.close();
+}
+
+// Less motion: no drift unless asked for.
+{
+  const page = await browser.newPage({ viewport: { width: 1280, height: 800 }, reducedMotion: 'reduce' });
+  await page.goto(SITE, { waitUntil: 'networkidle' });
+  check('drift starts off with reduced motion', (await page.locator('.header__drift').getAttribute('aria-pressed')) === 'false');
   await page.close();
 }
 

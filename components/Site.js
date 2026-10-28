@@ -1,38 +1,56 @@
 'use client';
 
-import { useState } from 'react';
-import Intro from './Intro';
-import Bento from './Bento';
-import Gallery from './Gallery';
+import { useEffect, useState } from 'react';
+import Walk from './Walk';
+import AllPhotos from './AllPhotos';
 import Lightbox from './Lightbox';
 
 export default function Site({ manifest }) {
-  const [introKey, setIntroKey] = useState(0);
+  // Drift is on unless the visitor has asked their device for less motion.
+  const [drift, setDrift] = useState(true);
+  const [replayKey, setReplayKey] = useState(0);
+  const [grid, setGrid] = useState(false);
   const [lightbox, setLightbox] = useState(null); // { photos, index }
 
-  const replay = () => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
-    setIntroKey((k) => k + 1);
-  };
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) setDrift(false);
+  }, []);
 
   return (
     <>
       <header className="header">
         <span className="header__name"><img className="header__mark" src="/logo.png" alt="" width="26" height="26" />The Aperture</span>
-        <button type="button" className="header__replay" onClick={replay} aria-label="Replay intro" title="Replay intro">
-          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M3 12a9 9 0 1 0 3-6.7" />
-            <path d="M3 4v5h5" />
-          </svg>
-        </button>
+        <div className="header__tools">
+          <button type="button" className="header__btn" onClick={() => setGrid(true)}>All photos</button>
+          <button
+            type="button"
+            className="header__btn header__drift"
+            aria-pressed={drift}
+            onClick={() => setDrift((d) => !d)}
+            title={drift ? 'The page moves on its own. Scroll any time to take over.' : 'Let the page move on its own'}
+          >
+            Drift
+          </button>
+          <button type="button" className="header__replay" onClick={() => setReplayKey((k) => k + 1)} aria-label="Back to the start" title="Back to the start">
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 12a9 9 0 1 0 3-6.7" />
+              <path d="M3 4v5h5" />
+            </svg>
+          </button>
+        </div>
       </header>
 
-      <Intro key={introKey} manifest={manifest} />
-
-      <main id="work" className="work">
-        <Bento manifest={manifest} />
-        <Gallery manifest={manifest} onOpen={(photos, index) => setLightbox({ photos, index })} />
+      <main>
+        <Walk
+          manifest={manifest}
+          drift={drift}
+          paused={grid || !!lightbox}
+          replayKey={replayKey}
+          onOpen={(photos, index) => setLightbox({ photos, index })}
+        />
       </main>
+
+      {grid && <AllPhotos manifest={manifest} onOpen={(photos, index) => setLightbox({ photos, index })} onClose={() => setGrid(false)} />}
 
       {lightbox && (
         <Lightbox

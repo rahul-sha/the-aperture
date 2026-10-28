@@ -28,7 +28,7 @@ export default function Lightbox({ manifest, photos, index, onStep, onClose }) {
         <button type="button" className="btn" onClick={onClose}>Close</button>
       </div>
       <div className="lightbox__img">
-        <img src={photoSrc(manifest, photo)} alt={photo.title} />
+        <img key={photo.id} className="develop" src={photoSrc(manifest, photo)} alt={photo.title} />
       </div>
       {(photo.caption || photo.place) && (
         <p className="lightbox__caption serif">
