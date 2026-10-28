@@ -204,7 +204,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
   fill: none; stroke: var(--hairline); stroke-width: 1; animation: dial-turn .45s var(--ease) both;
 }
 .dial__item {
-  position: absolute; left: -20px; top: -20px; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%;
+  position: absolute; left: -22px; top: -22px; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%;
   display: flex; align-items: center; justify-content: center; background: none;
   color: rgba(245, 243, 239, .72); text-decoration: none;
   transform: translate(var(--x), var(--y)); animation: dial-item .35s var(--ease) both;
@@ -281,6 +281,12 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
   .walk__title { bottom: 84px; }
   .walk__threshold, .walk__exit { padding-bottom: 84px; }
   .walk__caption { left: 20px; right: auto; text-align: left; bottom: auto; top: 76px; }
+}
+
+/* On a touch screen, touch and hold opens the mode dial, so the browser's
+   own press-and-hold callout and text selection stay out of the way. */
+@media (hover: none) {
+  body { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

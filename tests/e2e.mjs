@@ -171,12 +171,31 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
 
 // Phone
 {
-  const page = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true });
   await page.goto(SITE, { waitUntil: 'networkidle' });
   await page.waitForTimeout(2200);
   const wide = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
   check('no sideways scroll on a phone', !wide);
   await page.screenshot({ path: `${SHOTS}06-phone-intro.png` });
+
+  // Touch and hold opens the same mode dial as a right-click.
+  const cdp = await page.context().newCDPSession(page);
+  const touch = (type, x, y) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y }] });
+  await touch('touchStart', 30, 780);
+  await page.waitForTimeout(250);
+  await touch('touchEnd');
+  await page.waitForTimeout(400);
+  check('a quick tap does not open the dial', (await page.locator('.dial').count()) === 0);
+  await touch('touchStart', 195, 420);
+  await page.waitForTimeout(800);
+  await touch('touchEnd');
+  await page.waitForTimeout(300);
+  check('touch and hold opens the dial', (await page.locator('.dial').count()) === 1);
+  check('the hold does not also open a photo', (await page.locator('.lightbox').count()) === 0);
+  await page.screenshot({ path: `${SHOTS}09-phone-dial.png` });
+  await page.locator('.dial__item[aria-label="All photos"]').tap();
+  await page.waitForTimeout(400);
+  check('a tap on the dial works', (await page.locator('.all').count()) === 1 && (await page.locator('.dial').count()) === 0);
   await page.close();
 }
 

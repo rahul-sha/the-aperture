@@ -284,6 +284,7 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
       const onMove = (e) => { mouse.x = (e.clientX / window.innerWidth) * 2 - 1; mouse.y = -(e.clientY / window.innerHeight) * 2 + 1; };
       const onDown = (e) => { downAt = { x: e.clientX, y: e.clientY }; onMove(e); };
       const onUp = (e) => {
+        if (document.querySelector('.dial')) return; // the hold opened the mode dial instead
         if (welcomeUp || !downAt || Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) > 8) return;
         onMove(e);
         ray.setFromCamera(mouse, camera);
