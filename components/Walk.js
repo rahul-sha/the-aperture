@@ -224,10 +224,6 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen, onGo 
 
     // Overlays and the rail, updated straight from the frame loop.
     const { threshold, title, titleName, titleQuote, exit, cue, veil, caption, rail } = ui.current;
-    const railButtons = rail ? [...rail.querySelectorAll('button')] : [];
-    railButtons.forEach((b, i) => {
-      b.onclick = () => window.scrollTo({ top: Math.max(0, (-marks[i].z - 2) * pxPerUnit), behavior: 'smooth' });
-    });
 
     // Hover and click.
     const mouse = new THREE.Vector2(9, 9);
@@ -302,6 +298,62 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen, onGo 
     window.addEventListener('touchmove', onTouchMove, { passive: false });
     window.addEventListener('keydown', onKey);
     window.addEventListener('scroll', onScroll, { passive: true });
+
+    // The timeline along the top: one segment per section, a tick per photo,
+    // and a marker for where you are. Click or drag along it to move.
+    const zFrom = START + 2;
+    const zTo = items.length ? items[items.length - 1].position.z : END;
+    const uOf = (zz) => clamp01((zFrom - zz) / (zFrom - zTo));
+    const segs = rail ? [...rail.querySelectorAll('.walk__seg')] : [];
+    const ticks = rail?.querySelector('.walk__ticks');
+    const head = rail?.querySelector('.walk__head');
+    const track = rail?.querySelector('.walk__track');
+    segs.forEach((el, i) => {
+      const a = uOf(marks[i].z + 2);
+      const b = i + 1 < marks.length ? uOf(marks[i + 1].z + 2) : 1;
+      el.style.flex = `${Math.max(0.001, b - a)} 1 0px`;
+    });
+    if (ticks) {
+      ticks.innerHTML = '';
+      items.forEach((m) => {
+        const t = document.createElement('i');
+        t.style.left = `${(uOf(m.position.z) * 100).toFixed(2)}%`;
+        ticks.appendChild(t);
+      });
+    }
+    const seekTo = (u) => {
+      const zz = zFrom - clamp01(u) * (zFrom - zTo);
+      glide = null;
+      expected = null;
+      window.scrollTo({ top: Math.round(root.offsetTop - zz * pxPerUnit), behavior: 'instant' });
+    };
+    let scrubbing = false;
+    const uAt = (e) => { const r = track.getBoundingClientRect(); return (e.clientX - r.left) / r.width; };
+    const onScrubDown = (e) => {
+      if (!track || e.button > 0) return;
+      scrubbing = true;
+      rail.setPointerCapture(e.pointerId);
+      rail.classList.add('is-scrubbing');
+      pause();
+      seekTo(uAt(e));
+    };
+    const onScrubMove = (e) => { if (scrubbing) { pause(); seekTo(uAt(e)); } };
+    const onScrubUp = () => { scrubbing = false; rail?.classList.remove('is-scrubbing'); pause(); };
+    const onScrubKey = (e) => {
+      const step = { ArrowRight: GAP, ArrowLeft: -GAP }[e.key];
+      if (!step) return;
+      e.preventDefault();
+      e.stopPropagation();
+      pause();
+      seekTo(uOf(camZ - step));
+    };
+    if (rail) {
+      rail.addEventListener('pointerdown', onScrubDown);
+      rail.addEventListener('pointermove', onScrubMove);
+      rail.addEventListener('pointerup', onScrubUp);
+      rail.addEventListener('pointercancel', onScrubUp);
+      rail.addEventListener('keydown', onScrubKey);
+    }
 
     let camZ = -window.scrollY / pxPerUnit;
     function replay(top) {
@@ -446,7 +498,7 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen, onGo 
             title.classList.remove('is-out');
           }
         }, 450);
-        railButtons.forEach((b, i) => b.setAttribute('aria-current', String(marks[i] === current)));
+        segs.forEach((el, i) => el.setAttribute('aria-current', String(marks[i] === current)));
       }
       const tz = -camZ;
       if (threshold) {
@@ -455,7 +507,14 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen, onGo 
         threshold.style.visibility = op > 0.02 ? 'visible' : 'hidden';
       }
       if (cue) cue.style.opacity = (1 - smooth(0, 0.8, tz)).toFixed(3);
-      if (rail) rail.style.opacity = smooth(-START - 4, -START, tz).toFixed(3);
+      if (rail) {
+        const op = smooth(-START - 4, -START, tz);
+        rail.style.opacity = op.toFixed(3);
+        rail.style.visibility = op > 0.02 ? 'visible' : 'hidden';
+        const u = uOf(camZ);
+        if (head) head.style.left = `${(u * 100).toFixed(2)}%`;
+        rail.setAttribute('aria-valuenow', String(Math.round(u * 100)));
+      }
       if (exit) {
         const ex = smooth(-END - 8, -END - 3, tz);
         exit.style.opacity = ex.toFixed(3);
@@ -477,6 +536,13 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen, onGo 
       window.removeEventListener('scroll', onScroll);
       canvas.removeEventListener('pointerdown', onDown);
       canvas.removeEventListener('pointerup', onUp);
+      if (rail) {
+        rail.removeEventListener('pointerdown', onScrubDown);
+        rail.removeEventListener('pointermove', onScrubMove);
+        rail.removeEventListener('pointerup', onScrubUp);
+        rail.removeEventListener('pointercancel', onScrubUp);
+        rail.removeEventListener('keydown', onScrubKey);
+      }
       photos.forEach((m) => { m.material.uniforms.map.value.dispose(); m.material.dispose(); m.geometry.dispose(); });
       renderer.dispose();
     };
@@ -522,9 +588,24 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen, onGo 
           <span className="place" />
         </div>
 
-        <nav ref={set('rail')} className="walk__rail" aria-label="Sections">
-          {sections.map((s) => <button key={s.slug} type="button">{s.name}</button>)}
-        </nav>
+        <div
+          ref={set('rail')}
+          className="walk__timeline"
+          role="slider"
+          tabIndex={0}
+          aria-label="Timeline of every photo. Drag, or use the left and right arrow keys."
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={0}
+        >
+          <div className="walk__track">
+            {sections.map((s) => (
+              <div key={s.slug} className="walk__seg"><span>{s.name}</span></div>
+            ))}
+            <div className="walk__ticks" aria-hidden="true" />
+            <div className="walk__head" aria-hidden="true" />
+          </div>
+        </div>
 
         <div ref={set('exit')} className="walk__exit" style={{ opacity: 0, visibility: 'hidden' }}>
           <div className="walk__panel">

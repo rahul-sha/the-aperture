@@ -111,5 +111,5 @@ npm run build && npm test
 
 This starts the built site, drives it with a real browser (Playwright), checks
 the walk-through, the drift (that it moves, pauses when you scroll, and
-resumes), the section rail, All photos, the lightbox, and the phone layout, and saves screenshots in `tests/screenshots/`. The first time on
+resumes), dragging the timeline, All photos, the lightbox, and the phone layout, and saves screenshots in `tests/screenshots/`. The first time on
 a new computer run `npx playwright install chromium`.

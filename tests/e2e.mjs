@@ -75,11 +75,15 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
   await page.waitForTimeout(1500);
   check('page stays still with drift off', Math.abs((await scrollY(page)) - off) < 3);
 
-  const rail = page.locator('.walk__rail button');
-  check('rail lists six sections', (await rail.count()) === 6);
-  await rail.nth(1).click();
-  await page.waitForTimeout(3500);
-  check('rail marks Reflections', (await rail.nth(1).getAttribute('aria-current')) === 'true');
+  const segs = page.locator('.walk__seg');
+  check('timeline lists six sections', (await segs.count()) === 6);
+  const box = await segs.nth(1).boundingBox();
+  await page.mouse.move(box.x + 6, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x + 12, box.y + box.height / 2, { steps: 4 });
+  await page.mouse.up();
+  await page.waitForTimeout(2500);
+  check('dragging the timeline moves to Reflections', (await segs.nth(1).getAttribute('aria-current')) === 'true');
   check('section title shows Reflections', (await page.locator('.walk__name').innerText()) === 'Reflections');
   await page.screenshot({ path: `${SHOTS}03-walk.png` });
 
