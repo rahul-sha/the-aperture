@@ -352,12 +352,10 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, onOp
     let clickBuf = null;
     let lastTick = -1;
     let lastClickAt = 0;
-    function click() {
-      const t0 = performance.now();
-      if (t0 - lastClickAt < 28) return; // a fast drag shouldn't buzz
-      lastClickAt = t0;
-      // On phones that allow it (Android, not iPhone), a tiny tap of vibration too.
-      try { navigator.vibrate?.(6); } catch { /* fine without */ }
+    // Browsers hold back sound and vibration until the visitor has tapped or
+    // clicked something. On a phone a drag doesn't count, only a tap, so the
+    // sound is woken up on the first tap or click anywhere on the page.
+    function wakeAudio() {
       try {
         if (!audio) {
           const AC = window.AudioContext || window.webkitAudioContext;
@@ -372,6 +370,19 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, onOp
           }
         }
         if (audio.state === 'suspended') audio.resume();
+      } catch { /* no sound is fine */ }
+    }
+    window.addEventListener('pointerup', wakeAudio);
+    window.addEventListener('keydown', wakeAudio);
+    function click() {
+      const t0 = performance.now();
+      if (t0 - lastClickAt < 28) return; // a fast drag shouldn't buzz
+      lastClickAt = t0;
+      // On phones that allow it (Android, not iPhone), a short tap of vibration too.
+      try { if (navigator.userActivation?.hasBeenActive !== false) navigator.vibrate?.(12); } catch { /* fine without */ }
+      try {
+        wakeAudio();
+        if (!audio || audio.state !== 'running') return;
         const src = audio.createBufferSource();
         src.buffer = clickBuf;
         src.playbackRate.value = 0.92 + Math.random() * 0.16;
@@ -578,8 +589,10 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, onOp
         const op = smooth(6.8, 8.8, tz) * (1 - smooth(10.6, 11.9, tz));
         welcomeUp = op > 0.3 || (exit && +exit.style.opacity > 0.3);
         threshold.style.opacity = op.toFixed(3);
-        // The words rise a little as they arrive and as they leave, like the section names.
-        threshold.firstChild.style.transform = `translateY(${((1 - op) * 18 * (tz > 10 ? -1 : 1)).toFixed(1)}px)`;
+        // The words come out of the middle of the screen as if from the
+        // depth ahead, and grow past you as you walk on.
+        const sc = tz > -CARD_Z ? 1 + (1 - op) * 0.25 : 0.6 + op * 0.4;
+        threshold.firstChild.style.transform = `scale(${sc.toFixed(3)})`;
         threshold.style.visibility = op > 0.02 ? 'visible' : 'hidden';
       }
       if (cue) cue.style.opacity = (1 - smooth(0, 0.8, tz)).toFixed(3);
@@ -594,7 +607,7 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, onOp
       if (exit) {
         const ex = smooth(-END - 8, -END - 3, tz);
         exit.style.opacity = ex.toFixed(3);
-        exit.firstChild.style.transform = `translateY(${((1 - ex) * 18).toFixed(1)}px)`;
+        exit.firstChild.style.transform = `scale(${(0.6 + ex * 0.4).toFixed(3)})`;
         exit.style.visibility = ex > 0.02 ? 'visible' : 'hidden';
         if (title) title.style.visibility = ex > 0.5 ? 'hidden' : 'visible';
       }
@@ -620,6 +633,8 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, onOp
         rail.removeEventListener('pointercancel', onScrubUp);
         rail.removeEventListener('keydown', onScrubKey);
       }
+      window.removeEventListener('pointerup', wakeAudio);
+      window.removeEventListener('keydown', wakeAudio);
       audio?.close();
       delete document.documentElement.dataset.focus;
       photos.forEach((m) => { m.material.uniforms.map.value.dispose(); m.material.dispose(); m.geometry.dispose(); });

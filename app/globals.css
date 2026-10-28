@@ -61,22 +61,15 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 .place { font-family: var(--font-sans), sans-serif; font-style: normal; font-size: 12px; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-soft); opacity: .8; }
 .lightbox__caption .place { display: block; margin-top: 6px; }
 
-.btn {
-  min-height: 44px; padding: 0 18px; border-radius: 999px;
-  display: inline-flex; align-items: center; text-decoration: none; font-weight: 500;
-  border: 1px solid rgba(245, 243, 239, .35); color: var(--ink); background: rgba(0, 0, 0, .35);
-}
-.btn--primary { background: var(--orange); color: var(--orange-ink); border-color: var(--orange); }
-.btn--primary:hover { color: var(--orange-ink); }
 .header__tools { flex: none; margin-left: auto; display: flex; align-items: center; gap: 18px; }
-/* All photos and Drift read like the timeline: small type over a hairline. */
-.header__btn {
-  min-height: 44px; padding: 0 0 10px; border: 0; border-bottom: 1px solid rgba(245, 243, 239, .28); border-radius: 0;
+/* Every button reads like the timeline: plain words over a hairline. */
+.btn, .header__btn {
+  min-height: 44px; text-decoration: none; padding: 0 0 10px; border: 0; border-bottom: 1px solid rgba(245, 243, 239, .28); border-radius: 0;
   display: inline-flex; align-items: flex-end; background: none;
   color: rgba(245, 243, 239, .62); font-size: 13px; text-shadow: 0 1px 8px rgba(0, 0, 0, .9);
   transition: color .3s ease, border-color .3s ease;
 }
-.header__btn:hover { color: var(--ink); border-bottom-color: rgba(245, 243, 239, .6); }
+.btn:hover, .header__btn:hover { color: var(--ink); border-bottom-color: var(--pink); }
 /* The dot shows whether the page is drifting on its own. */
 .header__drift { gap: 8px; }
 .header__drift::before { content: ''; width: 6px; height: 6px; margin-bottom: 5px; border-radius: 999px; background: var(--ink-muted); opacity: .45; transition: background .3s ease, opacity .3s ease; }
@@ -99,7 +92,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 .walk__threshold, .walk__exit {
   position: absolute; inset: 0; pointer-events: none;
   background: radial-gradient(ellipse 70% 65% at 50% 50%, rgba(0, 0, 0, .78), rgba(0, 0, 0, .5) 60%, rgba(0, 0, 0, .25));
-  display: flex; align-items: center; justify-content: center; padding: 96px 24px 40px;
+  display: flex; align-items: center; justify-content: center; padding: 72px 24px;
 }
 .walk__welcome {
   max-width: 720px; pointer-events: auto; text-align: center;
@@ -219,16 +212,13 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 .lightbox__img { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
 .lightbox__img img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: var(--photo-radius); }
 .lightbox__caption { text-align: center; color: var(--ink-soft); font-size: 15px; margin: 0; }
-.lightbox__nav { display: flex; justify-content: center; gap: 10px; }
-.btn--light { background: var(--ink); color: var(--ground); border-color: var(--ink); }
-.btn--light:hover { color: var(--ground); }
+.lightbox__nav { display: flex; justify-content: center; gap: 28px; }
 
-/* Opening a photo: it develops out of the dark, warm at first like a print
-   under a darkroom safelight, then settles into its real colours. */
-.develop { animation: develop 1.6s ease-out both; }
+/* Opening a photo: it fades up out of the dark in its own colours. */
+.develop { animation: develop 1s ease-out both; }
 @keyframes develop {
-  0% { opacity: 0; filter: brightness(.2) sepia(1) saturate(5) hue-rotate(-25deg) contrast(1.6); }
-  45% { opacity: 1; filter: brightness(.75) sepia(.9) saturate(3) hue-rotate(-25deg) contrast(1.3); }
+  0% { opacity: 0; filter: brightness(.3); }
+  60% { opacity: 1; }
   100% { opacity: 1; filter: none; }
 }
 
