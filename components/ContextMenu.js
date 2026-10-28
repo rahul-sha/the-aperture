@@ -2,10 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-// Right-click opens a camera mode dial around the pointer instead of the
-// browser's menu: icons on a lens ring, with the name of the one you point at
-// in the middle. For a mouse or trackpad.
+// Right-click (or touch and hold on a phone) opens a camera mode dial around
+// the pointer instead of the browser's menu: icons on a lens ring, with the
+// name of the one you point at in the middle.
 const R = 66; // radius of the ring the icons sit on, in px
+const HOLD = 500; // ms a finger rests before the dial opens
 
 const ICONS = {
   home: <><path d="M3 12a9 9 0 1 0 3-6.7" /><path d="M3 4v5h5" /></>,
@@ -23,17 +24,49 @@ export default function ContextMenu({ about, onHome, onAbout, onAll }) {
   const before = useRef(null); // where keyboard focus was before the dial opened
 
   useEffect(() => {
-    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return undefined;
-    const onMenu = (e) => {
-      e.preventDefault();
+    const open = (x, y, touch) => {
       const m = R + 34;
       if (!ref.current) before.current = document.activeElement;
-      setAt({ x: Math.min(Math.max(e.clientX, m), window.innerWidth - m), y: Math.min(Math.max(e.clientY, m), window.innerHeight - m) });
+      setAt({ x: Math.min(Math.max(x, m), window.innerWidth - m), y: Math.min(Math.max(y, m), window.innerHeight - m), touch });
       setLabel('');
+    };
+    const onMenu = (e) => {
+      e.preventDefault();
+      if (held) return;
+      // Android sends its own long-press menu event; treat it as the hold.
+      const touch = !!hold;
+      if (touch) { cancelHold(); held = true; }
+      open(e.clientX, e.clientY, touch);
     };
     const close = () => setAt(null);
     const onKey = (e) => { if (e.key === 'Escape') close(); };
-    const onDown = (e) => { if (!ref.current?.contains(e.target)) close(); };
+
+    // Touch and hold: a finger that rests still for half a second. Moving it
+    // (a scroll, or dragging the timeline) cancels. The tap that ends the
+    // hold is swallowed, so it doesn't also open the photo underneath.
+    let hold = null; // { id, x, y, timer }
+    let held = false;
+    const cancelHold = () => { if (hold) clearTimeout(hold.timer); hold = null; };
+    const onDown = (e) => {
+      if (!ref.current?.contains(e.target)) close();
+      cancelHold();
+      held = false;
+      if (e.pointerType !== 'touch' || ref.current?.contains(e.target) || e.target.closest?.('.walk__timeline')) return;
+      const { clientX: x, clientY: y, pointerId: id } = e;
+      hold = { id, x, y, timer: setTimeout(() => { hold = null; held = true; navigator.vibrate?.(10); open(x, y, true); }, HOLD) };
+    };
+    const onMove = (e) => { if (hold && e.pointerId === hold.id && Math.hypot(e.clientX - hold.x, e.clientY - hold.y) > 10) cancelHold(); };
+    const onUp = () => cancelHold();
+    const onClick = (e) => {
+      if (!held || ref.current?.contains(e.target)) return;
+      held = false;
+      e.preventDefault();
+      e.stopPropagation();
+    };
+    window.addEventListener('pointermove', onMove, { passive: true });
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
+    window.addEventListener('click', onClick, true);
     window.addEventListener('contextmenu', onMenu);
     window.addEventListener('keydown', onKey);
     window.addEventListener('pointerdown', onDown);
@@ -41,6 +74,11 @@ export default function ContextMenu({ about, onHome, onAbout, onAll }) {
     window.addEventListener('resize', close);
     window.addEventListener('blur', close);
     return () => {
+      cancelHold();
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onUp);
+      window.removeEventListener('click', onClick, true);
       window.removeEventListener('contextmenu', onMenu);
       window.removeEventListener('keydown', onKey);
       window.removeEventListener('pointerdown', onDown);
@@ -51,7 +89,8 @@ export default function ContextMenu({ about, onHome, onAbout, onAll }) {
   }, []);
 
   useEffect(() => {
-    if (at) ref.current?.querySelector('.dial__item')?.focus({ preventScroll: true });
+    // A keyboard or mouse starts on the first item; a finger just sees the dial.
+    if (at && !at.touch) ref.current?.querySelector('.dial__item')?.focus({ preventScroll: true });
     else if (before.current?.isConnected && document.activeElement === document.body) before.current.focus({ preventScroll: true });
   }, [at]);
 

@@ -143,15 +143,22 @@ trailing.
 
 ### Mode dial (right-click menu)
 
-`components/ContextMenu.js`. Right-click anywhere (or press the menu key)
-and a camera mode dial opens round the pointer: icons on a lens ring with tick
+`components/ContextMenu.js`. Right-click anywhere (or press the menu key),
+or touch and hold for half a second on a phone, and a camera mode dial opens
+round the pointer or finger: icons on a lens ring with tick
 marks, and the name of the one you point at in the middle. Items: Back to the
-start, About, All photos, Instagram, Bluesky, and Email me.
+start, About, All photos, Instagram, and Bluesky (plus Email me, if an
+email address is set in `content/about.json`).
 
 - Icons are 1.5px line drawings in `--ink` at 72%, turning pink with a pink
   ring on hover or focus.
 - The arrow keys turn the dial; Escape, a scroll, or a click elsewhere closes
   it, and keyboard focus goes back to where it was.
+- On a phone, moving your finger during the hold (a scroll, or dragging the
+  timeline) cancels it, a quick tap still opens a photo, and the release
+  that ends a hold never opens the photo underneath. Each icon is a 44px
+  target. The browser's own press-and-hold callout and text selection are
+  switched off on touch screens so they don't compete with the dial.
 - It is a `menu` with `menuitem`s, each named by its label.
 
 ### All photos
