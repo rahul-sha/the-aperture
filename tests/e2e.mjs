@@ -47,7 +47,7 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
   const card = await scrollY(page);
   const cardOpacity = await page.locator('.walk__threshold').evaluate((el) => +el.style.opacity);
   check('one scroll lands on the welcome', card > 0 && cardOpacity > 0.95, `y=${card} opacity=${cardOpacity}`);
-  check('the welcome is centred', await page.locator('.walk__welcome').evaluate((el) => { const r = el.getBoundingClientRect(); return Math.abs(r.left + r.width / 2 - innerWidth / 2) < 4; }));
+  check('the welcome is centred', await page.locator('.walk__threshold .walk__welcome').evaluate((el) => { const r = el.getBoundingClientRect(); return Math.abs(r.left + r.width / 2 - innerWidth / 2) < 4; }));
   check('the timeline sits in the header', await page.evaluate(() => !!document.querySelector('.header .walk__timeline')));
   await page.waitForTimeout(1500);
   check('the welcome waits for you', (await scrollY(page)) === card);
@@ -91,6 +91,15 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
   check('dragging the timeline moves to Reflections', (await segs.nth(1).getAttribute('aria-current')) === 'true');
   check('section title shows Reflections', (await page.locator('.walk__name').innerText()) === 'Reflections');
   await page.screenshot({ path: `${SHOTS}03-walk.png` });
+
+  // The end mirrors the welcome: centred words over the dimmed walk.
+  await page.evaluate(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'instant' }));
+  await page.waitForTimeout(2500);
+  const endOpacity = await page.locator('.walk__exit').evaluate((el) => +el.style.opacity);
+  check('the end shows at the bottom', endOpacity > 0.95, `opacity=${endOpacity}`);
+  check('the end is centred like the welcome', await page.locator('.walk__exit .walk__welcome').evaluate((el) => { const r = el.getBoundingClientRect(); return Math.abs(r.left + r.width / 2 - innerWidth / 2) < 4; }));
+  check('the end links open in new tabs', await page.locator('.walk__links a[target="_blank"]').count() === 3);
+  await page.screenshot({ path: `${SHOTS}03b-end.png` });
 
   await page.locator('.header__btn', { hasText: 'All photos' }).click();
   check('all photos opens', (await page.locator('.all').count()) === 1);

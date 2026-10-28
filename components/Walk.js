@@ -86,6 +86,11 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, onOp
 
   const { about } = manifest;
   const sections = manifest.sections.filter((s) => s.photos.length);
+  // The closing quote, split from its author so each can be set on its own line.
+  const words = about.quote ? (() => {
+    const m = about.quote.match(/^\s*["“]?(.+?)["”]?\s+[—–-]\s+(.+)$/);
+    return m ? { text: `“${m[1]}”`, by: m[2] } : { text: about.quote };
+  })() : null;
 
   useEffect(() => {
     const root = rootRef.current;
@@ -513,7 +518,7 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, onOp
       const tz = -camZ;
       if (threshold) {
         const op = smooth(6.8, 8.8, tz) * (1 - smooth(10.6, 11.9, tz));
-        welcomeUp = op > 0.3;
+        welcomeUp = op > 0.3 || (exit && +exit.style.opacity > 0.3);
         threshold.style.opacity = op.toFixed(3);
         threshold.style.visibility = op > 0.02 ? 'visible' : 'hidden';
       }
@@ -604,16 +609,21 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, onOp
         </div>
 
         <div ref={set('exit')} className="walk__exit" style={{ opacity: 0, visibility: 'hidden' }}>
-          <div className="walk__panel">
-            {about.quote && <p className="walk__words">{about.quote}</p>}
-            {about.bio && <p>{about.bio}</p>}
-            {about.now && <p><span style={{ color: 'var(--pink)', fontWeight: 500 }}>Now:</span> {about.now}</p>}
+          <div className="walk__welcome">
+            <p className="walk__by">The end of the walk</p>
+            {words && <p className="walk__big serif">{words.text}</p>}
+            {words?.by && <p className="walk__line serif">{words.by}</p>}
+            {about.bio && <p className="walk__sub">{about.bio}</p>}
+            {about.now && <p className="walk__sub"><span className="walk__now">Now:</span> {about.now}</p>}
             <div className="walk__links">
-              {about.instagram && <a className="btn" href={about.instagram} target="_blank" rel="noopener noreferrer">Instagram</a>}
-              {about.bluesky && <a className="btn" href={about.bluesky} target="_blank" rel="noopener noreferrer">Bluesky</a>}
-              {about.projectsUrl && <a className="btn" href={about.projectsUrl} target="_blank" rel="noopener noreferrer">Other projects</a>}
-              {about.email && <a className="btn" href={`mailto:${about.email}`}>Email me</a>}
+              {about.instagram && <a href={about.instagram} target="_blank" rel="noopener noreferrer">Instagram</a>}
+              {about.bluesky && <a href={about.bluesky} target="_blank" rel="noopener noreferrer">Bluesky</a>}
+              {about.projectsUrl && <a href={about.projectsUrl} target="_blank" rel="noopener noreferrer">Other projects</a>}
+              {about.email && <a href={`mailto:${about.email}`}>Email me</a>}
             </div>
+            <button type="button" className="walk__next" onClick={() => api.current?.replay()} aria-label="Back to the start" title="Back to the start">
+              <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7" /><path d="M3 4v5h5" /></svg>
+            </button>
           </div>
         </div>
 

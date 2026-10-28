@@ -84,13 +84,9 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 .walk__cue svg { animation: cue 1.8s ease-in-out 2.6s infinite both; }
 @keyframes cue { 0%, 100% { transform: translateY(0); opacity: .9; } 50% { transform: translateY(8px); opacity: .5; } }
 
-.walk__exit {
-  position: absolute; inset: 0; pointer-events: none;
-  display: flex; align-items: flex-end;
-  padding: 0 clamp(20px, 4vw, 56px) 36px;
-}
-/* The welcome: centred over the walk, which waits behind it mostly in the dark. */
-.walk__threshold {
+/* The welcome and the end: centred over the walk, which waits behind them
+   mostly in the dark. */
+.walk__threshold, .walk__exit {
   position: absolute; inset: 0; pointer-events: none; background: rgba(0, 0, 0, .8);
   display: flex; align-items: center; justify-content: center; padding: 96px 24px 40px;
 }
@@ -99,7 +95,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
   display: flex; flex-direction: column; align-items: center; gap: 14px;
 }
 .walk__by { margin: 0; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
-.walk__welcome h1 {
+.walk__welcome h1, .walk__big {
   margin: 0; font-family: var(--font-serif), Georgia, serif; font-style: italic; font-weight: 400;
   font-size: clamp(40px, 6.4vw, 84px); line-height: 1; letter-spacing: -.01em; text-wrap: balance;
 }
@@ -107,20 +103,19 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 .walk__sub { margin: 4px 0 0; max-width: 520px; color: var(--ink-muted); font-size: 16px; line-height: 1.5; text-wrap: balance; }
 .walk__next { margin-top: 18px; width: 48px; height: 48px; border: 0; border-radius: 999px; background: none; color: var(--ink); display: inline-flex; align-items: center; justify-content: center; }
 .walk__next svg { animation: cue 1.8s ease-in-out infinite both; }
-/* Your words sit in the walk the same way the section names do: large
-   italic type at the bottom left, with a line of plain text beneath. */
-.walk__panel {
-  max-width: min(760px, 100%); pointer-events: auto;
-  display: flex; flex-direction: column; gap: 12px; align-items: flex-start;
-  text-shadow: 0 2px 24px rgba(0, 0, 0, .9), 0 0 4px rgba(0, 0, 0, .6);
+.walk__exit .walk__next { opacity: .7; }
+.walk__exit .walk__next:hover { opacity: 1; color: var(--pink); }
+.walk__exit .walk__next svg { animation: none; }
+.walk__big { font-size: clamp(34px, 5vw, 64px); max-width: 16ch; }
+.walk__now { color: var(--pink); font-weight: 500; }
+/* Links read like the header: plain words over a hairline. */
+.walk__links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 22px; margin-top: 10px; }
+.walk__links a {
+  min-height: 44px; display: inline-flex; align-items: flex-end; padding-bottom: 8px; text-decoration: none;
+  border-bottom: 1px solid rgba(245, 243, 239, .28); color: var(--ink-soft); font-size: 15px;
+  transition: color .3s ease, border-color .3s ease;
 }
-.walk__panel .walk__words {
-  margin: 0; font-family: var(--font-serif), Georgia, serif; font-style: italic; font-weight: 400;
-  font-size: clamp(36px, 5.2vw, 68px); line-height: 1; letter-spacing: -.01em; text-wrap: balance;
-}
-.walk__panel p { margin: 0; color: var(--ink-muted); font-size: 16px; line-height: 1.5; max-width: 560px; }
-.walk__links .btn { text-shadow: none; }
-.walk__links { display: flex; flex-wrap: wrap; gap: 10px; }
+.walk__links a:hover { color: var(--ink); border-bottom-color: var(--pink); }
 
 .walk__title {
   position: absolute; left: clamp(20px, 4vw, 56px); bottom: 36px; max-width: min(520px, calc(100% - 40px));
