@@ -149,21 +149,48 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
         mesh.userData = { photo, quality: 0 };
         return mesh;
       }
-      // Small copies first; the full-size file once the photo is close.
+      // Small copies first; the full-size file once the photo is close (not
+      // on a phone, where the small copy is already sharp at that size).
+      // Each photo is decoded off the main thread, then handed to the GPU
+      // one per frame, so a burst of arrivals never stalls the walk.
       let heroLoaded = 0;
+      let disposed = false;
+      const uploads = [];
       function load(mesh, quality) {
-        if (mesh.userData.quality >= quality) return;
-        mesh.userData.quality = quality;
-        const p = mesh.userData.photo;
-        loader.load(tex(quality === 1 ? thumbSrc(manifest, p) : photoSrc(manifest, p)), (t) => {
-          t.colorSpace = THREE.SRGBColorSpace;
-          t.anisotropy = 4;
-          const old = mesh.material.uniforms.map.value;
-          mesh.material.uniforms.map.value = t;
-          mesh.material.uniforms.ready.value = 1;
-          if (mesh.userData.card != null && quality === 1) heroLoaded += 1;
-          if (old !== blank) old.dispose();
+        const u = mesh.userData;
+        if (u.quality >= quality) return;
+        u.quality = quality;
+        const gen = u.gen || 0;
+        loader.load(tex(quality === 1 ? thumbSrc(manifest, u.photo) : photoSrc(manifest, u.photo)), (t) => {
+          Promise.resolve(t.image.decode?.()).catch(() => {}).then(() => {
+            uploads.push(() => {
+              // Dropped since (see unload), or a sharper copy is already up.
+              if (disposed || (u.gen || 0) !== gen || (u.shown || 0) >= quality) { t.dispose(); return; }
+              t.colorSpace = THREE.SRGBColorSpace;
+              t.anisotropy = 4;
+              renderer.initTexture(t);
+              const old = mesh.material.uniforms.map.value;
+              mesh.material.uniforms.map.value = t;
+              mesh.material.uniforms.ready.value = 1;
+              u.shown = quality;
+              if (u.card != null && quality === 1) heroLoaded += 1;
+              if (old !== blank) old.dispose();
+            });
+          });
         });
+      }
+      // Photos well behind you or far ahead give their memory back; they load
+      // again (from the browser's cache) if you come back to them.
+      function unload(mesh) {
+        const u = mesh.userData;
+        if (!u.quality) return;
+        u.quality = 0;
+        u.shown = 0;
+        u.gen = (u.gen || 0) + 1;
+        const old = mesh.material.uniforms.map.value;
+        mesh.material.uniforms.map.value = blank;
+        mesh.material.uniforms.ready.value = 0;
+        if (old !== blank) old.dispose();
       }
 
       // The collage.
@@ -226,10 +253,22 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
       // Read once per resize, not every frame, so the browser never has to
       // stop and measure the page mid-frame.
       let rootTop = 0;
-      let maxScroll = 0;
+      let rootH = 0;
+      let narrow = false;
+      let lastW = 0;
+      let lastH = 0;
+      // The bottom of the page moves with a phone's address bar, so it is
+      // worked out fresh (reading innerHeight is cheap).
+      const maxScroll = () => rootTop + rootH - window.innerHeight;
       function layout() {
         const w = root.clientWidth;
-        const h = window.innerHeight;
+        // The canvas is as tall as the screen at its smallest (100svh), so a
+        // phone's address bar sliding in and out never changes it. That
+        // slide used to rebuild the whole layout mid-scroll, which stuttered.
+        const h = canvas.clientHeight || window.innerHeight;
+        if (w === lastW && h === lastH) return;
+        lastW = w;
+        lastH = h;
         renderer.setSize(w, h, false);
         camera.aspect = w / h;
         camera.fov = w < 640 ? 70 : 55;
@@ -237,7 +276,7 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
         pxPerUnit = h * 0.14; // about half a screen of scrolling from one photo to the next
         root.style.height = `${Math.round(h + -END * pxPerUnit)}px`;
         rootTop = root.offsetTop;
-        maxScroll = rootTop + root.offsetHeight - h;
+        rootH = root.offsetHeight;
         // Fit the collage to the screen the way the old intro did.
         const visH = 2 * -COLLAGE_Z * Math.tan((camera.fov * Math.PI) / 360);
         const visW = visH * camera.aspect;
@@ -245,7 +284,7 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
         k = Math.min((0.86 * visH) / 680, ((w < 640 ? 1.25 : 0.96) * visW) / 820);
         // The corridor: on a narrow screen the photos come in closer to the
         // middle and a little smaller, so each one fits on screen as it passes.
-        const narrow = w < 640;
+        narrow = w < 640;
         items.forEach((mesh) => {
           const { side, drift: r, full } = mesh.userData;
           const sc = narrow ? 0.62 : 1;
@@ -349,7 +388,18 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
       const onScroll = () => { if (expected !== null && Math.abs(window.scrollY - expected) > 2) pause(); };
       window.addEventListener('wheel', onWheel, { passive: false });
       window.addEventListener('touchstart', onTouchStart, { passive: true });
-      window.addEventListener('touchmove', onTouchMove, { passive: false });
+      // Holding back a phone's scroll means every touch has to wait for this
+      // page's code, which makes scrolling stutter. So the listener is only
+      // there on the collage and the welcome, where a swipe glides on, and
+      // during the glide itself.
+      let touchHeld = false;
+      function holdTouch(on) {
+        if (on === touchHeld) return;
+        touchHeld = on;
+        if (on) window.addEventListener('touchmove', onTouchMove, { passive: false });
+        else window.removeEventListener('touchmove', onTouchMove);
+      }
+      holdTouch(true);
       window.addEventListener('keydown', onKey);
       window.addEventListener('scroll', onScroll, { passive: true });
 
@@ -509,8 +559,8 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
           glide = null;
           if (veil) { veil.style.transition = 'opacity .4s ease'; veil.style.opacity = '1'; }
           setTimeout(() => {
-            window.scrollTo({ top: maxScroll, behavior: 'instant' });
-            camZ = -Math.max(0, maxScroll - rootTop) / pxPerUnit;
+            window.scrollTo({ top: maxScroll(), behavior: 'instant' });
+            camZ = -Math.max(0, maxScroll() - rootTop) / pxPerUnit;
             pause();
             if (veil) veil.style.opacity = '0';
             setTimeout(() => { if (veil) veil.style.transition = ''; }, 500);
@@ -545,6 +595,8 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
         const now = nowMs / 1000;
         // Nothing to draw while All photos or a photo covers the walk.
         if (live.current.paused && !glide) { expected = null; return; }
+        uploads.shift()?.();
+        holdTouch(!!glide || (!live.current.drift && window.scrollY < startY() - 4));
 
         // The glide from the collage to the card: eased, so it starts and
         // lands softly.
@@ -563,7 +615,7 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
         } else if (driftOn && !held && !looping && nowMs > pausedUntil && document.visibilityState === 'visible') {
           if (expected === null) acc = window.scrollY;
           acc += DRIFT_SPEED * pxPerUnit * dt;
-          if (acc >= maxScroll - 1) {
+          if (acc >= maxScroll() - 1) {
             expected = null;
             loopToStart();
           } else {
@@ -589,7 +641,8 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
         // fetched in the background, one at a time, so the walk never waits
         // for one. Skipped when the visitor has asked to save data.
         if (heroIn && bgNext < items.length && nowMs > bgAt && !saveData) {
-          load(items[bgNext], 1);
+          // Into the browser's cache only; it reaches the GPU when it's near.
+          fetch(tex(thumbSrc(manifest, items[bgNext].userData.photo))).then((r) => r.blob()).catch(() => {});
           bgNext += 1;
           bgAt = nowMs + 120;
         }
@@ -628,8 +681,9 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
           // Photos behind you, or too far off to see, aren't drawn at all.
           mesh.visible = op > 0.002 && d < FAR;
           if (!heroIn) return;
-          if (d > -2 && d < FAR) load(mesh, 1);
-          if (d > 0 && d < 10) load(mesh, 2);
+          if (d < -8 || d > FAR + 8) unload(mesh);
+          else if (d > -2 && d < FAR) load(mesh, 1);
+          if (!narrow && d > 0 && d < 10) load(mesh, 2);
         });
 
         ray.setFromCamera(mouse, camera);
@@ -724,7 +778,7 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
         window.removeEventListener('pointermove', onMove);
         window.removeEventListener('wheel', onWheel);
         window.removeEventListener('touchstart', onTouchStart);
-        window.removeEventListener('touchmove', onTouchMove);
+        holdTouch(false);
         window.removeEventListener('keydown', onKey);
         window.removeEventListener('scroll', onScroll);
         canvas.removeEventListener('pointerdown', onDown);
@@ -741,6 +795,7 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
         audio?.close();
         delete document.documentElement.dataset.focus;
         photos.forEach((m) => { m.material.uniforms.map.value.dispose(); m.material.dispose(); m.geometry.dispose(); });
+        disposed = true;
         renderer.dispose();
       };
     }

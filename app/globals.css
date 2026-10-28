@@ -93,13 +93,17 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
   position: absolute; inset: 0; pointer-events: none;
   background: radial-gradient(ellipse 70% 65% at 50% 50%, rgba(0, 0, 0, .78), rgba(0, 0, 0, .5) 60%, rgba(0, 0, 0, .25));
   display: flex; align-items: center; justify-content: center; padding: 72px 24px;
+  /* Each on its own layer, so fading them in and out never repaints them. */
+  will-change: opacity;
 }
 .walk__threshold.is-gone { opacity: 0 !important; visibility: hidden; transition: opacity .7s ease, visibility 0s linear .7s; }
 .walk__threshold.is-gone .walk__welcome { transform: translateY(-12px) !important; pointer-events: none; transition: transform .7s var(--ease); }
 .walk__welcome {
   max-width: 720px; pointer-events: auto; text-align: center;
   display: flex; flex-direction: column; align-items: center; gap: 12px;
-  text-shadow: 0 2px 24px rgba(0, 0, 0, .9), 0 0 4px rgba(0, 0, 0, .6);
+  /* The dim behind already does most of the work; a wide blur here was
+     costly to redraw on a phone as the words grow in. */
+  text-shadow: 0 1px 10px rgba(0, 0, 0, .8);
 }
 .walk__by { margin: 0; font-size: 14px; color: var(--ink-muted); opacity: .8; }
 .walk__welcome h2, .walk__big {
