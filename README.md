@@ -28,7 +28,7 @@ repository is committed, so the site works straight away.
 
 ## Editing the words on the page
 
-The About card reads `content/about.json` from this repository at build time, so edit it, commit, and Vercel redeploys with the new text. No sync run is needed for that.
+The words in the walk-through (the welcome, its line, and your headline near the start; the quote, bio, Now line, and links at the end) come from `content/about.json`. The site reads it from this repository at build time, so edit it, commit, and Vercel redeploys with the new text. No sync run is needed for that.
 
 These files are plain text. Change them, save, and reload:
 
@@ -110,6 +110,6 @@ npm run build && npm test
 ```
 
 This starts the built site, drives it with a real browser (Playwright), checks
-the intro, the bento tiles, section switching, hover, the lightbox, and the
-phone layout, and saves screenshots in `tests/screenshots/`. The first time on
+the walk-through, the drift (that it moves, pauses when you scroll, and
+resumes), dragging the timeline, All photos, the lightbox, and the phone layout, and saves screenshots in `tests/screenshots/`. The first time on
 a new computer run `npx playwright install chromium`.
