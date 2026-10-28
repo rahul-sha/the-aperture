@@ -33,7 +33,8 @@ The words in the walk-through (the welcome, its line, and your headline near the
 These files are plain text. Change them, save, and reload:
 
 - `content/about.json`: your name, city, headline, bio, quote, the "Now" line,
-  email, and social links.
+  and social links. Add an `"email"` line to show an "Email me" link
+  again; without one the site has no email link.
 - `content/sections.json`: the one-line quote under each section name. When
   Immich is connected, the album description replaces this.
 - `content/captions.json`: titles and captions for the photos in the

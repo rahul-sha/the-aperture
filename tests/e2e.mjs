@@ -101,6 +101,7 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
   check('the end shows at the bottom', endOpacity > 0.95, `opacity=${endOpacity}`);
   check('the end is centred like the welcome', await page.locator('.walk__exit .walk__welcome').evaluate((el) => { const r = el.getBoundingClientRect(); return Math.abs(r.left + r.width / 2 - innerWidth / 2) < 4; }));
   check('the end links open in new tabs', await page.locator('.walk__links a[target="_blank"]').count() === 3);
+  check('no email link while no address is set', await page.locator('a[href^="mailto:"]').count() === 0);
   await page.screenshot({ path: `${SHOTS}03b-end.png` });
 
   await page.locator('.header__btn', { hasText: 'All photos' }).click();
