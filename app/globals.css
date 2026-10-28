@@ -185,6 +185,23 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 .cursor.is-down .cursor__brackets { transform: scale(.55); }
 .cursor.is-focus.is-down .cursor__brackets { transform: scale(1.2); }
 
+/* The right-click menu (components/ContextMenu.js): the header's plain
+   words over hairlines, on a dark glass panel. */
+.menu {
+  position: fixed; z-index: 90; min-width: 200px; padding: 10px 18px 14px;
+  display: flex; flex-direction: column; border-radius: 12px;
+  background: rgba(0, 0, 0, .72); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, .6); animation: menu-in .18s ease-out both;
+}
+.menu button, .menu a {
+  min-height: 38px; display: flex; align-items: flex-end; padding: 0 0 8px; text-align: left; text-decoration: none;
+  border: 0; border-bottom: 1px solid rgba(245, 243, 239, .14); background: none;
+  color: rgba(245, 243, 239, .7); font-size: 13px; transition: color .2s ease, border-color .2s ease;
+}
+.menu button:hover, .menu a:hover, .menu button:focus-visible, .menu a:focus-visible { color: var(--ink); border-bottom-color: var(--pink); outline: none; }
+.menu__rule { height: 10px; }
+@keyframes menu-in { from { opacity: 0; transform: translateY(-4px); } }
+
 /* All photos */
 .all {
   position: fixed; inset: 0; z-index: 25; overflow-y: auto; background: var(--ground);
@@ -239,7 +256,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .walk__cue svg, .walk__next svg, .develop, .header__drift::before { animation: none !important; }
+  .walk__cue svg, .walk__next svg, .develop, .menu, .header__drift::before { animation: none !important; }
   .all__cell img, .walk__title { transition: none; }
 }
 

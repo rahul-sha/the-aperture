@@ -75,14 +75,15 @@ const smooth = (a, b, v) => { const t = clamp01((v - a) / (b - a)); return t * t
 const easeOut = (t) => 1 - (1 - t) ** 4;
 const rnd = (i) => { const x = Math.sin(i * 91.7 + 13.1) * 43758.5; return x - Math.floor(x); };
 
-export default function Walk({ manifest, drift, paused, replayKey, railRef, onOpen, onGo }) {
+export default function Walk({ manifest, drift, paused, replayKey, railRef, controlRef, onOpen, onGo }) {
   const rootRef = useRef(null);
   const canvasRef = useRef(null);
   const ui = useRef({});
   // Read live by the frame loop, so changing them never rebuilds the scene.
   const live = useRef({});
   live.current = { drift, paused, onOpen, onGo };
-  const api = useRef(null);
+  const ownApi = useRef(null);
+  const api = controlRef || ownApi; // the page can steer the walk through this
 
   const { about } = manifest;
   const sections = manifest.sections.filter((s) => s.photos.length);
@@ -464,6 +465,21 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, onOp
       go: () => { pausedUntil = 0; if (window.scrollY < startY() - 4) glideTo(startY()); },
       toCard: () => glideTo(cardY()),
       begin,
+      // Straight to the closing words and links: a quick fade through black
+      // instead of rushing past every photo.
+      toEnd: () => {
+        pause();
+        glide = null;
+        if (veil) { veil.style.transition = 'opacity .4s ease'; veil.style.opacity = '1'; }
+        setTimeout(() => {
+          const top = root.offsetTop + root.offsetHeight - window.innerHeight;
+          window.scrollTo({ top, behavior: 'instant' });
+          camZ = -Math.max(0, top - root.offsetTop) / pxPerUnit;
+          pause();
+          if (veil) veil.style.opacity = '0';
+          setTimeout(() => { if (veil) veil.style.transition = ''; }, 500);
+        }, reduced ? 0 : 450);
+      },
     };
 
     let current = null;

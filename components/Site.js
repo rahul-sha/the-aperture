@@ -5,6 +5,7 @@ import Walk, { Timeline } from './Walk';
 import AllPhotos from './AllPhotos';
 import Lightbox from './Lightbox';
 import Cursor from './Cursor';
+import ContextMenu from './ContextMenu';
 
 export default function Site({ manifest }) {
   // Drift starts from the welcome after the collage, or the header switch.
@@ -13,8 +14,11 @@ export default function Site({ manifest }) {
   const [grid, setGrid] = useState(false);
   const [lightbox, setLightbox] = useState(null); // { photos, index }
   const railRef = useRef(null);
+  const walkRef = useRef(null);
 
   const backToStart = () => {
+    setGrid(false);
+    setLightbox(null);
     setDrift(false);
     setReplayKey((k) => k + 1);
   };
@@ -51,6 +55,7 @@ export default function Site({ manifest }) {
           paused={grid || !!lightbox}
           replayKey={replayKey}
           railRef={railRef}
+          controlRef={walkRef}
           onGo={() => setDrift(true)}
           onOpen={(photos, index) => setLightbox({ photos, index })}
         />
@@ -59,6 +64,12 @@ export default function Site({ manifest }) {
       {grid && <AllPhotos manifest={manifest} onOpen={(photos, index) => setLightbox({ photos, index })} onClose={() => setGrid(false)} />}
 
       <Cursor />
+      <ContextMenu
+        about={manifest.about}
+        onHome={backToStart}
+        onAbout={() => { setGrid(false); setLightbox(null); setDrift(false); walkRef.current?.toEnd(); }}
+        onAll={() => { setLightbox(null); setGrid(true); }}
+      />
 
       {lightbox && (
         <Lightbox
