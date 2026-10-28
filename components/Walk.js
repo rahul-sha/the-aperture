@@ -22,6 +22,7 @@ const DRIFT_RESUME = 4000; // ms to wait after you scroll before drifting again
 const FLY_DONE = 2.6; // seconds until the intro fly-in has settled
 const CARD_Z = -10; // where the camera rests on the welcome
 const GLIDE = 2.4; // seconds for the glide from the collage to the welcome
+const GLIDE_ON = 1.8; // seconds for the glide from the welcome to the first section
 const WELCOME_EASE = 0.8; // seconds the welcome words take to settle in
 const TITLE_LEAD = 6.5; // a section's name appears this far before its first photo
 const FAR = 22; // photos further than this have faded into the dark
@@ -290,9 +291,9 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
     const onHero = () => window.scrollY < cardY() - 4;
     const atWelcome = () => !onHero() && window.scrollY < startY() - 4;
     const pause = () => { pausedUntil = performance.now() + DRIFT_RESUME; expected = null; };
-    function glideTo(to) {
+    function glideTo(to, dur = GLIDE_ON) {
       if (glide) return;
-      glide = { from: window.scrollY, to, start: performance.now() };
+      glide = { from: window.scrollY, to, start: performance.now(), dur };
     }
     const begin = () => { live.current.onGo?.(); glideTo(startY()); };
     // A push down from the collage or the welcome takes you to the next step.
@@ -300,7 +301,7 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
     function step() {
       if (glide || performance.now() < quietUntil) return true;
       if (live.current.drift) return false;
-      if (onHero()) { glideTo(cardY()); return true; }
+      if (onHero()) { glideTo(cardY(), GLIDE); return true; }
       if (atWelcome()) { begin(); return true; }
       return false;
     }
@@ -465,7 +466,7 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
       // Turning the drift on from the collage or the welcome first glides to
       // the first section.
       go: () => { pausedUntil = 0; if (window.scrollY < startY() - 4) glideTo(startY()); },
-      toCard: () => glideTo(cardY()),
+      toCard: () => glideTo(cardY(), GLIDE),
       begin,
       // Straight to the closing words and links: a quick fade through black
       // instead of rushing past every photo.
@@ -497,7 +498,7 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
       // The glide from the collage to the card: eased, so it starts and
       // lands softly.
       if (glide) {
-        const t = clamp01((nowMs - glide.start) / (reduced ? 1 : GLIDE * 1000));
+        const t = clamp01((nowMs - glide.start) / (reduced ? 1 : glide.dur * 1000));
         const e = t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
         expected = Math.round(glide.from + (glide.to - glide.from) * e);
         window.scrollTo({ top: expected, behavior: 'instant' });
@@ -605,18 +606,23 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
       }
       const tz = -camZ;
       if (threshold) {
-        const goal = smooth(6.8, 8.8, tz) * (1 - smooth(10.6, 11.9, tz));
-        // Easing only on the way in; leaving follows the scroll like everything else.
-        if (goal < welcomeOp && tz > -CARD_Z) welcomeOp = goal;
-        else welcomeOp += (goal - welcomeOp) * (reduced ? 1 : 1 - Math.exp(-dt / WELCOME_EASE));
-        const op = Math.abs(goal - welcomeOp) < 0.002 ? goal : welcomeOp;
-        welcomeUp = op > 0.3 || (exit && +exit.style.opacity > 0.3);
-        threshold.style.opacity = op.toFixed(3);
-        // The words come out of the middle of the screen as if from the
-        // depth ahead, and grow past you as you walk on.
-        const sc = tz > -CARD_Z ? 1 + (1 - op) * 0.25 : 0.6 + op * 0.4;
-        threshold.firstChild.style.transform = `scale(${sc.toFixed(3)})`;
-        threshold.style.visibility = op > 0.02 ? 'visible' : 'hidden';
+        // The words grow out of the middle of the screen as you arrive, easing
+        // in behind the scroll. Once you move on they fade away on their own,
+        // the way the section names do.
+        const leaving = tz > -CARD_Z + 0.25;
+        threshold.classList.toggle('is-gone', leaving);
+        if (leaving) {
+          welcomeOp = 0;
+          welcomeUp = !!(exit && +exit.style.opacity > 0.3);
+        } else {
+          const goal = smooth(6.8, 8.8, tz);
+          welcomeOp += (goal - welcomeOp) * (reduced ? 1 : 1 - Math.exp(-dt / WELCOME_EASE));
+          const op = Math.abs(goal - welcomeOp) < 0.002 ? goal : welcomeOp;
+          welcomeUp = op > 0.3 || (exit && +exit.style.opacity > 0.3);
+          threshold.style.opacity = op.toFixed(3);
+          threshold.firstChild.style.transform = `scale(${(0.6 + op * 0.4).toFixed(3)})`;
+          threshold.style.visibility = op > 0.02 ? 'visible' : 'hidden';
+        }
       }
       if (cue) cue.style.opacity = (1 - smooth(0, 0.8, tz)).toFixed(3);
       if (rail) {
