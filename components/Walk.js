@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { findPhoto, photoSrc, thumbSrc } from '../lib/photos';
+import { findPhoto, photoSrc, texSrc, thumbSrc } from '../lib/photos';
 
 // The whole page is one walk through a dark space, drawn with three.js.
 // It opens on the intro collage: nine cards fly in from the dark and settle.
@@ -110,7 +110,7 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
       const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       // Photos on R2 are fetched through this site (see next.config.mjs), so
       // WebGL is allowed to read them.
-      const tex = (url) => (manifest.texBase ? url.replace(manifest.base, manifest.texBase) : url);
+      const tex = (url) => texSrc(manifest, url);
 
       // Some browsers and older phones can't draw WebGL at all; the page then
       // shows All photos instead of an empty screen.
@@ -532,6 +532,9 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
 
       let current = null;
       let lastFocus = false;
+      let bgNext = 0;
+      let bgAt = 0;
+      const saveData = !!navigator.connection?.saveData;
       let last = performance.now();
       let raf = 0;
       function frame(nowMs) {
@@ -581,6 +584,14 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
 
         if (flyStart == null && (heroLoaded >= cards.length || nowMs > flyDeadline)) flyStart = now;
         const heroIn = flyStart != null && now - flyStart > 1.2;
+        // Once the collage is in, the small copy of every other photo is
+        // fetched in the background, one at a time, so the walk never waits
+        // for one. Skipped when the visitor has asked to save data.
+        if (heroIn && bgNext < items.length && nowMs > bgAt && !saveData) {
+          load(items[bgNext], 1);
+          bgNext += 1;
+          bgAt = nowMs + 120;
+        }
 
         // The collage: fly in, float, then part gently as you walk into it.
         const part = smooth(0, -COLLAGE_Z, -camZ);
