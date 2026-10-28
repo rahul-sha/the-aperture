@@ -332,6 +332,7 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, onOp
     const ticks = rail?.querySelector('.walk__ticks');
     const head = rail?.querySelector('.walk__head');
     const track = rail?.querySelector('.walk__track');
+    const slider = rail?.querySelector('.walk__slider');
     segs.forEach((el, i) => {
       const a = uOf(marks[i].z + TITLE_LEAD);
       const b = i + 1 < marks.length ? uOf(marks[i + 1].z + TITLE_LEAD) : 1;
@@ -409,7 +410,7 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, onOp
     const onScrubDown = (e) => {
       if (!track || e.button > 0) return;
       scrubbing = true;
-      rail.setPointerCapture(e.pointerId);
+      slider.setPointerCapture(e.pointerId);
       rail.classList.add('is-scrubbing');
       lastTick = tickAt(uOf(camZ));
       pause();
@@ -427,11 +428,11 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, onOp
       seekTo(uOf(camZ - step));
     };
     if (rail) {
-      rail.addEventListener('pointerdown', onScrubDown);
-      rail.addEventListener('pointermove', onScrubMove);
-      rail.addEventListener('pointerup', onScrubUp);
-      rail.addEventListener('pointercancel', onScrubUp);
-      rail.addEventListener('keydown', onScrubKey);
+      slider.addEventListener('pointerdown', onScrubDown);
+      slider.addEventListener('pointermove', onScrubMove);
+      slider.addEventListener('pointerup', onScrubUp);
+      slider.addEventListener('pointercancel', onScrubUp);
+      slider.addEventListener('keydown', onScrubKey);
     }
 
     let camZ = -window.scrollY / pxPerUnit;
@@ -602,7 +603,7 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, onOp
         rail.style.visibility = op > 0.02 ? 'visible' : 'hidden';
         const u = uOf(camZ);
         if (head) head.style.left = `${(u * 100).toFixed(2)}%`;
-        rail.setAttribute('aria-valuenow', String(Math.round(u * 100)));
+        slider.setAttribute('aria-valuenow', String(Math.round(u * 100)));
       }
       if (exit) {
         const ex = smooth(-END - 8, -END - 3, tz);
@@ -627,11 +628,11 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, onOp
       canvas.removeEventListener('pointerdown', onDown);
       canvas.removeEventListener('pointerup', onUp);
       if (rail) {
-        rail.removeEventListener('pointerdown', onScrubDown);
-        rail.removeEventListener('pointermove', onScrubMove);
-        rail.removeEventListener('pointerup', onScrubUp);
-        rail.removeEventListener('pointercancel', onScrubUp);
-        rail.removeEventListener('keydown', onScrubKey);
+        slider.removeEventListener('pointerdown', onScrubDown);
+        slider.removeEventListener('pointermove', onScrubMove);
+        slider.removeEventListener('pointerup', onScrubUp);
+        slider.removeEventListener('pointercancel', onScrubUp);
+        slider.removeEventListener('keydown', onScrubKey);
       }
       window.removeEventListener('pointerup', wakeAudio);
       window.removeEventListener('keydown', wakeAudio);
@@ -712,27 +713,33 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, onOp
 }
 
 // The timeline in the header: one segment per section, a tick per photo,
-// and a marker for where you are. Walk wires it up through railRef.
-export function Timeline({ manifest, railRef }) {
+// and a marker for where you are. Walk wires it up through railRef. On a
+// phone it runs along the bottom with a way home at its start.
+export function Timeline({ manifest, railRef, onHome }) {
   const sections = manifest.sections.filter((s) => s.photos.length);
   return (
-    <div
-      ref={railRef}
-      className="walk__timeline"
-      role="slider"
-      tabIndex={0}
-      aria-label="Timeline of every photo. Drag, or use the left and right arrow keys."
-      aria-valuemin={0}
-      aria-valuemax={100}
-      aria-valuenow={0}
-      style={{ opacity: 0, visibility: 'hidden' }}
-    >
-      <div className="walk__track">
-        {sections.map((s) => (
-          <div key={s.slug} className="walk__seg"><span>{s.name}</span></div>
-        ))}
-        <div className="walk__ticks" aria-hidden="true" />
-        <div className="walk__head" aria-hidden="true" />
+    <div ref={railRef} className="walk__timeline" style={{ opacity: 0, visibility: 'hidden' }}>
+      {onHome && (
+        <button type="button" className="walk__home" onClick={onHome} aria-label="Back to the start" title="Back to the start">
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7" /><path d="M3 4v5h5" /></svg>
+        </button>
+      )}
+      <div
+        className="walk__slider"
+        role="slider"
+        tabIndex={0}
+        aria-label="Timeline of every photo. Drag, or use the left and right arrow keys."
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={0}
+      >
+        <div className="walk__track">
+          {sections.map((s) => (
+            <div key={s.slug} className="walk__seg"><span>{s.name}</span></div>
+          ))}
+          <div className="walk__ticks" aria-hidden="true" />
+          <div className="walk__head" aria-hidden="true" />
+        </div>
       </div>
     </div>
   );

@@ -23,7 +23,7 @@ export default function Site({ manifest }) {
     <>
       <header className="header">
         <button type="button" className="header__name" onClick={backToStart} title="Back to the start"><img className="header__mark" src="/logo.png" alt="" width="26" height="26" />The Aperture</button>
-        <Timeline manifest={manifest} railRef={railRef} />
+        <Timeline manifest={manifest} railRef={railRef} onHome={backToStart} />
         <div className="header__tools">
           <button type="button" className="header__btn" onClick={() => setGrid(true)}>All photos</button>
           <button

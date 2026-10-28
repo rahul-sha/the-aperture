@@ -37,18 +37,15 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
   display: flex; align-items: center; gap: clamp(16px, 2.4vw, 32px);
   padding: 18px clamp(16px, 4vw, 56px);
 }
-.header__name { flex: none; font-weight: 700; font-size: 17px; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0; border: 0; background: none; color: var(--ink); }
-.header__name:hover { color: var(--pink); }
-/* On a wider screen the name reads like the timeline beside it. */
-@media (min-width: 721px) {
-  .header__name {
-    align-items: flex-end; gap: 8px; padding-bottom: 10px; border-bottom: 1px solid rgba(245, 243, 239, .28);
-    font-size: 13px; font-weight: 500; color: rgba(245, 243, 239, .62); text-shadow: 0 1px 8px rgba(0, 0, 0, .9);
-    transition: color .3s ease, border-color .3s ease;
-  }
-  .header__name:hover { color: var(--ink); border-bottom-color: var(--pink); }
-  .header__name .header__mark { width: 18px; height: 18px; border-radius: 5px; }
+/* The name reads like the timeline beside it: small type over a hairline. */
+.header__name {
+  flex: none; min-height: 44px; display: inline-flex; align-items: flex-end; gap: 8px;
+  padding: 0 0 10px; border: 0; border-bottom: 1px solid rgba(245, 243, 239, .28); background: none;
+  font-size: 13px; font-weight: 500; color: rgba(245, 243, 239, .62); text-shadow: 0 1px 8px rgba(0, 0, 0, .9);
+  transition: color .3s ease, border-color .3s ease;
 }
+.header__name:hover { color: var(--ink); border-bottom-color: var(--pink); }
+.header__name .header__mark { width: 18px; height: 18px; border-radius: 5px; }
 .header__mark { width: 26px; height: 26px; border-radius: var(--photo-radius); display: block; }
 .header__replay {
   width: 44px; height: 44px; padding: 0; border: 0; border-radius: 999px;
@@ -149,8 +146,10 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
   transition: opacity .3s ease;
 }
 .walk__track { flex: 1; }
+.walk__slider { flex: 1; min-width: 0; align-self: stretch; display: flex; align-items: flex-end; }
+.walk__home { display: none; }
 .walk__timeline.is-scrubbing { cursor: grabbing; }
-.walk__timeline:focus-visible { outline: 2px solid var(--pink); outline-offset: 4px; border-radius: 6px; }
+.walk__slider:focus-visible { outline: 2px solid var(--pink); outline-offset: 4px; border-radius: 6px; }
 .walk__track { position: relative; display: flex; gap: 4px; }
 .walk__seg {
   min-width: 0; padding-bottom: 10px; border-bottom: 1px solid rgba(245, 243, 239, .28);
@@ -228,11 +227,15 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
   .walk__seg[aria-current="true"] { font-size: 12px; }
   .walk__seg[aria-current="true"] span { overflow: visible; }
   /* On a phone the timeline runs along the bottom, under your thumb. */
-  .walk__timeline { position: fixed; left: 20px; right: 20px; bottom: max(14px, env(safe-area-inset-bottom)); min-height: 40px; }
+  .walk__timeline { position: fixed; left: 20px; right: 20px; bottom: max(14px, env(safe-area-inset-bottom)); min-height: 40px; gap: 14px; }
+  .walk__home {
+    display: inline-flex; align-items: flex-end; justify-content: center; flex: none; min-width: 32px; min-height: 40px; padding: 0 0 10px;
+    border: 0; border-bottom: 1px solid rgba(245, 243, 239, .28); background: none; color: rgba(245, 243, 239, .7);
+  }
+  .walk__home:active { color: var(--pink); border-bottom-color: var(--pink); }
   .walk__title { bottom: 84px; }
   .walk__threshold, .walk__exit { padding-bottom: 84px; }
   .walk__caption { left: 20px; right: auto; text-align: left; bottom: auto; top: 76px; }
-  .header__name { font-size: 0; gap: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
