@@ -58,6 +58,8 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
   check('drift switches on', (await page.locator('.header__drift').getAttribute('aria-pressed')) === 'true');
   await page.waitForTimeout(4500);
   check('first section name shows', (await page.locator('.walk__name').innerText()) === 'Overview');
+  check('the welcome is out of the Tab order once you move on', await page.locator('.walk__threshold').evaluate((el) => getComputedStyle(el).visibility === 'hidden'));
+  check('the timeline tells a screen reader where you are', /^Overview, photo \d+ of \d+$/.test(await page.locator('.walk__slider').getAttribute('aria-valuetext')));
   const begun = await scrollY(page);
   await page.waitForTimeout(2000);
   const after = await scrollY(page);
@@ -107,12 +109,19 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
   await page.screenshot({ path: `${SHOTS}04-all.png` });
   await page.locator('.all__cell').nth(3).click();
   check('lightbox opens', (await page.locator('.lightbox').count()) === 1);
+  check('focus moves into the lightbox', await page.evaluate(() => !!document.activeElement.closest('.lightbox')));
+  for (let i = 0; i < 4; i += 1) await page.keyboard.press('Tab');
+  check('Tab stays inside the lightbox', await page.evaluate(() => !!document.activeElement.closest('.lightbox')));
   await page.keyboard.press('ArrowRight');
   check('lightbox steps forward', (await page.locator('.lightbox__bar small').innerText()).startsWith('5 of'));
   await page.waitForTimeout(1700);
   await page.screenshot({ path: `${SHOTS}05-lightbox.png` });
   await page.keyboard.press('Escape');
   check('lightbox closes with Escape', (await page.locator('.lightbox').count()) === 0);
+  check('focus goes back to the photo you opened', await page.evaluate(() => document.activeElement.classList.contains('all__cell')));
+  await page.keyboard.press('Shift+Tab');
+  await page.keyboard.press('Shift+Tab');
+  check('Tab stays inside All photos', await page.evaluate(() => !!document.activeElement.closest('.all')));
   await page.locator('.all__bar .header__btn').click();
   check('back to the walk', (await page.locator('.all').count()) === 0);
 
@@ -137,6 +146,25 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
   check('menu closes after use', (await page.locator('.dial').count()) === 0);
 
   check('no console or page errors', errors.length === 0, errors.join(' | ').slice(0, 300));
+  await page.close();
+}
+
+// A browser that can't draw WebGL gets All photos as the page.
+{
+  const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+  const errors = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.addInitScript(() => {
+    const real = HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext = function (type, ...rest) { return /webgl/.test(type) ? null : real.call(this, type, ...rest); };
+  });
+  await page.goto(SITE, { waitUntil: 'networkidle' });
+  await page.waitForTimeout(500);
+  check('without WebGL the page shows All photos', (await page.locator('main .all--page .all__cell').count()) > 20);
+  check('without WebGL nothing crashes', errors.length === 0, errors.join(' | ').slice(0, 200));
+  await page.locator('.all__cell').first().click();
+  check('without WebGL photos still open', (await page.locator('.lightbox').count()) === 1);
+  await page.screenshot({ path: `${SHOTS}08-no-webgl.png` });
   await page.close();
 }
 

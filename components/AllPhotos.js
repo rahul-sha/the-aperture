@@ -2,14 +2,18 @@
 
 import { useEffect, useRef } from 'react';
 import { thumbSrc } from '../lib/photos';
+import useDialog from './useDialog';
 
 // A plain view of every photo, section by section, for when you would rather
-// browse than walk. Rows keep each photo's real shape.
-export default function AllPhotos({ manifest, onOpen, onClose }) {
+// browse than walk. Rows keep each photo's real shape. When the browser
+// can't draw the walk (no WebGL), this is the page itself (standalone).
+export default function AllPhotos({ manifest, onOpen, onClose, standalone = false }) {
+  const ref = useRef(null);
   const closeRef = useRef(null);
+  useDialog(ref, closeRef, !standalone);
 
   useEffect(() => {
-    closeRef.current?.focus();
+    if (standalone) return undefined;
     const onKey = (e) => { if (e.key === 'Escape' && !document.querySelector('.lightbox')) onClose(); };
     window.addEventListener('keydown', onKey);
     const prev = document.body.style.overflow;
@@ -18,13 +22,13 @@ export default function AllPhotos({ manifest, onOpen, onClose }) {
       window.removeEventListener('keydown', onKey);
       document.body.style.overflow = prev;
     };
-  }, [onClose]);
+  }, [onClose, standalone]);
 
   return (
-    <div className="all" role="dialog" aria-modal="true" aria-label="All photos">
+    <div ref={ref} className={standalone ? 'all all--page' : 'all'} {...(standalone ? {} : { role: 'dialog', 'aria-modal': 'true', 'aria-label': 'All photos' })}>
       <div className="all__bar">
         <span>All photos</span>
-        <button ref={closeRef} type="button" className="header__btn" onClick={onClose}>Back to the walk</button>
+        {!standalone && <button ref={closeRef} type="button" className="header__btn" onClick={onClose}>Back to the walk</button>}
       </div>
       {manifest.sections.filter((s) => s.photos.length).map((s) => (
         <section key={s.slug} className="all__section" aria-label={s.name}>

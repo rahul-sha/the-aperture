@@ -20,12 +20,14 @@ export default function ContextMenu({ about, onHome, onAbout, onAll }) {
   const [at, setAt] = useState(null); // { x, y }
   const [label, setLabel] = useState('');
   const ref = useRef(null);
+  const before = useRef(null); // where keyboard focus was before the dial opened
 
   useEffect(() => {
     if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return undefined;
     const onMenu = (e) => {
       e.preventDefault();
       const m = R + 34;
+      if (!ref.current) before.current = document.activeElement;
       setAt({ x: Math.min(Math.max(e.clientX, m), window.innerWidth - m), y: Math.min(Math.max(e.clientY, m), window.innerHeight - m) });
       setLabel('');
     };
@@ -50,6 +52,7 @@ export default function ContextMenu({ about, onHome, onAbout, onAll }) {
 
   useEffect(() => {
     if (at) ref.current?.querySelector('.dial__item')?.focus({ preventScroll: true });
+    else if (before.current?.isConnected && document.activeElement === document.body) before.current.focus({ preventScroll: true });
   }, [at]);
 
   if (!at) return null;

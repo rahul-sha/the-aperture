@@ -1,10 +1,14 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { photoSrc } from '../lib/photos';
+import useDialog from './useDialog';
 
 export default function Lightbox({ manifest, photos, index, onStep, onClose }) {
   const photo = photos[index];
+  const ref = useRef(null);
+  const closeRef = useRef(null);
+  useDialog(ref, closeRef);
 
   useEffect(() => {
     const onKey = (e) => {
@@ -21,11 +25,17 @@ export default function Lightbox({ manifest, photos, index, onStep, onClose }) {
     };
   }, [onClose, onStep]);
 
+  // Fetch the photos either side, so Next and Previous open at once.
+  useEffect(() => {
+    if (photos.length < 2) return;
+    [1, -1].forEach((d) => { new Image().src = photoSrc(manifest, photos[(index + d + photos.length) % photos.length]); });
+  }, [manifest, photos, index]);
+
   return (
-    <div className="lightbox" role="dialog" aria-modal="true" aria-label={photo.title}>
+    <div ref={ref} className="lightbox" role="dialog" aria-modal="true" aria-label={photo.title}>
       <div className="lightbox__bar">
         <span>{photo.title} <small>{index + 1} of {photos.length}</small></span>
-        <button type="button" className="btn" onClick={onClose}>Close</button>
+        <button ref={closeRef} type="button" className="btn" onClick={onClose}>Close</button>
       </div>
       <div className="lightbox__img">
         <img key={photo.id} className="develop" src={photoSrc(manifest, photo)} alt={photo.title} />
