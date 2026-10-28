@@ -65,7 +65,7 @@ Set up once, in Immich:
 Set up once, in Cloudflare:
 
 1. Create an R2 bucket (for example `aperture-photos`) and connect a custom
-   domain to it, such as `photos.rahulll.com`.
+   domain to it, such as `photos.the-aperture.app`.
 2. Create an R2 API token with edit access to that bucket.
 
 Then run the sync, either as a container on the NAS (no Node.js needed) or
@@ -97,7 +97,7 @@ Location is handled in two ways. Each photo gets a place label (city and country
 
 1. Import this repository as a new Vercel project. The defaults work.
 2. Add one environment variable: `PHOTOS_MANIFEST_URL` set to
-   `https://photos.rahulll.com/manifest.json` (your bucket's domain).
+   `https://photos.the-aperture.app/manifest.json` (your bucket's domain).
 3. Deploy. The site re-reads the manifest at most once an hour, so new photos
    appear without another deploy.
 
