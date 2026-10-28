@@ -170,11 +170,12 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, onOp
         const h = photo.h >= photo.w ? 1.9 : 1.4;
         const w = h * ((photo.w || 3) / (photo.h || 2));
         const mesh = makePhoto(photo, w, h);
-        mesh.position.set(side * (1.5 + rnd(n) * 1.3), (rnd(n + 7) - 0.5) * 1.6, z);
-        mesh.rotation.y = -side * 0.22;
+        mesh.position.set(0, (rnd(n + 7) - 0.5) * 1.6, z);
         mesh.userData.list = s.photos;
         mesh.userData.index = j;
-        mesh.userData.base = mesh.position.clone();
+        mesh.userData.side = side;
+        mesh.userData.drift = rnd(n);
+        mesh.userData.full = [w, h];
         scene.add(mesh);
         items.push(mesh);
         z -= GAP;
@@ -214,6 +215,17 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, onOp
       const visW = visH * camera.aspect;
       // On a phone the outer cards may run off the sides, as they did before.
       k = Math.min((0.86 * visH) / 680, ((w < 640 ? 1.25 : 0.96) * visW) / 820);
+      // The corridor: on a narrow screen the photos come in closer to the
+      // middle and a little smaller, so each one fits on screen as it passes.
+      const narrow = w < 640;
+      items.forEach((mesh) => {
+        const { side, drift: r, full } = mesh.userData;
+        const sc = narrow ? 0.62 : 1;
+        mesh.position.x = side * (narrow ? 0.42 + r * 0.3 : 1.5 + r * 1.3);
+        mesh.rotation.y = -side * (narrow ? 0.12 : 0.22);
+        mesh.material.uniforms.size.value.set(full[0] * sc, full[1] * sc);
+        mesh.scale.set(full[0] * sc, full[1] * sc, 1);
+      });
       cards.forEach((mesh, i) => {
         const [sw, sh, x, y, zi] = SLOTS[i];
         const p = mesh.userData.photo;
@@ -492,7 +504,8 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, onOp
         mesh.scale.set(size.value.x * mesh.userData.hover, size.value.y * mesh.userData.hover, 1);
       });
       if (caption) {
-        if (hover) {
+        // The collage stays wordless; names show only along the walk.
+        if (hover && hover.userData.card == null) {
           const p = hover.userData.photo;
           caption.firstChild.textContent = p.title;
           caption.lastChild.textContent = p.place || '';
@@ -520,6 +533,8 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, onOp
         const op = smooth(6.8, 8.8, tz) * (1 - smooth(10.6, 11.9, tz));
         welcomeUp = op > 0.3 || (exit && +exit.style.opacity > 0.3);
         threshold.style.opacity = op.toFixed(3);
+        // The words rise a little as they arrive and as they leave, like the section names.
+        threshold.firstChild.style.transform = `translateY(${((1 - op) * 18 * (tz > 10 ? -1 : 1)).toFixed(1)}px)`;
         threshold.style.visibility = op > 0.02 ? 'visible' : 'hidden';
       }
       if (cue) cue.style.opacity = (1 - smooth(0, 0.8, tz)).toFixed(3);
@@ -534,6 +549,7 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, onOp
       if (exit) {
         const ex = smooth(-END - 8, -END - 3, tz);
         exit.style.opacity = ex.toFixed(3);
+        exit.firstChild.style.transform = `translateY(${((1 - ex) * 18).toFixed(1)}px)`;
         exit.style.visibility = ex > 0.02 ? 'visible' : 'hidden';
         if (title) title.style.visibility = ex > 0.5 ? 'hidden' : 'visible';
       }
