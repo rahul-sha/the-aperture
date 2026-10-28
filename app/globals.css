@@ -39,6 +39,16 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 }
 .header__name { flex: none; font-weight: 700; font-size: 17px; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0; border: 0; background: none; color: var(--ink); }
 .header__name:hover { color: var(--pink); }
+/* On a wider screen the name reads like the timeline beside it. */
+@media (min-width: 721px) {
+  .header__name {
+    align-items: flex-end; gap: 8px; padding-bottom: 10px; border-bottom: 1px solid rgba(245, 243, 239, .28);
+    font-size: 13px; font-weight: 500; color: rgba(245, 243, 239, .62); text-shadow: 0 1px 8px rgba(0, 0, 0, .9);
+    transition: color .3s ease, border-color .3s ease;
+  }
+  .header__name:hover { color: var(--ink); border-bottom-color: var(--pink); }
+  .header__name .header__mark { width: 18px; height: 18px; border-radius: 5px; }
+}
 .header__mark { width: 26px; height: 26px; border-radius: var(--photo-radius); display: block; }
 .header__replay {
   width: 44px; height: 44px; padding: 0; border: 0; border-radius: 999px;
