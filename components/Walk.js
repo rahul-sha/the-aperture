@@ -345,7 +345,47 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, onOp
         ticks.appendChild(t);
       });
     }
+    // A soft mechanical click each time the scrub passes a photo, like
+    // turning a dial on a camera. The sound is made in the browser, and only
+    // after you touch the timeline (browsers allow audio after a gesture).
+    let audio = null;
+    let clickBuf = null;
+    let lastTick = -1;
+    let lastClickAt = 0;
+    function click() {
+      try {
+        if (!audio) {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          if (!AC) return;
+          audio = new AC();
+          const len = Math.round(audio.sampleRate * 0.03);
+          clickBuf = audio.createBuffer(1, len, audio.sampleRate);
+          const d = clickBuf.getChannelData(0);
+          for (let i = 0; i < len; i += 1) {
+            const t = i / audio.sampleRate;
+            d[i] = ((Math.random() * 2 - 1) * Math.exp(-t * 520) + Math.sin(2 * Math.PI * 2300 * t) * Math.exp(-t * 900) * 0.6) * 0.5;
+          }
+        }
+        const t0 = performance.now();
+        if (t0 - lastClickAt < 28) return; // a fast drag shouldn't buzz
+        lastClickAt = t0;
+        if (audio.state === 'suspended') audio.resume();
+        const src = audio.createBufferSource();
+        src.buffer = clickBuf;
+        src.playbackRate.value = 0.92 + Math.random() * 0.16;
+        const filter = audio.createBiquadFilter();
+        filter.type = 'highpass';
+        filter.frequency.value = 900;
+        const gain = audio.createGain();
+        gain.gain.value = 0.35;
+        src.connect(filter).connect(gain).connect(audio.destination);
+        src.start();
+      } catch { /* no sound is fine */ }
+    }
+    const tickAt = (u) => items.reduce((n, m) => n + (uOf(m.position.z) <= u + 1e-4 ? 1 : 0), 0);
     const seekTo = (u) => {
+      const t = tickAt(clamp01(u));
+      if (t !== lastTick) { if (lastTick !== -1) click(); lastTick = t; }
       const zz = zFrom - clamp01(u) * (zFrom - zTo);
       glide = null;
       expected = null;
@@ -358,6 +398,7 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, onOp
       scrubbing = true;
       rail.setPointerCapture(e.pointerId);
       rail.classList.add('is-scrubbing');
+      lastTick = tickAt(uOf(camZ));
       pause();
       seekTo(uAt(e));
     };
@@ -369,6 +410,7 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, onOp
       e.preventDefault();
       e.stopPropagation();
       pause();
+      lastTick = tickAt(uOf(camZ));
       seekTo(uOf(camZ - step));
     };
     if (rail) {
@@ -497,6 +539,7 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, onOp
       const hit = mouse.x <= 1 && !welcomeUp ? ray.intersectObjects(photos).find((h) => h.object.material.uniforms.opacity.value > 0.5) : null;
       hover = hit ? hit.object : null;
       canvas.style.cursor = hover ? 'pointer' : '';
+      if (hover) document.documentElement.dataset.focus = ''; else delete document.documentElement.dataset.focus;
       photos.forEach((mesh) => {
         const s = mesh === hover ? 1.05 : 1;
         mesh.userData.hover = (mesh.userData.hover || 1) + (s - (mesh.userData.hover || 1)) * 0.15;
@@ -575,6 +618,8 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, onOp
         rail.removeEventListener('pointercancel', onScrubUp);
         rail.removeEventListener('keydown', onScrubKey);
       }
+      audio?.close();
+      delete document.documentElement.dataset.focus;
       photos.forEach((m) => { m.material.uniforms.map.value.dispose(); m.material.dispose(); m.geometry.dispose(); });
       renderer.dispose();
     };

@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import Walk, { Timeline } from './Walk';
 import AllPhotos from './AllPhotos';
 import Lightbox from './Lightbox';
+import Cursor from './Cursor';
 
 export default function Site({ manifest }) {
   // Drift starts from the welcome after the collage, or the header switch.
@@ -56,6 +57,8 @@ export default function Site({ manifest }) {
       </main>
 
       {grid && <AllPhotos manifest={manifest} onOpen={(photos, index) => setLightbox({ photos, index })} onClose={() => setGrid(false)} />}
+
+      <Cursor />
 
       {lightbox && (
         <Lightbox
