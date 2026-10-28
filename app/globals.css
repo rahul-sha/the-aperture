@@ -81,16 +81,19 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
   position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
   padding: 0 clamp(16px, 4vw, 40px); pointer-events: none;
 }
+/* The words float in the walk as a card, like the old About tile. */
 .walk__panel {
-  max-width: 620px; padding: 32px; border-radius: 40px; text-align: center;
-  display: flex; flex-direction: column; gap: 14px; align-items: center;
-  background: radial-gradient(closest-side, rgba(0, 0, 0, .85), rgba(0, 0, 0, .6) 70%, transparent);
+  max-width: 560px; padding: 28px 30px; border-radius: var(--radius);
+  display: flex; flex-direction: column; gap: 14px; align-items: flex-start; text-align: left;
+  background: rgba(22, 22, 24, .82); border: 1px solid rgba(245, 243, 239, .12);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, .5);
 }
-.walk__panel h1 { margin: 0; font-size: clamp(28px, 3.6vw, 44px); font-weight: 700; letter-spacing: -.025em; line-height: 1.1; text-wrap: balance; }
+.walk__panel h1 { margin: 0; font-size: clamp(26px, 3vw, 36px); font-weight: 700; letter-spacing: -.025em; line-height: 1.1; text-wrap: balance; }
 .walk__panel p { margin: 0; color: var(--ink-muted); font-size: 16px; line-height: 1.55; }
 .walk__exit .walk__panel { pointer-events: auto; }
 .walk__words { font-size: clamp(26px, 3.4vw, 42px) !important; line-height: 1.15 !important; color: var(--ink) !important; }
-.walk__links { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.walk__links { display: flex; flex-wrap: wrap; gap: 10px; }
 
 .walk__title {
   position: absolute; left: clamp(20px, 4vw, 56px); bottom: 36px; max-width: min(520px, calc(100% - 40px));
