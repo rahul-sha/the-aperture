@@ -126,13 +126,15 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
 
   // Right-click shows the site's own menu; About goes to the closing words.
   await page.mouse.click(700, 450, { button: 'right' });
-  check('right-click opens the site menu', (await page.locator('.menu').count()) === 1);
-  await page.screenshot({ path: `${SHOTS}07-menu.png` });
-  await page.locator('.menu button', { hasText: 'About' }).click();
+  check('right-click opens the site menu', (await page.locator('.dial').count()) === 1);
+  await page.locator('.dial__item[aria-label="All photos"]').hover();
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${SHOTS}07-menu.png`, clip: { x: 560, y: 310, width: 280, height: 280 } });
+  await page.locator('.dial__item[aria-label="About"]').click();
   await page.waitForTimeout(1500);
   const endOp = await page.locator('.walk__exit').evaluate((el) => +el.style.opacity);
   check('menu About goes to the end', endOp > 0.95, `y=${await scrollY(page)} opacity=${endOp}`);
-  check('menu closes after use', (await page.locator('.menu').count()) === 0);
+  check('menu closes after use', (await page.locator('.dial').count()) === 0);
 
   check('no console or page errors', errors.length === 0, errors.join(' | ').slice(0, 300));
   await page.close();

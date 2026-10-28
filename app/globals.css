@@ -185,22 +185,40 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 .cursor.is-down .cursor__brackets { transform: scale(.55); }
 .cursor.is-focus.is-down .cursor__brackets { transform: scale(1.2); }
 
-/* The right-click menu (components/ContextMenu.js): the header's plain
-   words over hairlines, on a dark glass panel. */
-.menu {
-  position: fixed; z-index: 90; min-width: 200px; padding: 10px 18px 14px;
-  display: flex; flex-direction: column; border-radius: 12px;
-  background: rgba(0, 0, 0, .72); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, .6); animation: menu-in .18s ease-out both;
+/* The right-click mode dial (components/ContextMenu.js): icons on a lens
+   ring around the pointer, the name of the one you point at in the middle. */
+.dial { position: fixed; z-index: 90; width: 0; height: 0; }
+.dial::before {
+  content: ''; position: absolute; left: -100px; top: -100px; width: 200px; height: 200px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 0, 0, .78) 55%, rgba(0, 0, 0, .35) 72%, transparent 74%);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  animation: dial-in .25s ease-out both;
 }
-.menu button, .menu a {
-  min-height: 38px; display: flex; align-items: flex-end; padding: 0 0 8px; text-align: left; text-decoration: none;
-  border: 0; border-bottom: 1px solid rgba(245, 243, 239, .14); background: none;
-  color: rgba(245, 243, 239, .7); font-size: 13px; transition: color .2s ease, border-color .2s ease;
+.dial__ring {
+  position: absolute; left: -100px; top: -100px; width: 200px; height: 200px; overflow: visible;
+  fill: none; stroke: rgba(245, 243, 239, .28); stroke-width: 1; animation: dial-turn .45s var(--ease) both;
 }
-.menu button:hover, .menu a:hover, .menu button:focus-visible, .menu a:focus-visible { color: var(--ink); border-bottom-color: var(--pink); outline: none; }
-.menu__rule { height: 10px; }
-@keyframes menu-in { from { opacity: 0; transform: translateY(-4px); } }
+.dial__item {
+  position: absolute; left: -20px; top: -20px; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; background: none;
+  color: rgba(245, 243, 239, .72); text-decoration: none;
+  transform: translate(var(--x), var(--y)); animation: dial-item .35s var(--ease) both;
+  transition: color .2s ease;
+}
+.dial__item:hover, .dial__item:focus-visible { color: var(--pink); outline: none; }
+.dial__item::after {
+  content: ''; position: absolute; inset: 4px; border-radius: 50%; border: 1px solid var(--pink);
+  opacity: 0; transform: scale(.7); transition: opacity .2s ease, transform .25s var(--ease);
+}
+.dial__item:hover::after, .dial__item:focus-visible::after { opacity: 1; transform: scale(1); }
+.dial__label {
+  position: absolute; left: -38px; top: -14px; width: 76px; height: 28px;
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  font-size: 11px; line-height: 1.15; color: var(--ink); pointer-events: none;
+}
+@keyframes dial-in { from { opacity: 0; transform: scale(.6); } }
+@keyframes dial-turn { from { opacity: 0; transform: rotate(-60deg) scale(.7); } }
+@keyframes dial-item { from { opacity: 0; transform: translate(0, 0) scale(.4); } }
 
 /* All photos */
 .all {
@@ -258,7 +276,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .walk__cue svg, .walk__next svg, .develop, .menu, .header__drift::before { animation: none !important; }
+  .walk__cue svg, .walk__next svg, .develop, .dial::before, .dial__ring, .dial__item, .header__drift::before { animation: none !important; }
   .all__cell img, .walk__title { transition: none; }
 }
 
