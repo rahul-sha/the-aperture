@@ -43,7 +43,7 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
   // One scroll down glides to the welcome.
   await page.mouse.move(700, 450);
   await page.mouse.wheel(0, 120);
-  await page.waitForTimeout(2600);
+  await page.waitForTimeout(4500);
   const card = await scrollY(page);
   const cardOpacity = await page.locator('.walk__threshold').evaluate((el) => +el.style.opacity);
   check('one scroll lands on the welcome', card > 0 && cardOpacity > 0.95, `y=${card} opacity=${cardOpacity}`);
@@ -56,7 +56,7 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
   // The next scroll starts the walk: the first section name, then the drift.
   await page.mouse.wheel(0, 120);
   check('drift switches on', (await page.locator('.header__drift').getAttribute('aria-pressed')) === 'true');
-  await page.waitForTimeout(2600);
+  await page.waitForTimeout(4500);
   check('first section name shows', (await page.locator('.walk__name').innerText()) === 'Overview');
   const begun = await scrollY(page);
   await page.waitForTimeout(2000);

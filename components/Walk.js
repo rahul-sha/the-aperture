@@ -21,7 +21,8 @@ const DRIFT_SPEED = 0.3; // units per second while drifting
 const DRIFT_RESUME = 4000; // ms to wait after you scroll before drifting again
 const FLY_DONE = 2.6; // seconds until the intro fly-in has settled
 const CARD_Z = -10; // where the camera rests on the welcome
-const GLIDE = 1.8; // seconds for the glide from the collage to the welcome
+const GLIDE = 2.4; // seconds for the glide from the collage to the welcome
+const WELCOME_EASE = 0.8; // seconds the welcome words take to settle in or out
 const TITLE_LEAD = 6.5; // a section's name appears this far before its first photo
 const FAR = 22; // photos further than this have faded into the dark
 
@@ -252,6 +253,7 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
     let hover = null;
     let downAt = null;
     let welcomeUp = false; // photos behind the welcome can't be picked
+    let welcomeOp = 0; // eased behind the scroll, so the words arrive slowly
 
     const onMove = (e) => { mouse.x = (e.clientX / window.innerWidth) * 2 - 1; mouse.y = -(e.clientY / window.innerHeight) * 2 + 1; };
     const onDown = (e) => { downAt = { x: e.clientX, y: e.clientY }; onMove(e); };
@@ -603,7 +605,9 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
       }
       const tz = -camZ;
       if (threshold) {
-        const op = smooth(6.8, 8.8, tz) * (1 - smooth(10.6, 11.9, tz));
+        const goal = smooth(6.8, 8.8, tz) * (1 - smooth(10.6, 11.9, tz));
+        welcomeOp += (goal - welcomeOp) * (reduced ? 1 : 1 - Math.exp(-dt / WELCOME_EASE));
+        const op = Math.abs(goal - welcomeOp) < 0.002 ? goal : welcomeOp;
         welcomeUp = op > 0.3 || (exit && +exit.style.opacity > 0.3);
         threshold.style.opacity = op.toFixed(3);
         // The words come out of the middle of the screen as if from the
