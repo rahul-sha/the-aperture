@@ -201,7 +201,7 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen, onGo 
       camera.aspect = w / h;
       camera.fov = w < 640 ? 70 : 55;
       camera.updateProjectionMatrix();
-      pxPerUnit = h * 0.34;
+      pxPerUnit = h * 0.14; // about half a screen of scrolling from one photo to the next
       root.style.height = `${Math.round(h + -END * pxPerUnit)}px`;
       // Fit the collage to the screen the way the old intro did.
       const visH = 2 * -COLLAGE_Z * Math.tan((camera.fov * Math.PI) / 360);
@@ -450,7 +450,7 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen, onGo 
       }
       const tz = -camZ;
       if (threshold) {
-        const op = smooth(6.8, 8.8, tz) * (1 - smooth(11.5, 14, tz));
+        const op = smooth(6.8, 8.8, tz) * (1 - smooth(10.6, 11.9, tz));
         threshold.style.opacity = op.toFixed(3);
         threshold.style.visibility = op > 0.02 ? 'visible' : 'hidden';
       }
@@ -528,7 +528,7 @@ export default function Walk({ manifest, drift, paused, replayKey, onOpen, onGo 
 
         <div ref={set('exit')} className="walk__exit" style={{ opacity: 0, visibility: 'hidden' }}>
           <div className="walk__panel">
-            {about.quote && <p className="serif walk__words">{about.quote}</p>}
+            {about.quote && <p className="walk__words">{about.quote}</p>}
             {about.now && <p><span style={{ color: 'var(--pink)', fontWeight: 500 }}>Now:</span> {about.now}</p>}
             <div className="walk__links">
               {about.instagram && <a className="btn" href={about.instagram} target="_blank" rel="noopener noreferrer">Instagram</a>}

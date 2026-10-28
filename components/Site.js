@@ -13,10 +13,15 @@ export default function Site({ manifest }) {
   const [grid, setGrid] = useState(false);
   const [lightbox, setLightbox] = useState(null); // { photos, index }
 
+  const backToStart = () => {
+    setDrift(false);
+    setReplayKey((k) => k + 1);
+  };
+
   return (
     <>
       <header className="header">
-        <span className="header__name"><img className="header__mark" src="/logo.png" alt="" width="26" height="26" />The Aperture</span>
+        <button type="button" className="header__name" onClick={backToStart} title="Back to the start"><img className="header__mark" src="/logo.png" alt="" width="26" height="26" />The Aperture</button>
         <div className="header__tools">
           <button type="button" className="header__btn" onClick={() => setGrid(true)}>All photos</button>
           <button
@@ -28,7 +33,7 @@ export default function Site({ manifest }) {
           >
             Drift
           </button>
-          <button type="button" className="header__replay" onClick={() => { setDrift(false); setReplayKey((k) => k + 1); }} aria-label="Back to the start" title="Back to the start">
+          <button type="button" className="header__replay" onClick={backToStart} aria-label="Back to the start" title="Back to the start">
             <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 12a9 9 0 1 0 3-6.7" />
               <path d="M3 4v5h5" />

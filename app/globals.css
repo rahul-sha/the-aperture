@@ -37,7 +37,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
   display: flex; justify-content: space-between; align-items: center; gap: 12px;
   padding: 18px clamp(16px, 4vw, 56px);
 }
-.header__name { font-weight: 700; font-size: 17px; display: inline-flex; align-items: center; gap: 10px; }
+.header__name { font-weight: 700; font-size: 17px; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0; border: 0; background: none; color: var(--ink); }
+.header__name:hover { color: var(--pink); }
 .header__mark { width: 26px; height: 26px; border-radius: var(--photo-radius); display: block; }
 .header__replay {
   width: 44px; height: 44px; padding: 0; border: 0; border-radius: 999px;
@@ -81,22 +82,24 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 @keyframes cue { 0%, 100% { transform: translateY(0); opacity: .9; } 50% { transform: translateY(8px); opacity: .5; } }
 
 .walk__threshold, .walk__exit {
-  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-  padding: 0 clamp(16px, 4vw, 40px); pointer-events: none;
+  position: absolute; inset: 0; pointer-events: none;
+  display: flex; align-items: flex-end;
+  padding: 0 clamp(20px, 4vw, 56px) 36px;
 }
-/* The words float in the walk as a card, like the old About tile. */
+/* Your words sit in the walk the same way the section names do: large
+   italic type at the bottom left, with a line of plain text beneath. */
 .walk__panel {
-  max-width: 560px; padding: 28px 30px; border-radius: var(--radius);
-  display: flex; flex-direction: column; gap: 14px; align-items: flex-start; text-align: left;
-  background: rgba(22, 22, 24, .82); border: 1px solid rgba(245, 243, 239, .12);
-  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
-  box-shadow: 0 30px 60px rgba(0, 0, 0, .5);
+  max-width: min(760px, 100%); pointer-events: auto;
+  display: flex; flex-direction: column; gap: 12px; align-items: flex-start;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, .9), 0 0 4px rgba(0, 0, 0, .6);
 }
-.walk__panel h1 { margin: 0; font-size: clamp(26px, 3vw, 36px); font-weight: 700; letter-spacing: -.025em; line-height: 1.1; text-wrap: balance; }
-.walk__panel p { margin: 0; color: var(--ink-muted); font-size: 16px; line-height: 1.55; }
-.walk__panel { pointer-events: auto; }
-.walk__go { margin-top: 4px; }
-.walk__words { font-size: clamp(26px, 3.4vw, 42px) !important; line-height: 1.15 !important; color: var(--ink) !important; }
+.walk__panel h1, .walk__panel .walk__words {
+  margin: 0; font-family: var(--font-serif), Georgia, serif; font-style: italic; font-weight: 400;
+  font-size: clamp(36px, 5.2vw, 68px); line-height: 1; letter-spacing: -.01em; text-wrap: balance;
+}
+.walk__panel p { margin: 0; color: var(--ink-muted); font-size: 16px; line-height: 1.5; max-width: 560px; }
+.walk__go { margin-top: 6px; text-shadow: none; }
+.walk__links .btn { text-shadow: none; }
 .walk__links { display: flex; flex-wrap: wrap; gap: 10px; }
 
 .walk__title {

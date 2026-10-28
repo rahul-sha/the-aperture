@@ -101,6 +101,10 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
   await page.locator('.header__replay').click();
   await page.waitForTimeout(300);
   check('back to the start', (await scrollY(page)) === 0);
+  await page.evaluate(() => window.scrollTo(0, 4000));
+  await page.locator('.header__name').click();
+  await page.waitForTimeout(300);
+  check('logo goes back to the start', (await scrollY(page)) === 0);
 
   check('no console or page errors', errors.length === 0, errors.join(' | ').slice(0, 300));
   await page.close();
