@@ -58,11 +58,13 @@ export default function Lightbox({ manifest, photos, index, onStep, onClose, qua
   const flown = fly && photo.id === first.current; // this photo came in by air
   useDialog(ref, closeRef);
 
-  // Where the photo ends up: as large as fits the viewer, in its own shape.
+  // Where the photo ends up: as large as fits the viewer, in its own shape,
+  // but never larger than the file itself, since the viewer doesn't stretch
+  // a small photo (w and h are the web copy's own size in pixels).
   const restRect = () => {
     const box = ref.current.querySelector('.lightbox__img').getBoundingClientRect();
     const r = (photo.w || 3) / (photo.h || 2);
-    const w = Math.min(box.width, box.height * r);
+    const w = Math.min(box.width, box.height * r, photo.w || Infinity);
     const h = w / r;
     return { x: box.left + (box.width - w) / 2, y: box.top + (box.height - h) / 2, w, h };
   };

@@ -17,6 +17,9 @@
 
 /* Black from the first frame, so moving between pages never flashes. */
 html { background: var(--ground); color-scheme: dark; }
+/* The scrollbar's space stays put when a photo or All photos opens and stops
+   the page scrolling, so nothing underneath slides sideways. */
+html { scrollbar-gutter: stable; }
 
 
 body {
