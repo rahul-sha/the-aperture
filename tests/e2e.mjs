@@ -146,6 +146,31 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
   check('menu About goes to the end', endOp > 0.95, `y=${await scrollY(page)} opacity=${endOp}`);
   check('menu closes after use', (await page.locator('.dial').count()) === 0);
 
+  // Scroll turns the dial a notch at a time, with the chosen setting on the
+  // right; Socials opens an outer dial, and Escape steps back, then closes.
+  const yDial = await scrollY(page);
+  await page.mouse.click(700, 450, { button: 'right' });
+  await page.waitForTimeout(300);
+  const chosen = () => page.locator('.dial [data-on="true"]').getAttribute('aria-label');
+  check('the dial opens on Back to the start', (await chosen()) === 'Back to the start');
+  for (let i = 0; i < 3; i += 1) { await page.mouse.wheel(0, 100); await page.waitForTimeout(150); }
+  await page.waitForTimeout(400);
+  check('scrolling turns the dial to Socials', (await chosen()) === 'Socials');
+  check('turning the dial does not move the walk', (await scrollY(page)) === yDial);
+  const frameBox = await page.locator('.dial__frame').boundingBox();
+  check('the chosen setting sits on the right', frameBox && frameBox.x > 700, `x=${frameBox?.x}`);
+  await page.keyboard.press('Enter');
+  await page.waitForTimeout(500);
+  check('Socials opens the outer dial', (await page.locator('.dial.is-outer').count()) === 1 && (await chosen()) === 'Instagram');
+  await page.screenshot({ path: `${SHOTS}07b-menu-socials.png`, clip: { x: 520, y: 250, width: 420, height: 400 } });
+  await page.mouse.wheel(0, 100);
+  await page.waitForTimeout(300);
+  check('scrolling moves along the outer dial', (await chosen()) === 'Bluesky');
+  await page.keyboard.press('Escape');
+  check('Escape steps back to the main dial', (await page.locator('.dial').count()) === 1 && (await page.locator('.dial.is-outer').count()) === 0);
+  await page.keyboard.press('Escape');
+  check('a second Escape closes the dial', (await page.locator('.dial').count()) === 0);
+
   // Behind the scenes is reached only from the menu.
   check('nothing on the walk links to behind the scenes', (await page.locator('a[href="/behind-the-scenes"]').count()) === 0);
   await page.mouse.click(700, 450, { button: 'right' });
@@ -232,6 +257,18 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
   await page.locator('.dial__item[aria-label="All photos"]').tap();
   await page.waitForTimeout(400);
   check('a tap on the dial works', (await page.locator('.all').count()) === 1 && (await page.locator('.dial').count()) === 0);
+
+  // Hold, slide towards a setting without lifting, and let go.
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(400);
+  await touch('touchStart', 195, 420);
+  await page.waitForTimeout(800);
+  for (let i = 1; i <= 6; i += 1) { await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: 195 - 14 * i, y: 420 + 10 * i }] }); await page.waitForTimeout(40); }
+  await page.waitForTimeout(200);
+  check('sliding moves the frame to All photos', (await page.locator('.dial [data-on="true"]').getAttribute('aria-label')) === 'All photos');
+  await touch('touchEnd');
+  await page.waitForTimeout(500);
+  check('lifting the finger goes there', (await page.locator('.all').count()) === 1 && (await page.locator('.dial').count()) === 0);
   await page.close();
 }
 

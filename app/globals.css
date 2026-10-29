@@ -194,40 +194,74 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 .cursor.is-down .cursor__brackets { transform: scale(.55); }
 .cursor.is-focus.is-down .cursor__brackets { transform: scale(1.2); }
 
-/* The right-click mode dial (components/ContextMenu.js): icons on a lens
-   ring around the pointer, the name of the one you point at in the middle. */
-.dial { position: fixed; z-index: 90; width: 0; height: 0; }
-.dial::before {
-  content: ''; position: absolute; left: -100px; top: -100px; width: 200px; height: 200px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 0, 0, .78) 55%, rgba(0, 0, 0, .35) 72%, transparent 74%);
+/* The right-click mode dial (components/ContextMenu.js): a ring of settings
+   that turns a notch at a time; the chosen one sits on the right inside the
+   pink frame. Socials opens an outer dial beyond it. The angles are animated
+   custom properties, so the ring, the upright icons, and the frame all turn
+   together. */
+@property --rot { syntax: '<angle>'; inherits: true; initial-value: 90deg; }
+@property --g { syntax: '<angle>'; inherits: true; initial-value: 90deg; }
+@property --srot { syntax: '<angle>'; inherits: true; initial-value: 0deg; }
+@property --sg { syntax: '<angle>'; inherits: true; initial-value: 90deg; }
+.dial {
+  position: fixed; z-index: 90; width: 0; height: 0;
+  transition: --rot .42s var(--ease), --g .28s var(--ease), --srot .34s var(--ease), --sg .28s var(--ease);
+}
+.dial__in { position: absolute; left: 0; top: 0; animation: dial-in .32s var(--ease) both; }
+.dial__bg {
+  position: absolute; left: -122px; top: -122px; width: 244px; height: 244px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 0, 0, .86) 60%, rgba(0, 0, 0, .55) 75%, transparent 77%);
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  animation: dial-in .25s ease-out both;
 }
-.dial__ring {
-  position: absolute; left: -100px; top: -100px; width: 200px; height: 200px; overflow: visible;
-  fill: none; stroke: var(--hairline); stroke-width: 1; animation: dial-turn .45s var(--ease) both;
+.dial__rot { position: absolute; left: 0; top: 0; transform: rotate(var(--rot)); transition: opacity .3s ease; }
+.dial__ring, .dial__hub-ring { position: absolute; left: -120px; top: -120px; width: 240px; height: 240px; overflow: visible; fill: none; stroke: var(--hairline); stroke-width: 1; pointer-events: none; }
+.dial__item, .dial__child {
+  position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+  padding: 0; border: 0; background: none; text-decoration: none; color: var(--ink-quiet);
+  font-size: 8.5px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; transition: color .2s ease;
 }
+/* Each icon rides the ring but turns back to stay upright. */
 .dial__item {
-  position: absolute; left: -22px; top: -22px; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center; background: none;
-  color: rgba(245, 243, 239, .72); text-decoration: none;
-  transform: translate(var(--x), var(--y)); animation: dial-item .35s var(--ease) both;
-  transition: color .2s ease;
+  left: -31px; top: -28px; width: 62px; height: 56px;
+  transform: rotate(var(--a)) translateY(-71px) rotate(calc(-1 * var(--a) - var(--rot)));
+  animation: dial-item .35s var(--ease) both;
 }
-.dial__item:hover, .dial__item:focus-visible { color: var(--pink); outline: none; }
-.dial__item::after {
-  content: ''; position: absolute; inset: 4px; border-radius: 50%; border: 1px solid var(--pink);
-  opacity: 0; transform: scale(.7); transition: opacity .2s ease, transform .25s var(--ease);
+.dial__item:hover, .dial__child:hover, .dial__item[data-on="true"], .dial__child[data-on="true"] { color: var(--pink); }
+.dial__item:focus-visible, .dial__child:focus-visible { outline: none; color: var(--pink); }
+.dial__index { position: absolute; left: -6px; top: -6px; width: 12px; height: 12px; transform: rotate(var(--g)) translateY(-118px); pointer-events: none; }
+.dial__index::before { content: ''; position: absolute; inset: 0; background: var(--pink); clip-path: polygon(0 0, 100% 0, 50% 85%); }
+.dial__frame {
+  position: absolute; left: -31px; top: -30px; color: var(--pink); pointer-events: none;
+  transform: rotate(var(--g)) translateY(-71px) rotate(calc(-1 * var(--g)));
 }
-.dial__item:hover::after, .dial__item:focus-visible::after { opacity: 1; transform: scale(1); }
-.dial__label {
-  position: absolute; left: -38px; top: -14px; width: 76px; height: 28px;
-  display: flex; align-items: center; justify-content: center; text-align: center;
-  font-size: 11px; line-height: 1.15; color: var(--ink); pointer-events: none;
+.dial__hub {
+  position: absolute; left: -40px; top: -40px; width: 80px; height: 80px; padding: 0; border: 0; border-radius: 50%; background: none;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-align: center; color: var(--ink);
 }
-@keyframes dial-in { from { opacity: 0; transform: scale(.6); } }
-@keyframes dial-turn { from { opacity: 0; transform: rotate(-60deg) scale(.7); } }
-@keyframes dial-item { from { opacity: 0; transform: translate(0, 0) scale(.4); } }
+.dial__name { font-family: var(--font-serif), Georgia, serif; font-style: italic; font-size: 15px; line-height: 1.08; max-width: 72px; text-wrap: balance; }
+.dial__hint { font-size: 7.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); line-height: 1.3; max-width: 70px; }
+/* The outer dial: a hint of it while Socials is chosen, in full once stepped onto. */
+.dial__sub { position: absolute; left: 0; top: 0; opacity: 0; pointer-events: none; transform: scale(.9); transition: opacity .3s ease, transform .4s var(--ease); }
+.dial.is-group .dial__sub { opacity: .5; transform: scale(.96); }
+.dial.is-outer .dial__sub { opacity: 1; transform: none; pointer-events: auto; }
+.dial.is-outer .dial__rot { opacity: .38; }
+.dial.is-outer .dial__frame, .dial.is-outer .dial__index { opacity: .4; }
+.dial.is-outer .dial__name { color: var(--pink); }
+.dial__sub-rot { position: absolute; left: 0; top: 0; transform: rotate(calc(var(--g) + var(--srot))); }
+.dial__band { position: absolute; left: -190px; top: -190px; width: 380px; height: 380px; overflow: visible; pointer-events: none; fill: none; stroke: var(--hairline); stroke-width: 1; }
+.dial__band-fill { fill: rgba(0, 0, 0, .86); }
+.dial__child {
+  left: -36px; top: -24px; width: 72px; height: 48px;
+  transform: rotate(var(--b)) translateY(-151px) rotate(calc(-1 * (var(--b) + var(--srot) + var(--g))));
+}
+.dial__sub-frame {
+  position: absolute; left: -37px; top: -27px; color: var(--pink); pointer-events: none; opacity: 0; transition: opacity .3s ease;
+  transform: rotate(var(--sg)) translateY(-151px) rotate(calc(-1 * var(--sg)));
+}
+.dial.is-outer .dial__sub-frame { opacity: 1; }
+@keyframes dial-in { from { opacity: 0; transform: scale(.82) rotate(-24deg); } }
+@keyframes dial-item { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .dial { transition-duration: .01s; } }
 
 /* All photos */
 .all {
@@ -296,7 +330,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .walk__cue svg, .walk__next svg, .develop, .dial::before, .dial__ring, .dial__item, .header__drift::before { animation: none !important; }
+  .walk__cue svg, .walk__next svg, .develop, .dial__in, .dial__item, .header__drift::before { animation: none !important; }
   .all__cell img, .walk__title { transition: none; }
 }
 

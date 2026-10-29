@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { findPhoto, photoSrc, texSrc, thumbSrc } from '../lib/photos';
+import { click, listenForAudio } from '../lib/click';
 
 // The whole page is one walk through a dark space, drawn with three.js.
 // It opens on the intro collage: nine cards fly in from the dark and settle.
@@ -428,56 +429,10 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
           ticks.appendChild(t);
         });
       }
-      // A soft mechanical click (and on a phone, a tiny vibration) each time
-      // the scrub passes a photo, like turning a dial on a camera. The sound is made in the browser, and only
-      // after you touch the timeline (browsers allow audio after a gesture).
-      let audio = null;
-      let clickBuf = null;
+      // A soft click (and a tiny vibration on phones) each time the scrub
+      // passes a photo, like turning a dial on a camera (lib/click.js).
       let lastTick = -1;
-      let lastClickAt = 0;
-      // Browsers hold back sound and vibration until the visitor has tapped or
-      // clicked something. On a phone a drag doesn't count, only a tap, so the
-      // sound is woken up on the first tap or click anywhere on the page.
-      function wakeAudio() {
-        try {
-          if (!audio) {
-            const AC = window.AudioContext || window.webkitAudioContext;
-            if (!AC) return;
-            audio = new AC();
-            const len = Math.round(audio.sampleRate * 0.03);
-            clickBuf = audio.createBuffer(1, len, audio.sampleRate);
-            const d = clickBuf.getChannelData(0);
-            for (let i = 0; i < len; i += 1) {
-              const t = i / audio.sampleRate;
-              d[i] = ((Math.random() * 2 - 1) * Math.exp(-t * 520) + Math.sin(2 * Math.PI * 2300 * t) * Math.exp(-t * 900) * 0.6) * 0.5;
-            }
-          }
-          if (audio.state === 'suspended') audio.resume();
-        } catch { /* no sound is fine */ }
-      }
-      window.addEventListener('pointerup', wakeAudio);
-      window.addEventListener('keydown', wakeAudio);
-      function click() {
-        const t0 = performance.now();
-        if (t0 - lastClickAt < 28) return; // a fast drag shouldn't buzz
-        lastClickAt = t0;
-        // On phones that allow it (Android, not iPhone), a short tap of vibration too.
-        try { if (navigator.userActivation?.hasBeenActive !== false) navigator.vibrate?.(12); } catch { /* fine without */ }
-        try {
-          wakeAudio();
-          if (!audio || audio.state !== 'running') return;
-          const src = audio.createBufferSource();
-          src.buffer = clickBuf;
-          src.playbackRate.value = 0.92 + Math.random() * 0.16;
-          const filter = audio.createBiquadFilter();
-          filter.type = 'highpass';
-          filter.frequency.value = 900;
-          const gain = audio.createGain();
-          gain.gain.value = 0.35;
-          src.connect(filter).connect(gain).connect(audio.destination);
-          src.start();
-        } catch { /* no sound is fine */ }
-      }
+      listenForAudio();
       const tickAt = (u) => items.reduce((n, m) => n + (uOf(m.position.z) <= u + 1e-4 ? 1 : 0), 0);
       // What a screen reader hears for the timeline: the section, and how far in.
       function where(u) {
@@ -792,9 +747,6 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
           slider.removeEventListener('pointercancel', onScrubUp);
           slider.removeEventListener('keydown', onScrubKey);
         }
-        window.removeEventListener('pointerup', wakeAudio);
-        window.removeEventListener('keydown', wakeAudio);
-        audio?.close();
         delete document.documentElement.dataset.focus;
         photos.forEach((m) => { m.material.uniforms.map.value.dispose(); m.material.dispose(); m.geometry.dispose(); });
         disposed = true;

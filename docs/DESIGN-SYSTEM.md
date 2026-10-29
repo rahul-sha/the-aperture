@@ -59,7 +59,7 @@ a hairline the only sign that something can be clicked.
 | Body, buttons, timeline | Onest (`--font-sans`), 400, 500, 700 | 13px buttons and timeline, 15 to 16px body |
 | Section names, welcome, quotes, captions | Newsreader italic (`--font-serif`, class `.serif`) | Section names 44 to 92px, welcome 34 to 58px (both fluid with `clamp`) |
 | Place labels | Onest, uppercase, 12px, 0.04em tracking (`.place`) | |
-| Dial label | Onest 11px | |
+| Dial labels | Onest 8.5px, uppercase, 0.14em tracking; the chosen name in Newsreader italic 15px in the centre | |
 
 Both fonts load through `next/font` with `display: swap`, so words show
 straight away in the fallback font and swap in when ready.
@@ -145,20 +145,32 @@ trailing.
 
 `components/ContextMenu.js`. Right-click anywhere (or press the menu key),
 or touch and hold for half a second on a phone, and a camera mode dial opens
-round the pointer or finger: icons on a lens ring with tick
-marks, and the name of the one you point at in the middle. Items: Back to the
-start, About, All photos, Instagram, and Bluesky (plus Email me, if an
-email address is set in `content/about.json`).
+round the pointer or finger: a knurled ring of settings that turns. The chosen
+setting sits on the right, inside pink focus-point brackets and under a pink
+index mark, with its name in the middle. Settings: Back to the start, About,
+All photos, Socials, and Behind the scenes. Socials is a group: Instagram and
+Bluesky (plus Email me, if an email address is set in `content/about.json`)
+sit on an outer dial that fans out on the right. A group of one is shown as
+that one link.
 
-- Icons are 1.5px line drawings in `--ink` at 72%, turning pink with a pink
-  ring on hover or focus.
-- The arrow keys turn the dial; Escape, a scroll, or a click elsewhere closes
-  it, and keyboard focus goes back to where it was.
-- On a phone, moving your finger during the hold (a scroll, or dragging the
-  timeline) cancels it, a quick tap still opens a photo, and the release
-  that ends a hold never opens the photo underneath. Each icon is a 44px
-  target. The browser's own press-and-hold callout and text selection are
-  switched off on touch screens so they don't compete with the dial.
+- Each scroll notch turns the ring one click (a trackpad's small steps add
+  up), with the same soft click and Android vibration as the timeline
+  (`lib/click.js`). The walk does not scroll while the dial is open.
+- Click the centre, press Enter, or click a setting directly to go there. On
+  Socials that steps onto the outer dial instead; scroll moves along it, and
+  right-click or Escape steps back. A second Escape, or a click elsewhere,
+  closes the dial and keyboard focus goes back to where it was.
+- The arrow keys turn the dial, and focus follows the chosen setting.
+- On a phone, touch and hold, then slide without lifting: the ring stays
+  still and the brackets follow your finger; sliding past the edge on Socials
+  reaches the outer dial; lifting chooses. Lifting without sliding leaves the
+  dial open for a tap. Each notch clicks and vibrates (iPhones do not allow
+  vibration). Moving your finger before the dial opens (a scroll, or dragging
+  the timeline) cancels it, a quick tap still opens a photo, and the lift that
+  ends a hold never opens the photo underneath. The browser's own
+  press-and-hold callout and text selection are switched off on touch screens.
+- The dial keeps 198px clear on the right for the outer dial, so near the
+  right edge it opens a little to the left of the pointer.
 - It is a `menu` with `menuitem`s, each named by its label.
 
 ### All photos
