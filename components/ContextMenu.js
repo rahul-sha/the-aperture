@@ -67,9 +67,10 @@ export default function ContextMenu({ about, onHome, onAbout, onAll }) {
     about.email && { key: 'email', label: 'Email me', short: 'Email', href: `mailto:${about.email}` },
   ].filter(Boolean);
   const items = [
-    { key: 'home', label: 'Back to the start', short: 'Start', onClick: done(onHome) },
-    { key: 'about', label: 'About', short: 'About', onClick: done(onAbout) },
-    { key: 'all', label: 'All photos', short: 'Photos', onClick: done(onAll) },
+    // Away from the walk (the behind the scenes page) these lead back to it.
+    { key: 'home', label: 'Back to the start', short: 'Start', ...(onHome ? { onClick: done(onHome) } : { href: '/' }) },
+    { key: 'about', label: 'About', short: 'About', ...(onAbout ? { onClick: done(onAbout) } : { href: '/#about' }) },
+    { key: 'all', label: 'All photos', short: 'Photos', ...(onAll ? { onClick: done(onAll) } : { href: '/#all' }) },
     // A group of one is just that one link.
     socials.length > 1 ? { key: 'socials', label: 'Socials', short: 'Socials', children: socials } : socials[0],
     // The only way in to this page; nothing else on the site links to it.
@@ -270,6 +271,14 @@ export default function ContextMenu({ about, onHome, onAbout, onAll }) {
 
   // A keyboard or mouse keeps focus on the chosen item; a finger just sees the dial.
   const open = !!dial;
+  // While the dial is open the focus-point cursor steps aside for the
+  // ordinary pointer (globals.css), so it never sits over the dial.
+  useEffect(() => {
+    const root = document.documentElement;
+    if (open) root.dataset.dial = '';
+    else delete root.dataset.dial;
+    return () => { delete root.dataset.dial; };
+  }, [open]);
   const focusKey = dial && !dial.touch ? notch : null;
   useEffect(() => {
     if (focusKey) ref.current?.querySelector('[data-on="true"]')?.focus({ preventScroll: true });

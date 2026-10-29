@@ -169,6 +169,11 @@ that one link.
   the timeline) cancels it, a quick tap still opens a photo, and the lift that
   ends a hold never opens the photo underneath. The browser's own
   press-and-hold callout and text selection are switched off on touch screens.
+- While it is open the focus-point cursor hides and the ordinary pointer
+  returns, so nothing sits over the dial. A right-click never opens the photo
+  under it; only the main button (or a finger) does.
+- The behind the scenes page has the same dial. There, Back to the start,
+  About, and All photos lead back to the walk (`/`, `/#about`, `/#all`).
 - The dial keeps 198px clear on the right for the outer dial, so near the
   right edge it opens a little to the left of the pointer.
 - It is a `menu` with `menuitem`s, each named by its label.

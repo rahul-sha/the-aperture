@@ -2,6 +2,7 @@ import { getManifest, thumbSrc, findPhoto } from '../../lib/photos';
 import scenes from '../../content/behind-the-scenes.json';
 import RouteBar from '../../components/RouteBar';
 import Cursor from '../../components/Cursor';
+import ContextMenu from '../../components/ContextMenu';
 import './scenes.css';
 
 // A public look at how the site works. Nothing links here except the
@@ -381,6 +382,7 @@ export default async function BehindTheScenes() {
       </main>
 
       <Cursor />
+      <ContextMenu about={about} />
     </div>
   );
 }

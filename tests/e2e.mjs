@@ -134,9 +134,29 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
   await page.waitForTimeout(300);
   check('logo goes back to the start', (await scrollY(page)) === 0);
 
+  // A right-click on a photo opens only the mode dial, never the photo (on
+  // Windows the button is released before the menu event, so the walk sees it).
+  const press = (x, y, button) => page.evaluate(([px, py, b]) => {
+    const c = document.querySelector('canvas');
+    for (const type of ['pointerdown', 'pointerup']) c.dispatchEvent(new PointerEvent(type, { clientX: px, clientY: py, button: b, buttons: type === 'pointerdown' ? (b === 2 ? 2 : 1) : 0, bubbles: true, pointerType: 'mouse', isPrimary: true }));
+  }, [x, y, button]);
+  let photoAt = null;
+  for (const [px, py] of [[700, 450], [560, 400], [840, 400], [560, 520], [840, 520], [700, 330], [700, 580]]) {
+    await press(px, py, 0);
+    await page.waitForTimeout(400);
+    if (await page.locator('.lightbox').count()) { photoAt = [px, py]; await page.keyboard.press('Escape'); await page.waitForTimeout(400); break; }
+  }
+  if (photoAt) {
+    await press(photoAt[0], photoAt[1], 2);
+    await page.waitForTimeout(400);
+    check('a right-click on a photo does not open it', (await page.locator('.lightbox').count()) === 0);
+  } else check('found a photo to right-click', false);
+
   // Right-click shows the site's own menu; About goes to the closing words.
   await page.mouse.click(700, 450, { button: 'right' });
   check('right-click opens the site menu', (await page.locator('.dial').count()) === 1);
+  await page.waitForTimeout(300);
+  check('the focus-point cursor hides while the dial is open', await page.evaluate(() => getComputedStyle(document.querySelector('.cursor')).opacity === '0'));
   await page.locator('.dial__item[aria-label="All photos"]').hover();
   await page.waitForTimeout(400);
   await page.screenshot({ path: `${SHOTS}07-menu.png`, clip: { x: 560, y: 310, width: 280, height: 280 } });
@@ -200,6 +220,14 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
   await page.waitForTimeout(300);
   check('scenes: the route bar follows your reading', (await page.locator('.bts__bar-nav a[aria-current="true"]').getAttribute('href')) === '#stop-prepared');
   await page.screenshot({ path: `${SHOTS}10-scenes.png`, fullPage: true });
+  await page.mouse.click(640, 400, { button: 'right' });
+  await page.waitForTimeout(300);
+  check('scenes: right-click opens the mode dial', (await page.locator('.dial').count()) === 1);
+  check('scenes: the dial leads back to About on the walk', (await page.locator('.dial__item[aria-label="About"]').getAttribute('href')) === '/#about');
+  await page.locator('.dial__item[aria-label="All photos"]').click();
+  await page.waitForURL((u) => u.pathname === '/');
+  await page.waitForTimeout(800);
+  check('scenes: the dial opens All photos on the walk', (await page.locator('.all').count()) === 1);
   check('scenes: no console or page errors', errors.length === 0, errors.join(' | ').slice(0, 300));
   await page.close();
 

@@ -180,6 +180,10 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 
 /* The focus-point cursor (components/Cursor.js), for a mouse or trackpad. */
 .has-cursor, .has-cursor * { cursor: none !important; }
+/* While the mode dial is open, the ordinary pointer returns and the focus point hides. */
+.has-cursor[data-dial] .cursor { opacity: 0 !important; }
+.has-cursor[data-dial], .has-cursor[data-dial] * { cursor: default !important; }
+.has-cursor[data-dial] .dial a, .has-cursor[data-dial] .dial button { cursor: pointer !important; }
 .cursor { position: fixed; top: 0; left: 0; z-index: 100; pointer-events: none; color: var(--ink); filter: drop-shadow(0 0 2px rgba(0, 0, 0, .8)); transition: opacity .2s ease; }
 .cursor__frame { position: absolute; }
 .cursor__brackets {
