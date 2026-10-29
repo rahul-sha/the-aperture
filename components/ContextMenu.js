@@ -16,9 +16,9 @@ import { click, listenForAudio } from '../lib/click';
 // then lift to go. Lifting without sliding leaves the dial open for a tap.
 const HOLD = 500; // ms a finger rests before the dial opens
 const AT = 90; // where the chosen item sits: 90 degrees is the right-hand side
-const R = 85; // radius of the ring the icons sit on, in px
+const R = 80; // radius of the ring the icons sit on, in px
 const SUB = 32; // degrees between options on the outer dial
-const SUB_R = 165; // radius of the outer dial's options
+const SUB_R = 175; // radius of the outer dial's options
 
 const ICONS = {
   home: <><path d="M3 12a9 9 0 1 0 3-6.7" /><path d="M3 4v5h5" /></>,
@@ -28,7 +28,7 @@ const ICONS = {
   instagram: <><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r=".6" fill="currentColor" /></>,
   bluesky: <path d="M12 11.2C10.6 8.5 6.9 4.6 3.5 4.1c0 2.6.3 6.6 4.2 7.4-3.3.9-3.6 3.6-1.9 5.2 2.4 2.2 5-1.4 6.2-4.4 1.2 3 3.8 6.6 6.2 4.4 1.7-1.6 1.4-4.3-1.9-5.2 3.9-.8 4.2-4.8 4.2-7.4-3.4.5-7.1 4.4-8.5 7.1z" />,
   // An aperture: six blades round a hexagonal opening.
-  scenes: <><circle cx="12" cy="12" r="9" /><path d="M12.0 7.8L20.9 13.0M15.6 9.9L15.6 20.2M15.6 14.1L6.7 19.3M12.0 16.2L3.1 11.0M8.4 14.1L8.4 3.8M8.4 9.9L17.3 4.7" /></>,
+  scenes: <><path d="M3.5 10h17v9a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 19z" /><path d="M3.5 10L3 6.6l16.4-2.3.5 3.4z" /><path d="M7.4 6l2.2 3.2M11.6 5.4l2.2 3.2M15.8 4.8l2.2 3.2M3.5 13.5h17" /></>,
   email: <><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3.5 6.5 12 13l8.5-6.5" /></>,
 };
 const Icon = ({ k }) => (
@@ -54,7 +54,7 @@ const pt = (r, deg) => { const t = (deg * Math.PI) / 180; return `${(Math.sin(t)
 // The knurled edge: fine ticks, a longer one every eighth.
 const KNURL = Array.from({ length: 96 }, (_, k) => {
   const a = k * 3.75;
-  return <path key={k} d={`M${pt(k % 8 ? 116 : 112, a)}L${pt(123, a)}`} />;
+  return <path key={k} d={`M${pt(k % 8 ? 126 : 122, a)}L${pt(133, a)}`} />;
 });
 
 export default function ContextMenu({ about, onHome, onAbout, onAll }) {
@@ -139,10 +139,10 @@ export default function ContextMenu({ about, onHome, onAbout, onAll }) {
     listenForAudio();
     const L = () => live.current;
     const open = (x, y, touch) => {
-      const m = 142;
+      const m = 152;
       if (!ref.current) before.current = document.activeElement;
       // Room on the right for the outer dial.
-      const right = Math.max(m, window.innerWidth - 212);
+      const right = Math.max(m, window.innerWidth - 222);
       setDial((v) => {
         const pos = v ? v.pos : 0;
         return { x: clamp(x, m, right), y: clamp(y, m, Math.max(m, window.innerHeight - m)), touch, drag: touch, turn: pos, pos, level: 0, sub: 0 };
@@ -318,9 +318,9 @@ export default function ContextMenu({ about, onHome, onAbout, onAll }) {
         {kids && (
           <div className="dial__sub">
             <div className="dial__sub-rot">
-              <svg className="dial__band" viewBox="-206 -206 412 412" aria-hidden="true">
-                <path className="dial__band-fill" d={`M${pt(140, -span)}A140 140 0 0 1 ${pt(140, span)}L${pt(190, span)}A190 190 0 0 0 ${pt(190, -span)}Z`} />
-                {Array.from({ length: Math.floor((2 * span - 6) / 3) + 1 }, (_, k) => -span + 3 + k * 3).map((a) => <path key={a} d={`M${pt(184, a)}L${pt(190, a)}`} />)}
+              <svg className="dial__band" viewBox="-216 -216 432 432" aria-hidden="true">
+                <path className="dial__band-fill" d={`M${pt(150, -span)}A150 150 0 0 1 ${pt(150, span)}L${pt(200, span)}A200 200 0 0 0 ${pt(200, -span)}Z`} />
+                {Array.from({ length: Math.floor((2 * span - 6) / 3) + 1 }, (_, k) => -span + 3 + k * 3).map((a) => <path key={a} d={`M${pt(194, a)}L${pt(200, a)}`} />)}
               </svg>
               {kids.map((k, j) => {
                 const on = level === 1 && j === sub;
@@ -335,9 +335,9 @@ export default function ContextMenu({ about, onHome, onAbout, onAll }) {
           </div>
         )}
         <div className="dial__rot">
-          <svg className="dial__ring" viewBox="-136 -136 272 272" aria-hidden="true">
-            <circle r="123" />
-            <circle r="108" />
+          <svg className="dial__ring" viewBox="-146 -146 292 292" aria-hidden="true">
+            <circle r="133" />
+            <circle r="118" />
             {KNURL}
           </svg>
           {items.map((it, i) => {
@@ -352,9 +352,9 @@ export default function ContextMenu({ about, onHome, onAbout, onAll }) {
             return <button key={it.key} type="button" {...common} onClick={onClick}>{body}</button>;
           })}
         </div>
-        <svg className="dial__hub-ring" viewBox="-136 -136 272 272" aria-hidden="true"><circle r="42" /></svg>
+        <svg className="dial__hub-ring" viewBox="-146 -146 292 292" aria-hidden="true"><circle r="42" /></svg>
         <div className="dial__index" aria-hidden="true" />
-        <Frame className="dial__frame" w={80} h={60} />
+        <Frame className="dial__frame" w={76} h={60} />
         <button type="button" className="dial__hub" tabIndex={-1} aria-hidden="true" onClick={() => live.current.choose()}>
           <span className="dial__name">{name}</span>
           <span className="dial__hint">{hint}</span>

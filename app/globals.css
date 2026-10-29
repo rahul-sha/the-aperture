@@ -216,12 +216,12 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 }
 .dial__in { position: absolute; left: 0; top: 0; animation: dial-in .32s var(--ease) both; }
 .dial__bg {
-  position: absolute; left: -138px; top: -138px; width: 276px; height: 276px; border-radius: 50%;
+  position: absolute; left: -153px; top: -153px; width: 306px; height: 306px; border-radius: 50%;
   background: radial-gradient(circle, rgba(0, 0, 0, .86) 60%, rgba(0, 0, 0, .55) 75%, transparent 77%);
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
 }
 .dial__rot { position: absolute; left: 0; top: 0; transform: rotate(var(--rot)); transition: opacity .3s ease; }
-.dial__ring, .dial__hub-ring { position: absolute; left: -136px; top: -136px; width: 272px; height: 272px; overflow: visible; fill: none; stroke: var(--hairline); stroke-width: 1; pointer-events: none; }
+.dial__ring, .dial__hub-ring { position: absolute; left: -146px; top: -146px; width: 292px; height: 292px; overflow: visible; fill: none; stroke: var(--hairline); stroke-width: 1; pointer-events: none; }
 .dial__item, .dial__child {
   position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
   padding: 0; border: 0; background: none; text-decoration: none; color: var(--ink-quiet);
@@ -230,16 +230,16 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 /* Each icon rides the ring but turns back to stay upright. */
 .dial__item {
   left: -38px; top: -28px; width: 76px; height: 56px;
-  transform: rotate(var(--a)) translateY(-85px) rotate(calc(-1 * var(--a) - var(--rot)));
+  transform: rotate(var(--a)) translateY(-80px) rotate(calc(-1 * var(--a) - var(--rot)));
   animation: dial-item .35s var(--ease) both;
 }
 .dial__item:hover, .dial__child:hover, .dial__item[data-on="true"], .dial__child[data-on="true"] { color: var(--pink); }
 .dial__item:focus-visible, .dial__child:focus-visible { outline: none; color: var(--pink); }
-.dial__index { position: absolute; left: -6px; top: -6px; width: 12px; height: 12px; transform: rotate(var(--g)) translateY(-132px); pointer-events: none; }
+.dial__index { position: absolute; left: -6px; top: -6px; width: 12px; height: 12px; transform: rotate(var(--g)) translateY(-142px); pointer-events: none; }
 .dial__index::before { content: ''; position: absolute; inset: 0; background: var(--pink); clip-path: polygon(0 0, 100% 0, 50% 85%); }
 .dial__frame {
-  position: absolute; left: -40px; top: -30px; color: var(--pink); pointer-events: none;
-  transform: rotate(var(--g)) translateY(-85px) rotate(calc(-1 * var(--g)));
+  position: absolute; left: -38px; top: -30px; color: var(--pink); pointer-events: none;
+  transform: rotate(var(--g)) translateY(-80px) rotate(calc(-1 * var(--g)));
 }
 .dial__hub {
   position: absolute; left: -40px; top: -40px; width: 80px; height: 80px; padding: 0; border: 0; border-radius: 50%; background: none;
@@ -255,15 +255,15 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 .dial.is-outer .dial__frame, .dial.is-outer .dial__index { opacity: .4; }
 .dial.is-outer .dial__name { color: var(--pink); }
 .dial__sub-rot { position: absolute; left: 0; top: 0; transform: rotate(calc(var(--g) + var(--srot))); }
-.dial__band { position: absolute; left: -206px; top: -206px; width: 412px; height: 412px; overflow: visible; pointer-events: none; fill: none; stroke: var(--hairline); stroke-width: 1; }
+.dial__band { position: absolute; left: -216px; top: -216px; width: 432px; height: 432px; overflow: visible; pointer-events: none; fill: none; stroke: var(--hairline); stroke-width: 1; }
 .dial__band-fill { fill: rgba(0, 0, 0, .86); }
 .dial__child {
   left: -36px; top: -24px; width: 72px; height: 48px;
-  transform: rotate(var(--b)) translateY(-165px) rotate(calc(-1 * (var(--b) + var(--srot) + var(--g))));
+  transform: rotate(var(--b)) translateY(-175px) rotate(calc(-1 * (var(--b) + var(--srot) + var(--g))));
 }
 .dial__sub-frame {
   position: absolute; left: -37px; top: -27px; color: var(--pink); pointer-events: none; opacity: 0; transition: opacity .3s ease;
-  transform: rotate(var(--sg)) translateY(-165px) rotate(calc(-1 * var(--sg)));
+  transform: rotate(var(--sg)) translateY(-175px) rotate(calc(-1 * var(--sg)));
 }
 .dial.is-outer .dial__sub-frame { opacity: 1; }
 @keyframes dial-in { from { opacity: 0; transform: scale(.82) rotate(-24deg); } }
