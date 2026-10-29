@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Walk, { Timeline } from './Walk';
 import AllPhotos from './AllPhotos';
 import Lightbox from './Lightbox';
@@ -27,6 +27,21 @@ export default function Site({ manifest }) {
     setDrift(false);
     setReplayKey((k) => k + 1);
   };
+
+  // The mode dial on the behind the scenes page links here with #about or
+  // #all; the walk takes a moment to load before it can go to the end.
+  useEffect(() => {
+    const want = window.location.hash;
+    if (want !== '#about' && want !== '#all') return undefined;
+    window.history.replaceState(null, '', window.location.pathname);
+    if (want === '#all') { setGrid(true); return undefined; }
+    let tries = 0;
+    const t = setInterval(() => {
+      tries += 1;
+      if (walkRef.current || tries > 40) { clearInterval(t); setTimeout(() => walkRef.current?.toEnd(), 400); }
+    }, 150);
+    return () => clearInterval(t);
+  }, []);
 
   return (
     <>

@@ -2,6 +2,8 @@ import { getManifest, thumbSrc, findPhoto } from '../../lib/photos';
 import scenes from '../../content/behind-the-scenes.json';
 import RouteBar from '../../components/RouteBar';
 import Cursor from '../../components/Cursor';
+import ContextMenu from '../../components/ContextMenu';
+import Link from 'next/link';
 import './scenes.css';
 
 // A public look at how the site works. Nothing links here except the
@@ -167,7 +169,7 @@ export default async function BehindTheScenes() {
     <div className="bts">
       <div className="bts__top">
         <header className="bts__header">
-          <a className="btn" href="/">The Aperture</a>
+          <Link className="btn" href="/">The Aperture</Link>
           <nav aria-label="On this page">
             <a className="btn" href="#route">The route</a>
             <a className="btn" href="#log">Build log</a>
@@ -373,7 +375,7 @@ export default async function BehindTheScenes() {
           {quote && <blockquote className="serif">{quote}</blockquote>}
           {author && <p className="bts__kicker">{author}</p>}
           <nav aria-label="Elsewhere">
-            <a className="btn" href="/">Back to the walk</a>
+            <Link className="btn" href="/">Back to the walk</Link>
             {about.instagram && <a className="btn" href={about.instagram} target="_blank" rel="noopener noreferrer">Instagram</a>}
             {about.bluesky && <a className="btn" href={about.bluesky} target="_blank" rel="noopener noreferrer">Bluesky</a>}
           </nav>
@@ -381,6 +383,7 @@ export default async function BehindTheScenes() {
       </main>
 
       <Cursor />
+      <ContextMenu about={about} />
     </div>
   );
 }
