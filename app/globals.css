@@ -217,7 +217,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 .dial__in { position: absolute; left: 0; top: 0; animation: dial-in .32s var(--ease) both; }
 .dial__bg {
   position: absolute; left: -153px; top: -153px; width: 306px; height: 306px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 0, 0, .86) 60%, rgba(0, 0, 0, .55) 75%, transparent 77%);
+  background: radial-gradient(circle, rgba(0, 0, 0, .86) 76%, rgba(0, 0, 0, .72) 87%, transparent 89%);
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
 }
 .dial__rot { position: absolute; left: 0; top: 0; transform: rotate(var(--rot)); transition: opacity .3s ease; }
@@ -258,11 +258,11 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 .dial__band { position: absolute; left: -216px; top: -216px; width: 432px; height: 432px; overflow: visible; pointer-events: none; fill: none; stroke: var(--hairline); stroke-width: 1; }
 .dial__band-fill { fill: rgba(0, 0, 0, .86); }
 .dial__child {
-  left: -36px; top: -24px; width: 72px; height: 48px;
+  left: -22px; top: -22px; width: 44px; height: 44px;
   transform: rotate(var(--b)) translateY(-175px) rotate(calc(-1 * (var(--b) + var(--srot) + var(--g))));
 }
 .dial__sub-frame {
-  position: absolute; left: -37px; top: -27px; color: var(--pink); pointer-events: none; opacity: 0; transition: opacity .3s ease;
+  position: absolute; left: -23px; top: -23px; color: var(--pink); pointer-events: none; opacity: 0; transition: opacity .3s ease;
   transform: rotate(var(--sg)) translateY(-175px) rotate(calc(-1 * var(--sg)));
 }
 .dial.is-outer .dial__sub-frame { opacity: 1; }

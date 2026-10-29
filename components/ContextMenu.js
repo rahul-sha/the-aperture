@@ -326,12 +326,12 @@ export default function ContextMenu({ about, onHome, onAbout, onAll }) {
                 const on = level === 1 && j === sub;
                 return (
                   <Anchor key={k.key} className="dial__child" role="menuitem" aria-label={k.label} data-on={on} tabIndex={on ? 0 : -1} style={{ '--b': `${(j - c) * SUB}deg` }} {...link(k)}>
-                    <Icon k={k.key} /><span>{k.short}</span>
+                    <Icon k={k.key} />
                   </Anchor>
                 );
               })}
             </div>
-            <Frame className="dial__sub-frame" w={74} h={54} />
+            <Frame className="dial__sub-frame" w={46} h={46} />
           </div>
         )}
         <div className="dial__rot">
