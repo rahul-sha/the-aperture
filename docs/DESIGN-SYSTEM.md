@@ -175,7 +175,7 @@ that one link.
   under it; only the main button (or a finger) does.
 - The behind the scenes page has the same dial. There, Back to the start,
   About, and All photos lead back to the walk (`/`, `/#about`, `/#all`).
-- The dial keeps 198px clear on the right for the outer dial, so near the
+- The dial keeps 212px clear on the right for the outer dial, so near the
   right edge it opens a little to the left of the pointer.
 - It is a `menu` with `menuitem`s, each named by its label.
 

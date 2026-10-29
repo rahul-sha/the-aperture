@@ -16,9 +16,9 @@ import { click, listenForAudio } from '../lib/click';
 // then lift to go. Lifting without sliding leaves the dial open for a tap.
 const HOLD = 500; // ms a finger rests before the dial opens
 const AT = 90; // where the chosen item sits: 90 degrees is the right-hand side
-const R = 71; // radius of the ring the icons sit on, in px
+const R = 85; // radius of the ring the icons sit on, in px
 const SUB = 32; // degrees between options on the outer dial
-const SUB_R = 151; // radius of the outer dial's options
+const SUB_R = 165; // radius of the outer dial's options
 
 const ICONS = {
   home: <><path d="M3 12a9 9 0 1 0 3-6.7" /><path d="M3 4v5h5" /></>,
@@ -54,7 +54,7 @@ const pt = (r, deg) => { const t = (deg * Math.PI) / 180; return `${(Math.sin(t)
 // The knurled edge: fine ticks, a longer one every eighth.
 const KNURL = Array.from({ length: 96 }, (_, k) => {
   const a = k * 3.75;
-  return <path key={k} d={`M${pt(k % 8 ? 102 : 98, a)}L${pt(109, a)}`} />;
+  return <path key={k} d={`M${pt(k % 8 ? 116 : 112, a)}L${pt(123, a)}`} />;
 });
 
 export default function ContextMenu({ about, onHome, onAbout, onAll }) {
@@ -139,10 +139,10 @@ export default function ContextMenu({ about, onHome, onAbout, onAll }) {
     listenForAudio();
     const L = () => live.current;
     const open = (x, y, touch) => {
-      const m = 128;
+      const m = 142;
       if (!ref.current) before.current = document.activeElement;
       // Room on the right for the outer dial.
-      const right = Math.max(m, window.innerWidth - 198);
+      const right = Math.max(m, window.innerWidth - 212);
       setDial((v) => {
         const pos = v ? v.pos : 0;
         return { x: clamp(x, m, right), y: clamp(y, m, Math.max(m, window.innerHeight - m)), touch, drag: touch, turn: pos, pos, level: 0, sub: 0 };
@@ -318,9 +318,9 @@ export default function ContextMenu({ about, onHome, onAbout, onAll }) {
         {kids && (
           <div className="dial__sub">
             <div className="dial__sub-rot">
-              <svg className="dial__band" viewBox="-190 -190 380 380" aria-hidden="true">
-                <path className="dial__band-fill" d={`M${pt(126, -span)}A126 126 0 0 1 ${pt(126, span)}L${pt(176, span)}A176 176 0 0 0 ${pt(176, -span)}Z`} />
-                {Array.from({ length: Math.floor((2 * span - 6) / 3) + 1 }, (_, k) => -span + 3 + k * 3).map((a) => <path key={a} d={`M${pt(170, a)}L${pt(176, a)}`} />)}
+              <svg className="dial__band" viewBox="-206 -206 412 412" aria-hidden="true">
+                <path className="dial__band-fill" d={`M${pt(140, -span)}A140 140 0 0 1 ${pt(140, span)}L${pt(190, span)}A190 190 0 0 0 ${pt(190, -span)}Z`} />
+                {Array.from({ length: Math.floor((2 * span - 6) / 3) + 1 }, (_, k) => -span + 3 + k * 3).map((a) => <path key={a} d={`M${pt(184, a)}L${pt(190, a)}`} />)}
               </svg>
               {kids.map((k, j) => {
                 const on = level === 1 && j === sub;
@@ -335,9 +335,9 @@ export default function ContextMenu({ about, onHome, onAbout, onAll }) {
           </div>
         )}
         <div className="dial__rot">
-          <svg className="dial__ring" viewBox="-120 -120 240 240" aria-hidden="true">
-            <circle r="109" />
-            <circle r="94" />
+          <svg className="dial__ring" viewBox="-136 -136 272 272" aria-hidden="true">
+            <circle r="123" />
+            <circle r="108" />
             {KNURL}
           </svg>
           {items.map((it, i) => {
@@ -352,9 +352,9 @@ export default function ContextMenu({ about, onHome, onAbout, onAll }) {
             return <button key={it.key} type="button" {...common} onClick={onClick}>{body}</button>;
           })}
         </div>
-        <svg className="dial__hub-ring" viewBox="-120 -120 240 240" aria-hidden="true"><circle r="42" /></svg>
+        <svg className="dial__hub-ring" viewBox="-136 -136 272 272" aria-hidden="true"><circle r="42" /></svg>
         <div className="dial__index" aria-hidden="true" />
-        <Frame className="dial__frame" w={62} h={60} />
+        <Frame className="dial__frame" w={80} h={60} />
         <button type="button" className="dial__hub" tabIndex={-1} aria-hidden="true" onClick={() => live.current.choose()}>
           <span className="dial__name">{name}</span>
           <span className="dial__hint">{hint}</span>
