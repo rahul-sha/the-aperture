@@ -76,12 +76,12 @@ export default function ContextMenu({ about, onHome, onAbout, onAll }) {
   const items = [
     // Away from the walk (the behind the scenes page) these lead back to it.
     { key: 'home', label: 'Back to the start', short: 'Start', ...(onHome ? { onClick: done(onHome) } : { href: '/' }) },
-    { key: 'about', label: 'About', short: 'About', ...(onAbout ? { onClick: done(onAbout) } : { href: '/#about' }) },
     { key: 'all', label: 'All photos', short: 'Photos', ...(onAll ? { onClick: done(onAll) } : { href: '/#all' }) },
+    { key: 'about', label: 'About', short: 'About', ...(onAbout ? { onClick: done(onAbout) } : { href: '/#about' }) },
+    // The only way in to the behind the scenes page; nothing else on the site links to it.
+    { key: 'scenes', label: 'The making of', short: 'Making of', href: '/behind-the-scenes' },
     // A group of one is just that one link.
     socials.length > 1 ? { key: 'socials', label: 'Socials', short: 'Socials', children: socials } : socials[0],
-    // The only way in to this page; nothing else on the site links to it.
-    { key: 'scenes', label: 'Behind the scenes', short: 'Scenes', href: '/behind-the-scenes' },
   ].filter(Boolean);
   const N = items.length;
   const STEP = 360 / N;

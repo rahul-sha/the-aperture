@@ -173,7 +173,7 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
   await page.waitForTimeout(300);
   const chosen = () => page.locator('.dial [data-on="true"]').getAttribute('aria-label');
   check('the dial opens on Back to the start', (await chosen()) === 'Back to the start');
-  for (let i = 0; i < 3; i += 1) { await page.mouse.wheel(0, 100); await page.waitForTimeout(150); }
+  for (let i = 0; i < 4; i += 1) { await page.mouse.wheel(0, 100); await page.waitForTimeout(150); }
   await page.waitForTimeout(400);
   check('scrolling turns the dial to Socials', (await chosen()) === 'Socials');
   check('turning the dial does not move the walk', (await scrollY(page)) === yDial);
@@ -194,7 +194,7 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
   // Behind the scenes is reached only from the menu.
   check('nothing on the walk links to behind the scenes', (await page.locator('a[href="/behind-the-scenes"]').count()) === 0);
   await page.mouse.click(700, 450, { button: 'right' });
-  const scenesItem = page.locator('.dial__item[aria-label="Behind the scenes"]');
+  const scenesItem = page.locator('.dial__item[aria-label="The making of"]');
   check('the menu offers behind the scenes', (await scenesItem.getAttribute('href')) === '/behind-the-scenes');
   await scenesItem.click();
   await page.waitForURL('**/behind-the-scenes');
@@ -291,7 +291,7 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
   await page.waitForTimeout(400);
   await touch('touchStart', 195, 420);
   await page.waitForTimeout(800);
-  for (let i = 1; i <= 6; i += 1) { await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: 195 - 14 * i, y: 420 + 10 * i }] }); await page.waitForTimeout(40); }
+  for (let i = 1; i <= 6; i += 1) { await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: 195 + 4 * i, y: 420 + 14 * i }] }); await page.waitForTimeout(40); }
   await page.waitForTimeout(200);
   check('sliding moves the frame to All photos', (await page.locator('.dial [data-on="true"]').getAttribute('aria-label')) === 'All photos');
   await touch('touchEnd');

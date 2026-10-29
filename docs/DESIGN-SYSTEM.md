@@ -147,8 +147,9 @@ trailing.
 or touch and hold for half a second on a phone, and a camera mode dial opens
 round the pointer or finger: a knurled ring of settings that turns. The chosen
 setting sits on the right, inside pink focus-point brackets and under a pink
-index mark, with its name in the middle. Settings: Back to the start, About,
-All photos, Socials, and Behind the scenes. Socials is a group: Instagram and
+index mark, with its name in the middle. Settings, in order: Back to the
+start, All photos, About, The making of (the behind the scenes page), and
+Socials. Socials is a group: Instagram and
 Bluesky (plus Email me, if an email address is set in `content/about.json`)
 sit on an outer dial that fans out on the right. A group of one is shown as
 that one link.
