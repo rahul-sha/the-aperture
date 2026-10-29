@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { click, listenForAudio } from '../lib/click';
 
 // Right-click (or touch and hold on a phone) opens a camera mode dial around
@@ -39,6 +41,10 @@ const Frame = ({ className, w, h }) => (
   </svg>
 );
 
+// Pages of this site swap in place (no blank frame between documents);
+// anything else is a plain link.
+const Anchor = ({ href, ...rest }) => (href.startsWith('/') ? <Link href={href} {...rest} /> : <a href={href} {...rest} />);
+
 const mod = (a, n) => ((a % n) + n) % n;
 const near = (d, n) => { const m = mod(d, n); return m > n / 2 ? m - n : m; }; // the short way round
 const angle = (a, b) => mod(a - b + 180, 360) - 180;
@@ -56,6 +62,7 @@ export default function ContextMenu({ about, onHome, onAbout, onAll }) {
   // (it keeps counting past a full turn, so the ring never spins back);
   // level 1 means the outer dial is in use, with sub the option on it.
   const [dial, setDial] = useState(null);
+  const router = useRouter();
   const ref = useRef(null);
   const before = useRef(null); // where keyboard focus was before the dial opened
   const live = useRef({}); // the latest dial, items, and actions, for the window listeners
@@ -86,7 +93,7 @@ export default function ContextMenu({ about, onHome, onAbout, onAll }) {
     setDial(null);
     if (it.onClick) it.onClick();
     else if (it.href.startsWith('http')) window.open(it.href, '_blank', 'noopener,noreferrer');
-    else window.location.assign(it.href);
+    else router.push(it.href);
   };
   live.current = {
     dial, items, N, STEP,
@@ -318,9 +325,9 @@ export default function ContextMenu({ about, onHome, onAbout, onAll }) {
               {kids.map((k, j) => {
                 const on = level === 1 && j === sub;
                 return (
-                  <a key={k.key} className="dial__child" role="menuitem" aria-label={k.label} data-on={on} tabIndex={on ? 0 : -1} style={{ '--b': `${(j - c) * SUB}deg` }} {...link(k)}>
+                  <Anchor key={k.key} className="dial__child" role="menuitem" aria-label={k.label} data-on={on} tabIndex={on ? 0 : -1} style={{ '--b': `${(j - c) * SUB}deg` }} {...link(k)}>
                     <Icon k={k.key} /><span>{k.short}</span>
-                  </a>
+                  </Anchor>
                 );
               })}
             </div>
@@ -340,7 +347,7 @@ export default function ContextMenu({ about, onHome, onAbout, onAll }) {
               style: { '--a': `${i * STEP}deg`, animationDelay: `${i * 25}ms` },
             };
             const body = <><Icon k={it.key} /><span>{it.short}</span></>;
-            if (it.href) return <a key={it.key} {...common} {...link(it)}>{body}</a>;
+            if (it.href) return <Anchor key={it.key} {...common} {...link(it)}>{body}</Anchor>;
             const onClick = it.children ? () => setDial((v) => ({ ...v, pos: v.pos + near(i - mod(v.pos, N), N), level: 1, sub: 0 })) : it.onClick;
             return <button key={it.key} type="button" {...common} onClick={onClick}>{body}</button>;
           })}
