@@ -66,7 +66,7 @@ export default function Site({ manifest }) {
             railRef={railRef}
             controlRef={walkRef}
             onGo={() => { if (!reducedMotion()) setDrift(true); }}
-            onOpen={(photos, index) => setLightbox({ photos, index })}
+            onOpen={(photos, index, quad) => setLightbox({ photos, index, quad })}
             onNoWalk={() => setNoWalk(true)}
           />
         )}
@@ -89,6 +89,8 @@ export default function Site({ manifest }) {
           index={lightbox.index}
           onStep={(d) => setLightbox((lb) => ({ ...lb, index: (lb.index + d + lb.photos.length) % lb.photos.length }))}
           onClose={() => setLightbox(null)}
+          quad={lightbox.quad}
+          walk={lightbox.quad ? walkRef.current : null}
         />
       )}
     </>
