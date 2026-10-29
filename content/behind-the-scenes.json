@@ -1,0 +1,77 @@
+{
+  "_note": "Words for /behind-the-scenes. Add a log entry whenever the site changes. This page is public: describe ideas, never server names, addresses, keys, accounts, or settings.",
+  "log": [
+    {
+      "at": "2026-10-27T14:00+08:00",
+      "when": "27 Oct, 14:00",
+      "title": "Choosing the approach",
+      "text": "Instead of building an upload system from scratch, keep photos in a library I already manage at home and send out copies."
+    },
+    {
+      "at": "2026-10-27T15:00+08:00",
+      "when": "27 Oct, 15:00",
+      "title": "Eight designs, three rounds",
+      "text": "A collage that flies together won the first round and is still the opening of the site."
+    },
+    {
+      "at": "2026-10-27T17:00+08:00",
+      "when": "27 Oct, 17:00",
+      "title": "The first site goes up",
+      "text": "The chosen design turned into a working site, with web copies in cloud storage."
+    },
+    {
+      "at": "2026-10-27T22:00+08:00",
+      "when": "27 Oct, 22:00",
+      "title": "Real albums, real photos",
+      "text": "The route from home was connected end to end. Place names, automatic titles, and true aspect ratios followed the same evening."
+    },
+    {
+      "at": "2026-10-28T16:05+08:00",
+      "when": "28 Oct, 16:05",
+      "title": "Drift",
+      "text": "Four new concepts, and one winner: scrolling walks you forward through every photo in 3D, with a timeline to drag and a camera mode dial on right-click."
+    },
+    {
+      "at": "2026-10-28T16:13+08:00",
+      "when": "28 Oct, 16:13",
+      "title": "A home of its own",
+      "text": "The site moved to the-aperture.app."
+    },
+    {
+      "at": "2026-10-28T16:49+08:00",
+      "when": "28 Oct, 16:49",
+      "title": "Faster, and open to everyone",
+      "text": "A full check for speed and for people using keyboards and screen readers. On a phone, the pause while the 3D walk loads dropped by two thirds."
+    },
+    {
+      "at": "2026-10-28T17:22+08:00",
+      "when": "28 Oct, 17:22",
+      "title": "Smoother on phones",
+      "text": "Photos load into the walk one at a time, and the far ones are let go, so scrolling stays steady."
+    },
+    {
+      "at": "2026-10-29",
+      "when": "29 Oct",
+      "title": "Behind the scenes",
+      "text": "This page, tucked into the right-click menu. Around it: the welcome line dropped its mention of the night, the corridor's two walls moved closer together on computers, the closing words follow the last photo without a long dark pause, and on phones the timeline moved up within easy reach of a thumb."
+    }
+  ],
+  "speed": [
+    {
+      "label": "Pause on a phone while the 3D walk loads, in seconds",
+      "before": 2.2,
+      "after": 0.7,
+      "max": 2.5,
+      "unit": " s",
+      "better": "Shorter is better."
+    },
+    {
+      "label": "Speed score on a computer, out of 100",
+      "before": 88,
+      "after": 98,
+      "max": 100,
+      "unit": "",
+      "better": "Longer is better."
+    }
+  ]
+}

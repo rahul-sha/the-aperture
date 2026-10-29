@@ -146,8 +146,43 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
   check('menu About goes to the end', endOp > 0.95, `y=${await scrollY(page)} opacity=${endOp}`);
   check('menu closes after use', (await page.locator('.dial').count()) === 0);
 
+  // Behind the scenes is reached only from the menu.
+  check('nothing on the walk links to behind the scenes', (await page.locator('a[href="/behind-the-scenes"]').count()) === 0);
+  await page.mouse.click(700, 450, { button: 'right' });
+  const scenesItem = page.locator('.dial__item[aria-label="Behind the scenes"]');
+  check('the menu offers behind the scenes', (await scenesItem.getAttribute('href')) === '/behind-the-scenes');
+  await scenesItem.click();
+  await page.waitForURL('**/behind-the-scenes');
+  check('behind the scenes opens in the same tab', (await page.title()) === 'Behind the scenes | The Aperture');
+
   check('no console or page errors', errors.length === 0, errors.join(' | ').slice(0, 300));
   await page.close();
+}
+
+// The behind the scenes page.
+{
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  const errors = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  page.on('console', (m) => { if (m.type() === 'error' && !noise(m.text())) errors.push(m.text()); });
+  await page.goto(`${SITE}/behind-the-scenes`, { waitUntil: 'networkidle' });
+  check('scenes: six stops on the route', (await page.locator('.bts__stop').count()) === 6);
+  check('scenes: route bar names every stop', (await page.locator('.bts__bar-nav a').count()) === 6);
+  check('scenes: every chart has a title', await page.locator('.bts__viz svg[role="img"]').evaluateAll((els) => els.every((el) => el.querySelector('title')?.textContent.length > 10)));
+  check('scenes: the build log has entries', (await page.locator('.bts__log li').count()) > 5);
+  check('scenes: no link to the code', (await page.locator('a[href*="github"]').count()) === 0);
+  await page.locator('#stop-prepared').scrollIntoViewIfNeeded();
+  await page.waitForTimeout(300);
+  check('scenes: the route bar follows your reading', (await page.locator('.bts__bar-nav a[aria-current="true"]').getAttribute('href')) === '#stop-prepared');
+  await page.screenshot({ path: `${SHOTS}10-scenes.png`, fullPage: true });
+  check('scenes: no console or page errors', errors.length === 0, errors.join(' | ').slice(0, 300));
+  await page.close();
+
+  const phone = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true });
+  await phone.goto(`${SITE}/behind-the-scenes`, { waitUntil: 'networkidle' });
+  check('scenes: no sideways scroll on a phone', !(await phone.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1)));
+  await phone.screenshot({ path: `${SHOTS}11-scenes-phone.png`, fullPage: true });
+  await phone.close();
 }
 
 // A browser that can't draw WebGL gets All photos as the page.
@@ -176,6 +211,7 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
   await page.waitForTimeout(2200);
   const wide = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
   check('no sideways scroll on a phone', !wide);
+  check('the phone timeline sits clear of the bottom edge', await page.evaluate(() => { const r = document.querySelector('.walk__timeline').getBoundingClientRect(); return innerHeight - r.bottom >= 36; }));
   await page.screenshot({ path: `${SHOTS}06-phone-intro.png` });
 
   // Touch and hold opens the same mode dial as a right-click.
