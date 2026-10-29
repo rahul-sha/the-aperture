@@ -14,6 +14,8 @@ const ICONS = {
   all: <><rect x="3" y="3" width="7.5" height="7.5" rx="1.5" /><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5" /><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5" /><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5" /></>,
   instagram: <><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r=".6" fill="currentColor" /></>,
   bluesky: <path d="M12 11.2C10.6 8.5 6.9 4.6 3.5 4.1c0 2.6.3 6.6 4.2 7.4-3.3.9-3.6 3.6-1.9 5.2 2.4 2.2 5-1.4 6.2-4.4 1.2 3 3.8 6.6 6.2 4.4 1.7-1.6 1.4-4.3-1.9-5.2 3.9-.8 4.2-4.8 4.2-7.4-3.4.5-7.1 4.4-8.5 7.1z" />,
+  // An aperture: six blades round a hexagonal opening.
+  scenes: <><circle cx="12" cy="12" r="9" /><path d="M12.0 7.8L20.9 13.0M15.6 9.9L15.6 20.2M15.6 14.1L6.7 19.3M12.0 16.2L3.1 11.0M8.4 14.1L8.4 3.8M8.4 9.9L17.3 4.7" /></>,
   email: <><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3.5 6.5 12 13l8.5-6.5" /></>,
 };
 
@@ -100,6 +102,8 @@ export default function ContextMenu({ about, onHome, onAbout, onAll }) {
     { key: 'home', label: 'Back to the start', onClick: done(onHome) },
     { key: 'about', label: 'About', onClick: done(onAbout) },
     { key: 'all', label: 'All photos', onClick: done(onAll) },
+    // The only way in to this page; nothing else on the site links to it.
+    { key: 'scenes', label: 'Behind the scenes', href: '/behind-the-scenes' },
     about.instagram && { key: 'instagram', label: 'Instagram', href: about.instagram },
     about.bluesky && { key: 'bluesky', label: 'Bluesky', href: about.bluesky },
     about.email && { key: 'email', label: 'Email me', href: `mailto:${about.email}` },

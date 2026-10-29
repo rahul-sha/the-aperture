@@ -5,7 +5,7 @@ const onest = Onest({ subsets: ['latin'], weight: ['400', '500', '700'], variabl
 const newsreader = Newsreader({ subsets: ['latin'], style: ['italic'], weight: ['400'], variable: '--font-serif', display: 'swap' });
 
 const SITE_URL = 'https://www.the-aperture.app';
-const DESCRIPTION = 'Photographs by Rahul Sharma: cities after dark, and the quiet things in between.';
+const DESCRIPTION = 'Photographs by Rahul Sharma: cities, and the quiet things in between.';
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),

@@ -230,7 +230,8 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
           z -= GAP;
         });
       });
-      const END = z - 6;
+      // The end words follow the last photo closely, with no long dark gap.
+      const END = z - 3;
       const photos = [...cards, ...items];
 
       // A faint dust of points, so the space reads as deep between photos.
@@ -282,13 +283,14 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
         const visW = visH * camera.aspect;
         // On a phone the outer cards may run off the sides, as they did before.
         k = Math.min((0.86 * visH) / 680, ((w < 640 ? 1.25 : 0.96) * visW) / 820);
-        // The corridor: on a narrow screen the photos come in closer to the
-        // middle and a little smaller, so each one fits on screen as it passes.
+        // The corridor: the two walls sit close together for a dense walk. On a
+        // narrow screen the photos come in closer still and a little smaller,
+        // so each one fits on screen as it passes.
         narrow = w < 640;
         items.forEach((mesh) => {
           const { side, drift: r, full } = mesh.userData;
           const sc = narrow ? 0.62 : 1;
-          mesh.position.x = side * (narrow ? 0.42 + r * 0.3 : 1.5 + r * 1.3);
+          mesh.position.x = side * (narrow ? 0.42 + r * 0.3 : 1.1 + r * 0.7);
           mesh.rotation.y = -side * (narrow ? 0.12 : 0.22);
           mesh.material.uniforms.size.value.set(full[0] * sc, full[1] * sc);
           mesh.scale.set(full[0] * sc, full[1] * sc, 1);
@@ -762,7 +764,7 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
           put(slider, '@aria-valuetext', where(u));
         }
         if (exit) {
-          const ex = smooth(-END - 8, -END - 3, tz);
+          const ex = smooth(-END - 6.5, -END - 3, tz);
           put(exit, 'opacity', ex.toFixed(3));
           put(exit.firstChild, 'transform', `scale(${(0.6 + ex * 0.4).toFixed(3)})`);
           put(exit, 'visibility', ex > 0.02 ? 'visible' : 'hidden');

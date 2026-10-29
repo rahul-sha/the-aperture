@@ -275,15 +275,17 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
   .walk__seg[aria-current="true"] span { overflow: visible; }
   /* The logo and the timeline's own home button already go back to the start. */
   .header__replay { display: none; }
-  /* On a phone the timeline runs along the bottom, under your thumb. */
-  .walk__timeline { position: fixed; left: 20px; right: 20px; bottom: max(14px, env(safe-area-inset-bottom)); min-height: 44px; gap: 14px; }
+  /* On a phone the timeline runs along the bottom, under your thumb, lifted
+     clear of the browser's toolbar and the home bar, with a taller strip to
+     grab than the line itself. */
+  .walk__timeline { position: fixed; left: 20px; right: 20px; bottom: calc(env(safe-area-inset-bottom, 0px) + 36px); min-height: 56px; padding-top: 12px; gap: 14px; }
   .walk__home {
     display: inline-flex; align-items: flex-end; justify-content: center; flex: none; min-width: 44px; min-height: 44px; padding: 0 0 10px;
     border: 0; border-bottom: 1px solid var(--hairline); background: none; color: rgba(245, 243, 239, .7);
   }
   .walk__home:active { color: var(--pink); border-bottom-color: var(--pink); }
-  .walk__title { bottom: 84px; }
-  .walk__threshold, .walk__exit { padding-bottom: 84px; }
+  .walk__title { bottom: calc(env(safe-area-inset-bottom, 0px) + 112px); }
+  .walk__threshold, .walk__exit { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 112px); }
   .walk__caption { left: 20px; right: auto; text-align: left; bottom: auto; top: 76px; }
 }
 
