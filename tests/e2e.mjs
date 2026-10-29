@@ -58,7 +58,7 @@ async function findPhoto(page, w, h) {
   const card = await scrollY(page);
   const cardOpacity = await page.locator('.walk__threshold').evaluate((el) => +el.style.opacity);
   check('one scroll lands on the welcome', card > 0 && cardOpacity > 0.95, `y=${card} opacity=${cardOpacity}`);
-  check('the welcome is centred', await page.locator('.walk__threshold .walk__welcome').evaluate((el) => { const r = el.getBoundingClientRect(); return Math.abs(r.left + r.width / 2 - innerWidth / 2) < 4; }));
+  check('the welcome is centred', await page.locator('.walk__threshold .walk__welcome').evaluate((el) => { const r = el.getBoundingClientRect(); const v = el.parentElement.getBoundingClientRect(); return Math.abs(r.left + r.width / 2 - (v.left + v.width / 2)) < 4; }));
   check('the timeline sits in the header', await page.evaluate(() => !!document.querySelector('.header .walk__timeline')));
   await page.waitForTimeout(1500);
   check('the welcome waits for you', (await scrollY(page)) === card);
@@ -103,6 +103,11 @@ async function findPhoto(page, w, h) {
     check('the photo floats out of the walk', await page.locator('.lightbox__fly').evaluate((el) => getComputedStyle(el).visibility === 'visible' && el.style.transform.startsWith('matrix3d')));
     await page.waitForTimeout(1500);
     check('it lands in the viewer', await page.locator('.lightbox__img img').evaluate((el) => getComputedStyle(el).visibility === 'visible' && getComputedStyle(el).opacity === '1'));
+    check('it lands at the size the photo shows at', await page.evaluate(() => {
+      const fly = document.querySelector('.lightbox__fly');
+      const img = document.querySelector('.lightbox__img img').getBoundingClientRect();
+      return Math.abs(parseFloat(fly.style.width) - img.width) < 2 && Math.abs(parseFloat(fly.style.height) - img.height) < 2;
+    }));
     await page.keyboard.press('Escape');
     await page.waitForTimeout(200);
     check('Close floats it back first', (await page.locator('.lightbox').count()) === 1);
@@ -127,7 +132,7 @@ async function findPhoto(page, w, h) {
   await page.waitForTimeout(2500);
   const endOpacity = await page.locator('.walk__exit').evaluate((el) => +el.style.opacity);
   check('the end shows at the bottom', endOpacity > 0.95, `opacity=${endOpacity}`);
-  check('the end is centred like the welcome', await page.locator('.walk__exit .walk__welcome').evaluate((el) => { const r = el.getBoundingClientRect(); return Math.abs(r.left + r.width / 2 - innerWidth / 2) < 4; }));
+  check('the end is centred like the welcome', await page.locator('.walk__exit .walk__welcome').evaluate((el) => { const r = el.getBoundingClientRect(); const v = el.parentElement.getBoundingClientRect(); return Math.abs(r.left + r.width / 2 - (v.left + v.width / 2)) < 4; }));
   check('the end links open in new tabs', await page.locator('.walk__links a[target="_blank"]').count() === 3);
   check('no email link while no address is set', await page.locator('a[href^="mailto:"]').count() === 0);
   await page.screenshot({ path: `${SHOTS}03b-end.png` });
