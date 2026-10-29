@@ -15,10 +15,8 @@
 
 * { box-sizing: border-box; }
 
-/* Pages cross-fade into each other (browsers that support it) over black. */
+/* Black from the first frame, so moving between pages never flashes. */
 html { background: var(--ground); color-scheme: dark; }
-@view-transition { navigation: auto; }
-::view-transition-group(root) { animation-duration: .35s; }
 
 
 body {

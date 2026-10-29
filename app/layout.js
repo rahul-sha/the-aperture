@@ -23,7 +23,7 @@ export const metadata = {
   twitter: { card: 'summary', title: 'The Aperture', description: DESCRIPTION, images: ['/logo.png'] },
 };
 
-export const viewport = { themeColor: '#000000' };
+export const viewport = { themeColor: '#000000', colorScheme: 'dark' };
 
 export default function RootLayout({ children }) {
   return (
