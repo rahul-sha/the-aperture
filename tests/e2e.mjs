@@ -22,6 +22,17 @@ function check(name, ok, detail = '') {
 const browser = await chromium.launch({ headless: true, args: ['--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'] });
 const scrollY = (page) => page.evaluate(() => window.scrollY);
 const noise = (t) => /GPU stall|GL Driver/.test(t);
+// Moves the pointer about until it rests on a photo in the walk.
+async function findPhoto(page, w, h) {
+  for (let x = 0.15; x < 0.9; x += 0.05) {
+    for (let y = 0.3; y < 0.75; y += 0.05) {
+      await page.mouse.move(w * x, h * y);
+      await page.waitForTimeout(50);
+      if (await page.evaluate(() => document.querySelector('canvas.walk__canvas').style.cursor === 'pointer')) return [w * x, h * y];
+    }
+  }
+  return null;
+}
 
 // Desktop
 {
@@ -81,6 +92,23 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
   const off = await scrollY(page);
   await page.waitForTimeout(1500);
   check('page stays still with drift off', Math.abs((await scrollY(page)) - off) < 3);
+
+  // Clicking a photo in the walk floats it out of its spot to the screen,
+  // and Close floats it back.
+  const spot = await findPhoto(page, 1440, 900);
+  check('a photo in the walk is under the pointer', !!spot);
+  if (spot) {
+    await page.mouse.click(spot[0], spot[1]);
+    await page.waitForTimeout(250);
+    check('the photo floats out of the walk', await page.locator('.lightbox__fly').evaluate((el) => getComputedStyle(el).visibility === 'visible' && el.style.transform.startsWith('matrix3d')));
+    await page.waitForTimeout(1500);
+    check('it lands in the viewer', await page.locator('.lightbox__img img').evaluate((el) => getComputedStyle(el).visibility === 'visible' && getComputedStyle(el).opacity === '1'));
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(200);
+    check('Close floats it back first', (await page.locator('.lightbox').count()) === 1);
+    await page.waitForTimeout(800);
+    check('then the viewer is gone', (await page.locator('.lightbox').count()) === 0);
+  }
 
   const segs = page.locator('.walk__seg');
   check('timeline lists six sections', (await segs.count()) === 6);
@@ -236,6 +264,24 @@ const noise = (t) => /GPU stall|GL Driver/.test(t);
   check('scenes: no sideways scroll on a phone', !(await phone.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1)));
   await phone.screenshot({ path: `${SHOTS}11-scenes-phone.png`, fullPage: true });
   await phone.close();
+}
+
+// Anyone who asked for less motion: photos open in place, without floating.
+{
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
+  await page.goto(SITE, { waitUntil: 'networkidle' });
+  await page.waitForTimeout(1500);
+  await page.evaluate(() => window.scrollTo({ top: window.innerHeight * 9, behavior: 'instant' }));
+  await page.waitForTimeout(1500);
+  const spot = await findPhoto(page, 1440, 900);
+  if (spot) {
+    await page.mouse.click(spot[0], spot[1]);
+    await page.waitForTimeout(100);
+    check('reduced motion: the photo opens without floating', (await page.locator('.lightbox').count()) === 1 && (await page.locator('.lightbox__fly').count()) === 0);
+    await page.keyboard.press('Escape');
+    check('reduced motion: Close is immediate', (await page.locator('.lightbox').count()) === 0);
+  } else check('reduced motion: a photo in the walk is under the pointer', false);
+  await page.close();
 }
 
 // A browser that can't draw WebGL gets All photos as the page.

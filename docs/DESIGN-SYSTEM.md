@@ -196,6 +196,16 @@ step, Escape closes. Focus moves to Close when it opens, Tab stays inside, and
 focus goes back to the photo you opened. The photos either side are fetched in
 advance so stepping is instant.
 
+A photo opened from the walk floats there: the walk reports the photo's four
+corners on screen, and a copy (`.lightbox__fly`, the small file the walk has
+already loaded) is stretched onto those corners with a `matrix3d` transform,
+then eased to its resting place over 820 ms with a slight lift, while the dark
+and the words fade in. The full-size file fades in over it once loaded. The
+photo's spot in the walk stays empty while it is out (`hold`). Close reverses
+this over 560 ms if the photo is still in view, otherwise it closes at once.
+Photos opened from All photos, and anyone with reduced motion, keep the plain
+develop fade.
+
 ## Motion
 
 - **Drift** (the page moving on its own) is off when you arrive. Pressing the

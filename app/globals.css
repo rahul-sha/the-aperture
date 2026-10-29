@@ -298,6 +298,14 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-
 .lightbox__bar small { color: var(--ink-muted); font-size: inherit; }
 .lightbox__img { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
 .lightbox__img img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: var(--photo-radius); }
+/* A photo opened from the walk floats out of its spot to here (Lightbox.js);
+   the full-size file then fades in over the small copy that flew. */
+.lightbox__fly {
+  position: fixed; left: 0; top: 0; z-index: 0; visibility: hidden; transform-origin: 0 0;
+  border-radius: var(--photo-radius); pointer-events: none; will-change: transform;
+}
+.lightbox__img img { position: relative; z-index: 1; }
+.lightbox__sharp { transition: opacity .35s ease; }
 .lightbox__caption { text-align: center; color: var(--ink-soft); font-size: 15px; margin: 0; }
 .lightbox__nav { display: flex; justify-content: center; gap: 28px; }
 

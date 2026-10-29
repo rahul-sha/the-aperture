@@ -332,10 +332,28 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
         onMove(e);
         ray.setFromCamera(mouse, camera);
         const hit = ray.intersectObjects(photos).find((h) => h.object.material.uniforms.opacity.value > 0.5);
-        if (hit) live.current.onOpen(hit.object.userData.list, hit.object.userData.index);
+        if (!hit) return;
+        opened = hit.object;
+        live.current.onOpen(hit.object.userData.list, hit.object.userData.index, quadOf(hit.object));
       };
       window.addEventListener('pointermove', onMove, { passive: true });
       canvas.addEventListener('pointerdown', onDown);
+      // Where a photo's four corners sit on the screen right now, so the
+      // opened photo can float out from exactly that spot (and back to it).
+      let opened = null; // the photo you clicked, preferred on the way back
+      let away = null; // the open photo's id, hidden here while it's out
+      const corner = new THREE.Vector3();
+      function quadOf(mesh) {
+        const r = canvas.getBoundingClientRect();
+        mesh.updateMatrixWorld();
+        const quad = [];
+        for (const [x, y] of [[-0.5, 0.5], [0.5, 0.5], [0.5, -0.5], [-0.5, -0.5]]) {
+          corner.set(x, y, 0).applyMatrix4(mesh.matrixWorld).project(camera);
+          if (corner.z > 1) return null; // behind you
+          quad.push([r.left + ((corner.x + 1) / 2) * r.width, r.top + ((1 - corner.y) / 2) * r.height]);
+        }
+        return quad;
+      }
       canvas.addEventListener('pointerup', onUp);
 
       // The page rests on the collage after it loads. The first scroll down
@@ -505,6 +523,22 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
       }
       api.current = {
         replay: () => replay(true),
+        // The photo now open, if it still hangs in plain sight here.
+        quadOf: (id) => {
+          const seen = (m) => m.userData.photo.id === id && m.material.uniforms.opacity.value > 0.5;
+          const mesh = opened && seen(opened) ? opened : photos.find(seen);
+          const q = mesh && quadOf(mesh);
+          // Off the edge of the screen counts as out of sight.
+          if (!q || q.every(([x]) => x < 0) || q.every(([x]) => x > window.innerWidth) || q.every(([, y]) => y < 0) || q.every(([, y]) => y > window.innerHeight)) return null;
+          return q;
+        },
+        // While a photo is out in the viewer its spot here stays empty; the
+        // walk is paused then, so the change is drawn straight away.
+        hold: (id) => {
+          away = id;
+          photos.forEach((m) => { m.visible = m.userData.photo.id !== id && m.material.uniforms.opacity.value > 0.002; });
+          renderer.render(scene, camera);
+        },
         // Turning the drift on from the collage or the welcome first glides to
         // the first section.
         go: () => { pausedUntil = 0; if (window.scrollY < startY() - 4) glideTo(startY()); },
@@ -627,7 +661,7 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
           // The big middle card would fill the screen, so it fades a little sooner.
           const op = t * (i === 0 ? smooth(1.4, 3.2, d) : smooth(0.5, 2.2, d));
           mesh.material.uniforms.opacity.value = op;
-          mesh.visible = op > 0.002;
+          mesh.visible = op > 0.002 && mesh.userData.photo.id !== away;
         });
 
         // The corridor: each photo arrives out of the dark and fades as you pass.
@@ -637,7 +671,7 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
           const op = smooth(0, 0.7, d) * smooth(0.5, 3, -camZ);
           mesh.material.uniforms.opacity.value = op;
           // Photos behind you, or too far off to see, aren't drawn at all.
-          mesh.visible = op > 0.002 && d < FAR;
+          mesh.visible = op > 0.002 && d < FAR && mesh.userData.photo.id !== away;
           if (!heroIn) return;
           if (d < -8 || d > FAR + 8) unload(mesh);
           else if (d > -2 && d < FAR) load(mesh, 1);

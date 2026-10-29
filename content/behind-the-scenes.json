@@ -60,6 +60,12 @@
       "when": "29 Oct, 10:45",
       "title": "A dial that turns",
       "text": "The right-click menu now turns like a camera's mode dial: each scroll is one click, and the chosen setting sits on the right inside the focus brackets. Instagram and Bluesky moved onto an outer dial behind Socials. On a phone, touch and hold, slide to a setting, and let go, with a click and a small buzz at each step. The dial now works on this page too. Moving between the walk and this page now stays black instead of flashing grey. The settings now run Start, Photos, About, The making of (this page), and Socials."
+    },
+    {
+      "at": "2026-10-29T11:50+08:00",
+      "when": "29 Oct, 11:50",
+      "title": "Photos that come to you",
+      "text": "Click a photo in the walk and it lifts out of its spot, straightens up, and floats towards you until it fills the screen. Close it and it drifts back to where it was hanging, with the gap it left filling again. Anyone whose device asks for less motion still sees photos open and close in place."
     }
   ],
   "speed": [
