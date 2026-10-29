@@ -27,7 +27,9 @@ export const viewport = { themeColor: '#000000' };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en-GB" className={`${onest.variable} ${newsreader.variable}`}>
+    // Black from the very first frame, before the stylesheet arrives, so moving
+    // between pages never flashes the browser's own grey or white.
+    <html lang="en-GB" className={`${onest.variable} ${newsreader.variable}`} style={{ background: '#000', colorScheme: 'dark' }}>
       <body>{children}</body>
     </html>
   );
