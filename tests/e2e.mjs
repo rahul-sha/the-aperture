@@ -6,11 +6,20 @@
 // and stops the server again. Screenshots land in tests/screenshots/.
 
 import { chromium } from 'playwright';
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, readFileSync } from 'node:fs';
 
 const SITE = process.env.SITE_URL || 'http://localhost:3000';
 const SHOTS = new URL('./screenshots/', import.meta.url).pathname;
 mkdirSync(SHOTS, { recursive: true });
+
+// The photos the site is showing: the manifest it was built with, or the
+// copy in the repository. Counts in the checks below come from here, so
+// adding or removing a section never breaks a test.
+const manifestUrl = process.env.PHOTOS_MANIFEST_URL;
+const manifest = manifestUrl
+  ? await (await fetch(manifestUrl)).json()
+  : JSON.parse(readFileSync(new URL('../content/photos.json', import.meta.url), 'utf8'));
+const sectionCount = manifest.sections.filter((s) => s.photos.length).length;
 
 let failures = 0;
 function check(name, ok, detail = '') {
@@ -116,7 +125,7 @@ async function findPhoto(page, w, h) {
   }
 
   const segs = page.locator('.walk__seg');
-  check('timeline lists six sections', (await segs.count()) === 6);
+  check(`timeline lists all ${sectionCount} sections`, (await segs.count()) === sectionCount);
   const box = await segs.nth(1).boundingBox();
   await page.mouse.move(box.x + 6, box.y + box.height / 2);
   await page.mouse.down();
@@ -244,8 +253,11 @@ async function findPhoto(page, w, h) {
   page.on('pageerror', (e) => errors.push(e.message));
   page.on('console', (m) => { if (m.type() === 'error' && !noise(m.text())) errors.push(m.text()); });
   await page.goto(`${SITE}/behind-the-scenes`, { waitUntil: 'networkidle' });
-  check('scenes: six stops on the route', (await page.locator('.bts__stop').count()) === 6);
-  check('scenes: route bar names every stop', (await page.locator('.bts__bar-nav a').count()) === 6);
+  const stops = await page.locator('.bts__stop').count();
+  check('scenes: the route has stops', stops > 0);
+  check('scenes: route bar names every stop', (await page.locator('.bts__bar-nav a').count()) === stops);
+  check('scenes: the route says how many stops it has', /^\w+ stops, in order/.test(await page.locator('#route .bts__intro p').textContent()));
+  check('scenes: log dates are written out', /^\d{1,2} [A-Z][a-z]{2}(, \d{2}:\d{2})?$/.test(await page.locator('.bts__log time').first().textContent()));
   check('scenes: every chart has a title', await page.locator('.bts__viz svg[role="img"]').evaluateAll((els) => els.every((el) => el.querySelector('title')?.textContent.length > 10)));
   check('scenes: the build log has entries', (await page.locator('.bts__log li').count()) > 5);
   check('scenes: no link to the code', (await page.locator('a[href*="github"]').count()) === 0);

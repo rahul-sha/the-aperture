@@ -4,6 +4,8 @@ import RouteBar from '../../components/RouteBar';
 import Cursor from '../../components/Cursor';
 import ContextMenu from '../../components/ContextMenu';
 import Link from 'next/link';
+import { SITE_NAME } from '../../lib/site';
+import { LARGE_EDGE, THUMB_EDGE } from '../../scripts/lib/sizes.mjs';
 import './scenes.css';
 
 // A public look at how the site works. Nothing links here except the
@@ -13,19 +15,78 @@ import './scenes.css';
 // changes.
 
 export const metadata = {
-  title: 'Behind the scenes | The Aperture',
-  description: 'How a photograph gets from the camera to the 3D corridor of The Aperture.',
+  title: `Behind the scenes | ${SITE_NAME}`,
+  description: `How a photograph gets from the camera to the 3D corridor of ${SITE_NAME}.`,
   alternates: { canonical: '/behind-the-scenes' },
 };
 
+// The stops on the route, in order. The page's count of stops, the route
+// bar, and each stop's "At home" or "Public" label all come from this list.
 const STOPS = [
-  { id: 'taken', short: 'Taken' },
-  { id: 'kept', short: 'Kept' },
-  { id: 'curated', short: 'Curated' },
-  { id: 'prepared', short: 'Prepared' },
-  { id: 'stored', short: 'Stored' },
-  { id: 'walked', short: 'Walked' },
+  { id: 'taken', short: 'Taken', where: 'At home' },
+  { id: 'kept', short: 'Kept', where: 'At home' },
+  { id: 'curated', short: 'Curated', where: 'At home' },
+  { id: 'prepared', short: 'Prepared', where: 'Leaving home' },
+  { id: 'stored', short: 'Stored', where: 'Public' },
+  { id: 'walked', short: 'Walked', where: 'Public' },
 ];
+const stop = Object.fromEntries(STOPS.map((s) => [s.id, s]));
+const atHome = STOPS.filter((s) => s.where === 'At home').length;
+const inPublic = STOPS.filter((s) => s.where === 'Public').length;
+
+const NUMBER_WORDS = ['No', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve'];
+const numberWord = (n) => NUMBER_WORDS[n] || String(n);
+// "a sixth", "a quarter": how big a part of the whole something is.
+const PARTS = { 2: 'half', 3: 'third', 4: 'quarter', 5: 'fifth', 6: 'sixth', 7: 'seventh', 8: 'eighth', 9: 'ninth', 10: 'tenth' };
+
+// The build log's dates are written once, in "at", and shown in Singapore
+// time from it: "27 Oct, 14:00", or just "29 Oct" for an entry with no time.
+function logWhen(at) {
+  const d = new Date(at);
+  const opts = { timeZone: 'Asia/Singapore', day: 'numeric', month: 'short' };
+  const day = d.toLocaleDateString('en-GB', opts);
+  if (!at.includes('T')) return day;
+  return `${day}, ${d.toLocaleTimeString('en-GB', { timeZone: 'Asia/Singapore', hour: '2-digit', minute: '2-digit', hour12: false })}`;
+}
+
+// A typical phone original, for the drawing of the sizes (an illustration;
+// real photos vary). The two web copies use the sizes the sync script makes.
+const ORIGINAL = { w: 4000, h: 3000 };
+const copyOf = (edge) => ({ w: edge, h: Math.round((edge * ORIGINAL.h) / ORIGINAL.w) });
+const megapixels = ({ w, h }) => (w * h) / 1e6;
+const mp = (size) => { const m = megapixels(size); return m >= 10 ? Math.round(m) : Number(m.toPrecision(2)); };
+
+// Three frames drawn to scale, the original as large as the drawing allows.
+function Sizes() {
+  const large = copyOf(LARGE_EDGE);
+  const thumb = copyOf(THUMB_EDGE);
+  const s = 320 / ORIGINAL.w;
+  const box = (size) => ({ w: +(size.w * s).toFixed(1), h: +(size.h * s).toFixed(1) });
+  const o = box(ORIGINAL);
+  const l = box(large);
+  const t = box(thumb);
+  const floor = o.h + 0.5;
+  return (
+    <svg className="bts__sizes" viewBox="0 0 360 262" role="img" aria-labelledby="bts-sz-t">
+      <title id="bts-sz-t">{`Three frames drawn to scale: a typical ${ORIGINAL.w} by ${ORIGINAL.h} pixel phone original of ${mp(ORIGINAL)} megapixels, the ${LARGE_EDGE} pixel viewing copy of ${mp(large)} megapixels, and the ${THUMB_EDGE} pixel preview of ${mp(thumb)} megapixels`}</title>
+      <rect x="0.5" y="0.5" width={o.w} height={o.h} rx="8" className="bts__sz-orig" />
+      <rect x="0.5" y={floor - l.h} width={l.w} height={l.h} rx="8" className="bts__sz-large" />
+      <rect x="0.5" y={+(floor - t.h).toFixed(1)} width={t.w} height={t.h} rx="4" className="bts__sz-thumb" />
+      <text x="12" y="24" className="bts__lab">Original, kept at home</text>
+      <text x="12" y="40" className="bts__num">{ORIGINAL.w} px, {mp(ORIGINAL)} MP</text>
+      <text x={l.w + 12} y="190" className="bts__lab bts__lab--on">Viewing copy</text>
+      <text x={l.w + 12} y="206" className="bts__num">{LARGE_EDGE} px, {mp(large)} MP</text>
+      <text x={l.w + 12} y="234" className="bts__num">Preview, {THUMB_EDGE} px</text>
+      <text x="0" y="258" className="bts__ax">Drawn to scale, for a typical phone photo</text>
+    </svg>
+  );
+}
+
+// "About a sixth of the pixels": how much of the original a viewing copy keeps.
+function shareKept() {
+  const n = Math.round(megapixels(ORIGINAL) / megapixels(copyOf(LARGE_EDGE)));
+  return PARTS[n] ? `About a ${PARTS[n]} of the pixels` : `About 1/${n} of the pixels`;
+}
 
 const allPhotos = (manifest) => manifest.sections.flatMap((s) => s.photos);
 
@@ -169,7 +230,7 @@ export default async function BehindTheScenes() {
     <div className="bts">
       <div className="bts__top">
         <header className="bts__header">
-          <Link className="btn" href="/">The Aperture</Link>
+          <Link className="btn" href="/">{SITE_NAME}</Link>
           <nav aria-label="On this page">
             <a className="btn" href="#route">The route</a>
             <a className="btn" href="#log">Build log</a>
@@ -192,15 +253,15 @@ export default async function BehindTheScenes() {
         <section className="bts__col" id="route" aria-labelledby="bts-route-h">
           <div className="bts__intro">
             <h2 id="bts-route-h" className="bts__name serif">The route</h2>
-            <p>Six stops, in order. The first three happen at home and stay private. The last three are what you see.</p>
+            <p>{numberWord(STOPS.length)} stops, in order. The first {numberWord(atHome).toLowerCase()} happen at home and stay private. The last {numberWord(inPublic).toLowerCase()} are what you see.</p>
           </div>
 
           <RouteBar stops={STOPS} />
 
           <ol className="bts__stops">
-            <li className="bts__stop" id="stop-taken">
+            <li className="bts__stop" id={`stop-${stop.taken.id}`}>
               <div className="bts__text">
-                <span className="bts__where">At home</span>
+                <span className="bts__where">{stop.taken.where}</span>
                 <h3 className="serif">Taken</h3>
                 <p>Everything starts on a phone camera, carried everywhere, at any hour. The camera matters less than having it there when something catches the eye.</p>
               </div>
@@ -217,9 +278,9 @@ export default async function BehindTheScenes() {
               </div>
             </li>
 
-            <li className="bts__stop" id="stop-kept">
+            <li className="bts__stop" id={`stop-${stop.kept.id}`}>
               <div className="bts__text">
-                <span className="bts__where">At home</span>
+                <span className="bts__where">{stop.kept.where}</span>
                 <h3 className="serif">Kept in a private library</h3>
                 <p>The originals live in a self-hosted photo library on a small server at home, a private version of the photo apps on your phone. Photos are edited, sorted, and deleted there. Only a chosen few ever leave.</p>
               </div>
@@ -234,45 +295,34 @@ export default async function BehindTheScenes() {
               </div>
             </li>
 
-            <li className="bts__stop" id="stop-curated">
+            <li className="bts__stop" id={`stop-${stop.curated.id}`}>
               <div className="bts__text">
-                <span className="bts__where">At home</span>
+                <span className="bts__where">{stop.curated.where}</span>
                 <h3 className="serif">Curated into albums</h3>
                 <p>Each part of the site is one album. Adding a photo to an album is how it gets chosen, and removing it is how it leaves. An album&apos;s description becomes the quote before its section, and a photo without a title is named for where and when it was taken.</p>
               </div>
               <div className="bts__viz"><AlbumMap sections={manifest.sections} /></div>
             </li>
 
-            <li className="bts__stop" id="stop-prepared">
+            <li className="bts__stop" id={`stop-${stop.prepared.id}`}>
               <div className="bts__text">
-                <span className="bts__where">Leaving home</span>
+                <span className="bts__where">{stop.prepared.where}</span>
                 <h3 className="serif">Prepared for the web</h3>
                 <p>A small program wakes up, reads only the chosen albums, and makes two copies of each photo: one for viewing and a small one for previews. Camera details and exact location are removed. All that survives of where a photo was taken is the city and country.</p>
               </div>
               <div className="bts__viz">
-                <svg className="bts__sizes" viewBox="0 0 360 262" role="img" aria-labelledby="bts-sz-t">
-                  <title id="bts-sz-t">Three frames drawn to scale: a typical 4000 by 3000 pixel phone original of 12 megapixels, the 1600 pixel viewing copy of 1.9 megapixels, and the 560 pixel preview of 0.24 megapixels</title>
-                  <rect x="0.5" y="0.5" width="320" height="240" rx="8" className="bts__sz-orig" />
-                  <rect x="0.5" y="144.5" width="128" height="96" rx="8" className="bts__sz-large" />
-                  <rect x="0.5" y="206.9" width="44.8" height="33.6" rx="4" className="bts__sz-thumb" />
-                  <text x="12" y="24" className="bts__lab">Original, kept at home</text>
-                  <text x="12" y="40" className="bts__num">4000 px, 12 MP</text>
-                  <text x="140" y="190" className="bts__lab bts__lab--on">Viewing copy</text>
-                  <text x="140" y="206" className="bts__num">1600 px, 1.9 MP</text>
-                  <text x="140" y="234" className="bts__num">Preview, 560 px</text>
-                  <text x="0" y="258" className="bts__ax">Drawn to scale, for a typical phone photo</text>
-                </svg>
+                <Sizes />
                 <div className="bts__strip" aria-label="What happens to a photo's details">
                   <span><s>Exact GPS position</s><b>City, country</b></span>
                   <span><s>Camera and lens details</s><b>Removed</b></span>
-                  <span><s>Full-size original</s><b>About a sixth of the pixels</b></span>
+                  <span><s>Full-size original</s><b>{shareKept()}</b></span>
                 </div>
               </div>
             </li>
 
-            <li className="bts__stop" id="stop-stored">
+            <li className="bts__stop" id={`stop-${stop.stored.id}`}>
               <div className="bts__text">
-                <span className="bts__where">Public</span>
+                <span className="bts__where">{stop.stored.where}</span>
                 <h3 className="serif">Stored in the cloud</h3>
                 <p>The web copies, and a short list of what belongs in each section, go to cloud storage that serves them quickly anywhere in the world. The route only runs one way: nothing on the public side can reach back into the library at home.</p>
               </div>
@@ -301,9 +351,9 @@ export default async function BehindTheScenes() {
               </div>
             </li>
 
-            <li className="bts__stop" id="stop-walked">
+            <li className="bts__stop" id={`stop-${stop.walked.id}`}>
               <div className="bts__text">
-                <span className="bts__where">Public</span>
+                <span className="bts__where">{stop.walked.where}</span>
                 <h3 className="serif">Walked through in 3D</h3>
                 <p>When you open the site, it fetches that list and builds the corridor: every photo hung in its true shape, one section after another, drawn live in your browser. The timeline in the header is the same corridor seen from above. If your device can&apos;t draw 3D, you get a plain grid of everything instead.</p>
               </div>
@@ -336,7 +386,7 @@ export default async function BehindTheScenes() {
           <ol className="bts__log">
             {scenes.log.map((e) => (
               <li key={e.at + e.title} className={e === latest ? 'is-now' : undefined}>
-                <time dateTime={e.at}>{e.when}</time>
+                <time dateTime={e.at}>{logWhen(e.at)}</time>
                 <div><h3 className="serif">{e.title}</h3><p>{e.text}</p></div>
               </li>
             ))}
@@ -364,7 +414,7 @@ export default async function BehindTheScenes() {
         <section className="bts__col" aria-labelledby="bts-private-h">
           <div className="bts__intro"><h2 id="bts-private-h" className="bts__name serif">What stays private</h2></div>
           <ul className="bts__private">
-            <li><b>Originals</b><span>Only 1600 px copies are ever published.</span></li>
+            <li><b>Originals</b><span>Only {LARGE_EDGE} px copies are ever published.</span></li>
             <li><b>Exact location</b><span>The site knows a city and a country, never a street or coordinates.</span></li>
             <li><b>Camera details</b><span>Removed from every public copy.</span></li>
             <li><b>The library</b><span>The program that prepares copies can look but not change anything, and nothing public can reach it.</span></li>

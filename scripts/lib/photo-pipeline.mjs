@@ -9,14 +9,17 @@
 //     shutter speed, ISO, focal length, date taken)
 //   - a five colour palette, used by the "Latest" tile
 
+import { readFileSync } from 'node:fs';
 import sharp from 'sharp';
 import exifReader from 'exif-reader';
+import { LARGE_EDGE, THUMB_EDGE } from './sizes.mjs';
 
-export const LARGE_EDGE = 1600;
-export const THUMB_EDGE = 560;
+export { LARGE_EDGE, THUMB_EDGE };
 
-// Section order on the site. Albums in Immich are named "Portfolio - <Name>".
-export const SECTION_ORDER = ['Overview', 'Reflections', 'Landscapes', 'Nature', 'Abstract', 'Portraits', 'Miscellaneous'];
+// Section order on the site is the order of the lines in
+// content/sections.json, so adding or moving a section there is enough.
+// Albums in Immich are named "Portfolio - <Name>".
+export const SECTION_ORDER = Object.keys(JSON.parse(readFileSync(new URL('../../content/sections.json', import.meta.url), 'utf8')));
 
 export function slugify(name) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');

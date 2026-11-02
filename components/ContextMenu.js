@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { click, listenForAudio } from '../lib/click';
+import { SITE_NAME } from '../lib/site';
 
 // Right-click (or touch and hold on a phone) opens a camera mode dial around
 // the pointer instead of the browser's menu. Like a real mode dial it turns:
@@ -312,7 +313,7 @@ export default function ContextMenu({ about, onHome, onAbout, onAll }) {
   const span = kids ? (c + 0.5) * SUB + 10 : 0;
 
   return (
-    <div ref={ref} className={`dial${kids && !level ? ' is-group' : ''}${level ? ' is-outer' : ''}`} role="menu" aria-label="The Aperture" style={style}>
+    <div ref={ref} className={`dial${kids && !level ? ' is-group' : ''}${level ? ' is-outer' : ''}`} role="menu" aria-label={SITE_NAME} style={style}>
       <div className="dial__in">
         <div className="dial__bg" />
         {kids && (

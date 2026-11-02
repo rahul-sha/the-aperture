@@ -6,6 +6,7 @@ import AllPhotos from './AllPhotos';
 import Lightbox from './Lightbox';
 import Cursor from './Cursor';
 import ContextMenu from './ContextMenu';
+import { SITE_NAME } from '../lib/site';
 
 // Anyone who asked their device for less motion starts the drift themselves.
 const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -46,7 +47,7 @@ export default function Site({ manifest }) {
   return (
     <>
       <header className="header">
-        <button type="button" className="header__name" onClick={backToStart} title="Back to the start"><img className="header__mark" src="/logo-mark.webp" alt="" width="26" height="26" />The Aperture</button>
+        <button type="button" className="header__name" onClick={backToStart} title="Back to the start"><img className="header__mark" src="/logo-mark.webp" alt="" width="26" height="26" />{SITE_NAME}</button>
         <Timeline manifest={manifest} railRef={railRef} onHome={backToStart} />
         {!noWalk && <div className="header__tools">
           <button type="button" className="header__btn" onClick={() => setGrid(true)}>All photos</button>
@@ -69,7 +70,7 @@ export default function Site({ manifest }) {
       </header>
 
       <main>
-        <h1 className="visually-hidden">The Aperture: photographs by {manifest.about.name}</h1>
+        <h1 className="visually-hidden">{SITE_NAME}: photographs by {manifest.about.name}</h1>
         {noWalk ? (
           <AllPhotos manifest={manifest} standalone onOpen={(photos, index) => setLightbox({ photos, index })} />
         ) : (

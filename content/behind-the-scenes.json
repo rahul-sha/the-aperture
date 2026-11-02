@@ -1,71 +1,65 @@
 {
-  "_note": "Words for /behind-the-scenes. Add a log entry whenever the site changes. This page is public: describe ideas, never server names, addresses, keys, accounts, or settings.",
+  "_note": "Words for /behind-the-scenes. Add a log entry whenever the site changes; \"at\" is the date and time (Singapore, +08:00), and the page writes it out as \"27 Oct, 14:00\". Leave out the time (just the date) when it is not known. This page is public: describe ideas, never server names, addresses, keys, accounts, or settings.",
   "log": [
     {
       "at": "2026-10-27T14:00+08:00",
-      "when": "27 Oct, 14:00",
       "title": "Choosing the approach",
       "text": "Instead of building an upload system from scratch, keep photos in a library I already manage at home and send out copies."
     },
     {
       "at": "2026-10-27T15:00+08:00",
-      "when": "27 Oct, 15:00",
       "title": "Eight designs, three rounds",
       "text": "A collage that flies together won the first round and is still the opening of the site."
     },
     {
       "at": "2026-10-27T17:00+08:00",
-      "when": "27 Oct, 17:00",
       "title": "The first site goes up",
       "text": "The chosen design turned into a working site, with web copies in cloud storage."
     },
     {
       "at": "2026-10-27T22:00+08:00",
-      "when": "27 Oct, 22:00",
       "title": "Real albums, real photos",
       "text": "The route from home was connected end to end. Place names, automatic titles, and true aspect ratios followed the same evening."
     },
     {
       "at": "2026-10-28T16:05+08:00",
-      "when": "28 Oct, 16:05",
       "title": "Drift",
       "text": "Four new concepts, and one winner: scrolling walks you forward through every photo in 3D, with a timeline to drag and a camera mode dial on right-click."
     },
     {
       "at": "2026-10-28T16:13+08:00",
-      "when": "28 Oct, 16:13",
       "title": "A home of its own",
       "text": "The site moved to the-aperture.app."
     },
     {
       "at": "2026-10-28T16:49+08:00",
-      "when": "28 Oct, 16:49",
       "title": "Faster, and open to everyone",
       "text": "A full check for speed and for people using keyboards and screen readers. On a phone, the pause while the 3D walk loads dropped by two thirds."
     },
     {
       "at": "2026-10-28T17:22+08:00",
-      "when": "28 Oct, 17:22",
       "title": "Smoother on phones",
       "text": "Photos load into the walk one at a time, and the far ones are let go, so scrolling stays steady."
     },
     {
       "at": "2026-10-29",
-      "when": "29 Oct",
       "title": "Behind the scenes",
       "text": "This page, tucked into the right-click menu. Around it: the welcome line dropped its mention of the night, the corridor's two walls moved closer together on computers, the closing words follow the last photo without a long dark pause, and on phones the timeline moved up within easy reach of a thumb."
     },
     {
       "at": "2026-10-29T10:45+08:00",
-      "when": "29 Oct, 10:45",
       "title": "A dial that turns",
       "text": "The right-click menu now turns like a camera's mode dial: each scroll is one click, and the chosen setting sits on the right inside the focus brackets. Instagram and Bluesky moved onto an outer dial behind Socials. On a phone, touch and hold, slide to a setting, and let go, with a click and a small buzz at each step. The dial now works on this page too. Moving between the walk and this page now stays black instead of flashing grey. The settings now run Start, Photos, About, The making of (this page), and Socials."
     },
     {
       "at": "2026-10-29T11:50+08:00",
-      "when": "29 Oct, 11:50",
       "title": "Photos that come to you",
       "text": "Click a photo in the walk and it lifts out of its spot, straightens up, and floats towards you until it fills the screen. Close it and it drifts back to where it was hanging, with the gap it left filling again. It lands at exactly the size it stays at, with no last-moment nudge. Anyone whose device asks for less motion still sees photos open and close in place."
+    },
+    {
+      "at": "2026-11-02T10:45+08:00",
+      "title": "Numbers that look after themselves",
+      "text": "A tidy-up behind the scenes. The dates in this log, the photo sizes drawn on this page, the number of stops on the route, and the order of the sections each now come from one place, so they can never disagree with each other. The site's description for search engines now follows the About text, and the automatic checks count whatever sections exist instead of expecting six."
     }
   ],
   "speed": [

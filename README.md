@@ -35,8 +35,9 @@ These files are plain text. Change them, save, and reload:
 - `content/about.json`: your name, city, headline, bio, quote, the "Now" line,
   and social links. Add an `"email"` line to show an "Email me" link
   again; without one the site has no email link.
-- `content/sections.json`: the one-line quote under each section name. When
-  Immich is connected, the album description replaces this.
+- `content/sections.json`: the one-line quote under each section name, and
+  the order the sections appear in. When Immich is connected, the album
+  description replaces the quote; the order still comes from here.
 - `content/captions.json`: titles and captions for the photos in the
   repository, keyed by file name. When Immich is connected, each photo's
   description replaces this (first line is the title, the rest is the caption).
@@ -52,8 +53,9 @@ the manifest with `npm run photos:local`.
 Set up once, in Immich:
 
 1. Create one album per section, named exactly `Portfolio - Overview`,
-   `Portfolio - Reflections`, and so on. The order on the site is Overview,
-   Reflections, Landscapes, Nature, Abstract, Portraits, Miscellaneous.
+   `Portfolio - Reflections`, and so on. The order on the site is the order
+   of the sections in `content/sections.json` (currently Overview,
+   Reflections, Landscapes, Nature, Abstract, Portraits, Miscellaneous).
 2. Give each album a description. It becomes the quote under the section name.
 3. Optionally give a photo a description. The first line is its title, any
    further lines are the caption shown in the lightbox. Photos without one
