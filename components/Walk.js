@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { findPhoto, photoSrc, texSrc, thumbSrc } from '../lib/photos';
 import { click, listenForAudio } from '../lib/click';
+import { SITE_NAME } from '../lib/site';
 
 // The whole page is one walk through a dark space, drawn with three.js.
 // It opens on the intro collage: nine cards fly in from the dark and settle.
@@ -815,7 +816,7 @@ export default function Walk({ manifest, drift, paused, replayKey, railRef, cont
         <div ref={set('threshold')} className="walk__threshold" style={{ opacity: 0, visibility: 'hidden' }}>
           <div className="walk__welcome">
             <p className="walk__by">Photographs by {[about.name, about.city].filter(Boolean).join(', ')}</p>
-            <h2>{about.welcome || 'Welcome to The Aperture'}</h2>
+            <h2>{about.welcome || `Welcome to ${SITE_NAME}`}</h2>
             <p className="walk__line serif">{about.welcomeLine || 'Here lies my collection.'}</p>
             {about.headline && <p className="walk__sub">{about.headline}</p>}
             <button type="button" className="walk__next" onClick={() => api.current?.begin()} aria-label="Begin the walk">
