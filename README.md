@@ -116,10 +116,14 @@ This starts the built site, drives it with a real browser (Playwright), checks
 the walk-through, the drift (that it moves, pauses when you scroll, and
 resumes), dragging the timeline, All photos, the lightbox, keyboard focus, the
 page shown when a browser can't draw 3D, and the phone layout, and saves screenshots in `tests/screenshots/`.
+The first time on a new computer, run `npx playwright install chromium` first.
 
 ## Design
 
 `docs/DESIGN-SYSTEM.md` lists the colours, type, and components of the Drift
 design, with the rules that keep new work consistent and an accessibility
-checklist. The first time on
-a new computer run `npx playwright install chromium`.
+checklist.
+
+## Working with Claude
+
+This project uses the Cartographer plugin (switched on in `.claude/settings.json`). `CLAUDE.md` describes the project, `.claude/rules/project-rules.md` holds its own rules, `docs/bugs.md` lists known bugs, and `docs/roadmap.md` is the plan.
