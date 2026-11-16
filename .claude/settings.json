@@ -1,0 +1,6 @@
+{
+  "extraKnownMarketplaces": {
+    "cartographer": { "source": { "source": "github", "repo": "rahul-sha/cartographer" } }
+  },
+  "enabledPlugins": { "cartographer@cartographer": true }
+}
