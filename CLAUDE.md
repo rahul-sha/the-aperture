@@ -37,6 +37,9 @@ Rahul Sharma's photography portfolio: a quiet 3D walk through his photos, with a
 - Before opening a pull request, run `npm test` and make sure it passes, and check the open pull requests for ones that change the same files.
 - Rahul merges pull requests himself: when one is ready, offer him a Merge card, and merge only after he taps it or says so, checking the checks and conflicts again first.
 - Keep `README.md` true: update it in the same pull request as any change it describes, using the `project-readme` skill.
+- Ask before adding a paid service, an add-on, or anything that runs on a schedule or in a loop.
+- Visual work: mock it up first, and check phone and desktop, and reduced motion.
+- Bigger features get a spec from the Cartographer spec template before building.
 - Rahul is new to Linux and programming: explain each step plainly, give exact commands, and say where to click.
 - UK English with the Oxford comma. No emojis, filler, or hype.
 

@@ -22,6 +22,8 @@ Ideas worth keeping, not yet agreed.
 - Repository tidy-up: delete merged branches, set the repository's website link, and decide whether the full-size photos in `assets/zz_categorised-photos` stay in the public repository.
 
 ## Done recently
+- 2026-11-18: Cartographer updated to 0.16.0; `npm test` builds first; README brought up to date (PR #22).
+- 2026-11-16: Cartographer set up: project rules, bug list, and roadmap (PR #21).
 - 2026-11-02: repeated values worked out from one place (PR #20).
 - 2026-10-29: floating photos land exactly where they stay (PR #19); floating photos out of the walk (PR #18).
 - 2026-10-29: turning mode dial on right-click (PR #17).

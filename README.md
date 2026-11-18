@@ -56,6 +56,7 @@ in Immich at home.
 - Photos come from Immich albums at home; a sync copies web-sized versions, without location data, to Cloudflare R2.
 
 Live at https://www.the-aperture.app.
+
 How the pieces fit together:
 
 ```
@@ -93,12 +94,18 @@ These files are plain text. Change them, save, and reload:
 - `content/captions.json`: titles and captions for the photos in the
   repository, keyed by file name. When Immich is connected, each photo's
   description replaces this (first line is the title, the rest is the caption).
+- `content/behind-the-scenes.json`: the build log and speed charts on the
+  behind the scenes page (plain words, no system names).
 - `content/curated.json`: which photos go in the intro collage, which is
   featured, and which is "latest". When Immich is connected, the album
   "Portfolio - Intro" picks the collage instead.
 
 After changing `captions.json`, `sections.json`, or `curated.json`, rebuild
-the manifest with `npm run photos:local`.
+the local photo list with `npm run photos:local`. That only changes local
+copies and previews without `PHOTOS_MANIFEST_URL`. On the live site the
+section order and fallback quotes come from the manifest the sync writes, so
+a change there needs the merge, the sync image build (about 3 minutes), then
+"Pull + recreate" on the Dockhand stack.
 
 ## Publishing photos from Immich
 
@@ -150,16 +157,6 @@ location data, and writes `manifest.json` to the bucket.
 
 Location is handled in two ways. Each photo gets a place label (city and country, as worked out by Immich) shown under its caption, and the manifest carries photo counts snapped to a coarse grid (5 km cells by default, `LOCATION_GRID_KM` in `.env` changes it) for a future map tile. Exact coordinates never leave Immich, and photos without GPS data simply get no label.
 
-## Deploying on Vercel
-
-1. Import this repository as a new Vercel project. The defaults work.
-2. Add one environment variable: `PHOTOS_MANIFEST_URL` set to
-   `https://photos.the-aperture.app/manifest.json` (your bucket's domain).
-3. Deploy. The site re-reads the manifest at most once an hour, so new photos
-   appear without another deploy.
-
-Without `PHOTOS_MANIFEST_URL` the site uses the committed `content/photos.json`.
-
 ## Checking that it works
 
 ```bash
@@ -171,6 +168,20 @@ the walk-through, the drift (that it moves, pauses when you scroll, and
 resumes), dragging the timeline, All photos, the lightbox, keyboard focus, the
 page shown when a browser can't draw 3D, and the phone layout, and saves screenshots in `tests/screenshots/`.
 The first time on a new computer, run `npx playwright install chromium` first.
+
+## Deploying on Vercel
+
+1. Import this repository as a new Vercel project. The defaults work.
+2. Add one environment variable: `PHOTOS_MANIFEST_URL` set to
+   `https://photos.the-aperture.app/manifest.json` (your bucket's domain).
+3. Deploy. The site re-reads the manifest at most once an hour, so new photos
+   appear without another deploy.
+
+Without `PHOTOS_MANIFEST_URL` the site uses the committed `content/photos.json`.
+
+After that, merging a pull request into `main` deploys the site. Changes to the
+sync code, or to `sections.json`, `captions.json`, or `curated.json`, also
+need "Pull + recreate" on the Dockhand stack.
 
 ## Design
 
