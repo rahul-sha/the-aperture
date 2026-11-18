@@ -17,7 +17,7 @@ Ideas worth keeping, not yet agreed.
 - Metering cursor (parked 2026-10-29): mockups at https://claude.ai/artifact/SoCWAc345BsobPACd2dY5L.
 - Right-click photo details (parked 2026-10-29): same mockups as above.
 - Real email link: only once Rahul has an address he wants on the site.
-- Caption writer: fills Immich descriptions automatically, since Rahul prefers not to write them by hand.
+- Caption writer: fills Immich descriptions automatically, since Rahul prefers not to write them by hand. As an AI feature it will need an on/off switch and a usage limit (shared rule).
 - Tailscale for reaching Immich instead of the Synology reverse proxy.
 - Repository tidy-up: delete merged branches, set the repository's website link, and decide whether the full-size photos in `assets/zz_categorised-photos` stay in the public repository.
 

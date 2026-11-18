@@ -2,7 +2,7 @@
 
 Known bugs and gaps in The Aperture, newest first. The Cartographer weekly review reads this file, so the helper can answer "any open bugs?" from any project. Add bugs here, not in GitHub issues; a copy in Trilium is for safekeeping only.
 
-Move a bug to "Fixed" when its fix is merged, and add one line on what fixed it.
+Move a bug to "Fixed" in the same pull request as its fix, and add one line on what fixed it.
 
 ## Open
 

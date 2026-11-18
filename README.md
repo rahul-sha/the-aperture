@@ -80,7 +80,9 @@ on your computer.
 `http://192.168.1.10:2283`), and deploy. GitHub builds the image
 (`ghcr.io/rahul-sha/the-aperture-sync`) whenever the sync code changes; the
 NAS pulls it, runs it once, prints its progress, and exits. Deploy it again
-whenever you change the albums. Its memory of what was uploaded lives in the
+whenever you change the albums. After a change to the sync code, wait for the
+image build to finish (about 3 minutes), then choose "Pull + recreate" on the
+Dockhand stack so the NAS uses the new image. Its memory of what was uploaded lives in the
 `sync-state` volume.
 
 **On your computer, with Node.js installed:**
