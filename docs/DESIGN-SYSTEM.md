@@ -225,5 +225,5 @@ develop fade.
 - A layer that covers the page moves focus in, keeps Tab inside, closes on
   Escape, and hands focus back (`components/useDialog.js` does all four).
 - New words over photos get the dark text shadow.
-- Run `npm run build && npm test`; the checks cover focus, the timeline's
+- Run `npm test`; the checks cover focus, the timeline's
   spoken value, and the no-WebGL fallback.

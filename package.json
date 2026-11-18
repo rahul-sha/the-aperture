@@ -9,7 +9,7 @@
     "start": "next start",
     "photos:local": "node scripts/build-local-manifest.mjs",
     "photos:sync": "node scripts/immich-to-r2.mjs",
-    "test": "node tests/run.mjs"
+    "test": "next build && node tests/run.mjs"
   },
   "dependencies": {
     "next": "16.4.3",

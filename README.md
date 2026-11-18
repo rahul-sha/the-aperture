@@ -4,6 +4,58 @@ Rahul Sharma's photography portfolio. A Next.js site hosted on Vercel, with
 web-sized photos served from Cloudflare R2 and the originals managed privately
 in Immich at home.
 
+## Tech stack
+
+<table>
+  <tr>
+    <th width="130">Back-end</th>
+    <th width="190">Front-end</th>
+    <th width="130">Data</th>
+    <th width="150">Hosting</th>
+    <th width="130">Other</th>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/nodejs/nodejs-original.svg" height="36" alt="Node.js" title="Node.js">
+    </td>
+    <td align="center">
+      <img src="https://cdn.simpleicons.org/nextdotjs/000/fff" height="36" alt="Next.js" title="Next.js">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/react/react-original.svg" height="36" alt="React" title="React">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/javascript/javascript-original.svg" height="36" alt="JavaScript" title="JavaScript">
+      <img src="https://cdn.simpleicons.org/threedotjs/000/fff" height="36" alt="three.js" title="three.js">
+    </td>
+    <td align="center">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/cloudflare/cloudflare-original.svg" height="36" alt="Cloudflare R2" title="Cloudflare R2">
+      <img src="https://cdn.simpleicons.org/immich" height="36" alt="Immich" title="Immich">
+    </td>
+    <td align="center">
+      <img src="https://cdn.simpleicons.org/vercel/000/fff" height="36" alt="Vercel" title="Vercel">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/docker/docker-original.svg" height="36" alt="Docker" title="Docker">
+      <img src="https://cdn.simpleicons.org/synology" height="36" alt="Synology" title="Synology">
+    </td>
+    <td align="center">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/playwright/playwright-original.svg" height="36" alt="Playwright" title="Playwright">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/icons/githubactions/githubactions-original.svg" height="36" alt="GitHub Actions" title="GitHub Actions">
+    </td>
+  </tr>
+  <tr>
+    <td align="center" valign="top"><sub>Node.js 22 or newer</sub></td>
+    <td align="center" valign="top"><sub>Next.js 16 (App Router)<br>React 19<br>Plain JavaScript<br>three.js for the walk</sub></td>
+    <td align="center" valign="top"><sub>Cloudflare R2 (photos and manifest)<br>Immich at home (originals)<br>No database</sub></td>
+    <td align="center" valign="top"><sub>Vercel (the site)<br>Docker sync container<br>Synology NAS via Dockhand</sub></td>
+    <td align="center" valign="top"><sub>Playwright checks<br>GitHub Actions (sync image)<br>sharp for resizing</sub></td>
+  </tr>
+</table>
+
+## What it does
+
+- A quiet 3D walk through the photos, section by section, with a timeline to jump around.
+- An All photos view, and a lightbox for each photo with its title, caption, and place name.
+- A right-click (or touch and hold) mode dial to move between Start, Photos, About, The making of, and Socials.
+- A behind the scenes page on how the site was made.
+- Photos come from Immich albums at home; a sync copies web-sized versions, without location data, to Cloudflare R2.
+
+Live at https://www.the-aperture.app.
 How the pieces fit together:
 
 ```
@@ -111,10 +163,10 @@ Without `PHOTOS_MANIFEST_URL` the site uses the committed `content/photos.json`.
 ## Checking that it works
 
 ```bash
-npm run build && npm test
+npm test
 ```
 
-This starts the built site, drives it with a real browser (Playwright), checks
+This builds the site, starts it, drives it with a real browser (Playwright), checks
 the walk-through, the drift (that it moves, pauses when you scroll, and
 resumes), dragging the timeline, All photos, the lightbox, keyboard focus, the
 page shown when a browser can't draw 3D, and the phone layout, and saves screenshots in `tests/screenshots/`.
@@ -125,6 +177,22 @@ The first time on a new computer, run `npx playwright install chromium` first.
 `docs/DESIGN-SYSTEM.md` lists the colours, type, and components of the Drift
 design, with the rules that keep new work consistent and an accessibility
 checklist.
+
+## Where things live
+
+| Where | What |
+| --- | --- |
+| `components/` | The walk, All photos, lightbox, mode dial, and cursor |
+| `app/behind-the-scenes/` | The behind the scenes page |
+| `content/` | The words on the site |
+| `scripts/` | The Immich to R2 sync and the local photo list |
+| `tests/` | The Playwright checks |
+| `docs/DESIGN-SYSTEM.md` | The Drift design system |
+| `docs/roadmap.md` | The plan |
+| `docs/bugs.md` | Known bugs |
+| `CLAUDE.md` | Notes for Claude on how the project works |
+| `.claude/rules/project-rules.md` | This project's own rules |
+| Trilium, under Vibe Coding Projects | The build map, design system, and notes |
 
 ## Working with Claude
 
