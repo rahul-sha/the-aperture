@@ -1,9 +1,9 @@
 // End-to-end checks for the built site. Run with:
 //
-//   npm run build && npm test
+//   npm test
 //
-// `npm test` starts the production server, waits for it, runs this file,
-// and stops the server again. Screenshots land in tests/screenshots/.
+// `npm test` builds the site, starts the production server, waits for it,
+// runs this file, and stops the server again. Screenshots land in tests/screenshots/.
 
 import { chromium } from 'playwright';
 import { mkdirSync, readFileSync } from 'node:fs';

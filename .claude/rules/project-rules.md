@@ -2,6 +2,8 @@
 
 Rules for this project only. They add to, or override, the shared rules from the Cartographer plugin (`DESIGN.md` and the shared skills). Claude Code loads this file automatically because it sits in `.claude/rules/`.
 
+Cartographer plugin: 0.16.0 (the version this project last took in; the setup-project skill sets it, and the version check compares it at the start of each session)
+
 Keep each rule to one line, with the reason after a colon. Tag each one so the weekly review can sort it.
 
 ## Adds
@@ -16,7 +18,7 @@ Rules the shared base does not cover.
 - [data] Do not add an "Email me" link unless Rahul gives a real address: he asked for it removed on 2026-10-28.
 - [workflow] When site changes ship, also update the behind the scenes page (no system names), the build map, and the Trilium notes under Vibe Coding Projects: Rahul's standing request from 2026-10-29.
 - [deploy] A change to the sync script needs merge, the GitHub image build (about 3 minutes), then "Pull + recreate" on the Dockhand stack; site-only changes need only the merge: the sync runs on the NAS, not on Vercel.
-- [testing] Run `npm run build && npm test` before asking for review, and use `npm test` rather than the webapp-testing helper script: the helper leaves a stale server on port 3000.
+- [testing] Run `npm test` (it builds first) before asking for review, and use `npm test` rather than the webapp-testing helper script: the helper leaves a stale server on port 3000.
 - [safety] Settings that hold secrets (`IMMICH_API_KEY`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`) live only in the Dockhand stack or a local `.env`: the repository is public.
 
 ## Overrides

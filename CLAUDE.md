@@ -13,7 +13,7 @@ Rahul Sharma's photography portfolio: a quiet 3D walk through his photos, with a
 ## Run commands
 - Install: `npm install` (Node.js 22 or newer).
 - Start: `npm run dev`, then open http://localhost:3000.
-- Build and test: `npm run build && npm test`. There is no way to run a single test; `tests/e2e.mjs` runs them all in order.
+- Build and test: `npm test` (it builds the site first, then runs the checks). There is no way to run a single test; `tests/e2e.mjs` runs them all in order.
 - First time on a new computer: `npx playwright install chromium`.
 - Rebuild the local photo list: `npm run photos:local`. Sync from Immich: `npm run photos:sync` (needs `.env`).
 - Deploy: merge to `main`; Vercel deploys. Sync changes also need the NAS stack redeployed (see README).
@@ -28,11 +28,18 @@ Rahul Sharma's photography portfolio: a quiet 3D walk through his photos, with a
 - `main` is the live site. The repository is public.
 - Real photos come from Rahul's Immich. Never publish exact GPS; the sync strips all location data.
 - Secret settings (names only): `IMMICH_API_KEY`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, kept in the Dockhand stack or a local `.env`, never committed. `PHOTOS_MANIFEST_URL` is set on Vercel by Rahul.
+- Previews only read photos: the committed `content/photos.json`, or the live manifest when `PHOTOS_MANIFEST_URL` is set for them. Nothing on the site writes data, so testing a preview cannot change the real photos.
 
 ## How to work
 - This project uses the Cartographer plugin. Its project rules are in `.claude/rules/project-rules.md`, the bug list in `docs/bugs.md`, and the plan in `docs/roadmap.md`.
 - New feature, or a change across several files: show a short plan first and wait for Rahul's OK. Small fixes go straight ahead.
-- Work on a branch with one small pull request per step. Never push to `main`. Rahul merges pull requests himself.
+- Work on a branch with one small pull request per step. Never push to `main`.
+- Before opening a pull request, run `npm test` and make sure it passes, and check the open pull requests for ones that change the same files.
+- Rahul merges pull requests himself: when one is ready, offer him a Merge card, and merge only after he taps it or says so, checking the checks and conflicts again first.
+- Keep `README.md` true: update it in the same pull request as any change it describes, using the `project-readme` skill.
+- Ask before adding a paid service, an add-on, or anything that runs on a schedule or in a loop.
+- Visual work: mock it up first, and check phone and desktop, and reduced motion.
+- Bigger features get a spec from the Cartographer spec template before building.
 - Rahul is new to Linux and programming: explain each step plainly, give exact commands, and say where to click.
 - UK English with the Oxford comma. No emojis, filler, or hype.
 
