@@ -144,6 +144,14 @@ image build to finish (about 3 minutes), then choose "Pull + recreate" on the
 Dockhand stack so the NAS uses the new image. Its memory of what was uploaded lives in the
 `sync-state` volume.
 
+The image holds only what the sync needs: Node.js, sharp, exif-reader, and
+the R2 client. npm is removed after install, and Debian's security updates are
+applied at build time, so the NAS's vulnerability scanner has little to flag.
+Rebuilding the image (or running the workflow by hand from GitHub's Actions
+tab) picks up newer Debian fixes. A pull request that touches the sync code
+builds the image as a check but never publishes it. After a new image, delete
+the older copy in Dockhand's Images page so it is not scanned twice.
+
 **On your computer, with Node.js installed:**
 
 ```bash
