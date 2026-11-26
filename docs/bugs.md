@@ -1,6 +1,10 @@
 # Bugs
 
+Last full check-up: 2026-11-18
+
 Known bugs and gaps in The Aperture, newest first. The Cartographer weekly review reads this file, so the helper can answer "any open bugs?" from any project. Add bugs here, not in GitHub issues; a copy in Trilium is for safekeeping only.
+
+The "Last full check-up" line is set by each full check-up (343 Guilty Spark); a monthly run skips the project when it is 14 days old or less.
 
 Move a bug to "Fixed" in the same pull request as its fix, and add one line on what fixed it.
 
