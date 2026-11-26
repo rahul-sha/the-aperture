@@ -60,6 +60,11 @@
       "at": "2026-11-02T10:45+08:00",
       "title": "Numbers that look after themselves",
       "text": "A tidy-up behind the scenes. The dates in this log, the photo sizes drawn on this page, the number of stops on the route, and the order of the sections each now come from one place, so they can never disagree with each other. The site's description for search engines now follows the About text, and the automatic checks count whatever sections exist instead of expecting six."
+    },
+    {
+      "at": "2026-11-26T16:45+08:00",
+      "title": "A security check-up",
+      "text": "A look through the site and the code for anything that could leak or be misused. Nothing private turned up, and no photo carries an exact location. The shortcut that lets the walk load photos now hands out photos and nothing else, and the step that builds the photo copier can only publish it from finished work, never from a draft."
     }
   ],
   "speed": [

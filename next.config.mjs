@@ -13,7 +13,16 @@ const nextConfig = {
     unoptimized: true,
   },
   async rewrites() {
-    return photoFolder ? [{ source: '/photo-files/:path*', destination: `${photoFolder}/:path*` }] : [];
+    if (!photoFolder) return [];
+    // Only photo files pass through: <section>/<id>.jpg and
+    // <section>/thumbs/<id>.jpg. Anything else under /photo-files/ is a 404,
+    // so the site cannot be used to fetch other files from the photo host.
+    const section = ':section([a-z0-9-]+)';
+    const file = ':file([A-Za-z0-9_-]+\\.jpg)';
+    return [
+      { source: `/photo-files/${section}/${file}`, destination: `${photoFolder}/:section/:file` },
+      { source: `/photo-files/${section}/thumbs/${file}`, destination: `${photoFolder}/:section/thumbs/:file` },
+    ];
   },
 };
 
