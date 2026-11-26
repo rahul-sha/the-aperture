@@ -1,6 +1,6 @@
 # Roadmap: The Aperture
 
-- **Updated:** 2026-11-16
+- **Updated:** 2026-11-26
 
 ## Now
 Being built this week or next. At most three items.
@@ -22,6 +22,9 @@ Ideas worth keeping, not yet agreed.
 - Repository tidy-up: delete merged branches, set the repository's website link, and decide whether the full-size photos in `assets/zz_categorised-photos` stay in the public repository.
 
 ## Done recently
+- 2026-11-26: Cartographer updated to 0.35.1 (this pull request).
+- 2026-11-26: image publishing limited to `main`, and `/photo-files/` serves photos only (PR #24).
+- 2026-11-21: slimmer sync container and Next.js 16.4.6 (PR #23).
 - 2026-11-18: Cartographer updated to 0.16.0; `npm test` builds first; README brought up to date (PR #22).
 - 2026-11-16: Cartographer set up: project rules, bug list, and roadmap (PR #21).
 - 2026-11-02: repeated values worked out from one place (PR #20).
