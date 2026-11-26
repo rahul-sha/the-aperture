@@ -16,6 +16,7 @@ Rahul Sharma's photography portfolio: a quiet 3D walk through his photos, with a
 - Build and test: `npm test` (it builds the site first, then runs the checks). There is no way to run a single test; `tests/e2e.mjs` runs them all in order.
 - First time on a new computer: `npx playwright install chromium`.
 - Rebuild the local photo list: `npm run photos:local`. Sync from Immich: `npm run photos:sync` (needs `.env`).
+- Pushes that change only `.md` files or `docs/` skip Vercel previews (`scripts/ignore-build.sh`, set in `vercel.json`); production always builds.
 - Deploy: merge to `main`; Vercel deploys. Sync changes also need the NAS stack redeployed (see README).
 
 ## Where things live
