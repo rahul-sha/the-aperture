@@ -149,7 +149,7 @@ the R2 client. npm is removed after install, and Debian's security updates are
 applied at build time, so the NAS's vulnerability scanner has little to flag.
 Rebuilding the image (or running the workflow by hand from GitHub's Actions
 tab) picks up newer Debian fixes. A pull request that touches the sync code
-builds the image as a check but never publishes it. After a new image, delete
+builds the image as a check, with read-only access, so it can never publish it. After a new image, delete
 the older copy in Dockhand's Images page so it is not scanned twice.
 
 **On your computer, with Node.js installed:**
