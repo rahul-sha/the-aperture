@@ -187,7 +187,10 @@ The first time on a new computer, run `npx playwright install chromium` first.
 
 Without `PHOTOS_MANIFEST_URL` the site uses the committed `content/photos.json`.
 
-After that, merging a pull request into `main` deploys the site. Changes to the
+After that, merging a pull request into `main` deploys the site. Pull requests
+that change only Markdown files or `docs/` skip the Vercel preview
+(`scripts/ignore-build.sh`, set in `vercel.json`), which saves build minutes;
+the live site always builds. Changes to the
 sync code, or to `sections.json`, `captions.json`, or `curated.json`, also
 need "Pull + recreate" on the Dockhand stack.
 
@@ -204,7 +207,7 @@ checklist.
 | `components/` | The walk, All photos, lightbox, mode dial, and cursor |
 | `app/behind-the-scenes/` | The behind the scenes page |
 | `content/` | The words on the site |
-| `scripts/` | The Immich to R2 sync and the local photo list |
+| `scripts/` | The Immich to R2 sync, the local photo list, and the Vercel preview skip |
 | `tests/` | The Playwright checks |
 | `docs/DESIGN-SYSTEM.md` | The Drift design system |
 | `docs/roadmap.md` | The plan |
