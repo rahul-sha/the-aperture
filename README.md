@@ -144,6 +144,14 @@ image build to finish (about 3 minutes), then choose "Pull + recreate" on the
 Dockhand stack so the NAS uses the new image. Its memory of what was uploaded lives in the
 `sync-state` volume.
 
+The sync has its own version number and release notes in
+`docs/sync-changelog.md`. When you change the sync, add a new entry at the top
+with a higher number (last number for a fix, middle for something new). After
+the merge, GitHub tags the image with that number as well as `latest` and
+publishes the notes on the repository's
+[Releases page](https://github.com/rahul-sha/the-aperture/releases). The image
+is labelled with that page, so Dockhand's release notes icon opens it.
+
 The image holds only what the sync needs: Node.js, sharp, exif-reader, and
 the R2 client. npm is removed after install, and Debian's security updates are
 applied at build time, so the NAS's vulnerability scanner has little to flag.
@@ -216,6 +224,7 @@ checklist.
 | `docs/DESIGN-SYSTEM.md` | The Drift design system |
 | `docs/roadmap.md` | The plan |
 | `docs/bugs.md` | Known bugs |
+| `docs/sync-changelog.md` | Version and release notes for the sync image |
 | `CLAUDE.md` | Notes for Claude on how the project works |
 | `.claude/rules/project-rules.md` | This project's own rules |
 | Trilium, under Vibe Coding Projects | The build map, design system, and notes |

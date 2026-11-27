@@ -2,6 +2,12 @@
 # Published to ghcr.io/rahul-sha/the-aperture-sync by the GitHub workflow.
 FROM node:22-bookworm-slim
 
+# Where this image comes from. Dockhand reads these to link its release notes
+# icon to this repository's releases. The GitHub build adds the version too.
+LABEL org.opencontainers.image.source="https://github.com/rahul-sha/the-aperture" \
+      org.opencontainers.image.url="https://github.com/rahul-sha/the-aperture/releases" \
+      dockhand.changelog.url="https://github.com/rahul-sha/the-aperture/releases"
+
 # Take Debian's latest security updates for the system packages in the base image.
 RUN apt-get update \
  && apt-get upgrade -y --no-install-recommends \
