@@ -51,6 +51,23 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: false
           cache-from: type=gha
+      # Build once more for this machine and check the sync runs as the limited
+      # "node" user and can still write its memory to a volume that root owns,
+      # as older versions left it on the NAS.
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: sync-check
+          cache-from: type=gha
+      - name: Check the sync runs as the node user
+        run: |
+          docker volume create old-state
+          docker run --rm --entrypoint sh -v old-state:/state sync-check -c 'chown root:root /state && touch /state/.sync-state.json'
+          out=$(docker run --rm -v old-state:/state sync-check sh -c 'id -un; echo ok > /state/.sync-state.json && echo writable')
+          echo "$out"
+          [ "$(echo "$out" | head -1)" = "node" ] || { echo "The sync is not running as node"; exit 1; }
+          echo "$out" | grep -qx writable || { echo "The sync cannot write its memory"; exit 1; }
 
   # Pushes to main (and manual runs): build and publish to ghcr.io, then
   # publish the newest notes in docs/sync-changelog.md as a GitHub Release.
