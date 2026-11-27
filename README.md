@@ -154,8 +154,8 @@ is labelled with that page, so Dockhand's release notes icon opens it.
 
 The image holds only what the sync needs: Node.js, sharp, exif-reader, and
 the R2 client. The sync runs as the limited `node` user rather than root (the
-entrypoint hands the `sync-state` volume to that user first). npm is removed after install, and Debian's security updates are
-applied at build time, so the NAS's vulnerability scanner has little to flag.
+entrypoint hands the `sync-state` volume to that user first). npm is removed
+after install, and Debian's security updates are applied at build time, so the NAS's vulnerability scanner has little to flag.
 Rebuilding the image (or running the workflow by hand from GitHub's Actions
 tab) picks up newer Debian fixes. A pull request that touches the sync code
 builds the image as a check, with read-only access, so it can never publish it. After a new image, delete
