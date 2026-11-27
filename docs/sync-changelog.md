@@ -4,6 +4,12 @@ What changed in the photo sync (the container `ghcr.io/rahul-sha/the-aperture-sy
 
 When a change to the sync is ready, add a new section at the top with a higher version number: raise the last number for a fix, the middle one for something new, and the first for a change that needs the Dockhand stack edited. After the merge, GitHub builds the image, tags it with that number, and publishes these notes as a release. Dockhand's release notes icon opens that release.
 
+## 1.1.1 (2026-11-27)
+
+- The sync now runs as a limited user ("node") instead of root, so it has fewer powers inside its container.
+- On its first run, it hands its saved memory folder (the `sync-state` volume) over to that user. Nothing to do in Dockhand beyond the usual "Pull + recreate".
+- Dockhand's Security tab may still say root: the container starts as root for a moment to fix that folder, then the sync itself runs as "node" (the Processes tab shows this).
+
 ## 1.1.0 (2026-11-27)
 
 - Dockhand's release notes icon now opens these notes instead of a missing GitHub page.

@@ -29,5 +29,10 @@ RUN npm install --no-save --no-audit --no-fund --no-package-lock \
 COPY scripts ./scripts
 COPY content ./content
 ENV SYNC_STATE_DIR=/state
+# The state folder belongs to the limited "node" user, so a new volume starts
+# with the right owner. The entrypoint fixes older volumes owned by root, then
+# runs the sync as "node" rather than root.
+RUN mkdir -p /state && chown node:node /state
 VOLUME ["/state"]
+ENTRYPOINT ["/app/scripts/docker-entrypoint.sh"]
 CMD ["node", "scripts/immich-to-r2.mjs"]
