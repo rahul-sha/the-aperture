@@ -65,6 +65,11 @@
       "at": "2026-11-26T16:45+08:00",
       "title": "A security check-up",
       "text": "A look through the site and the code for anything that could leak or be misused. Nothing private turned up, and no photo carries an exact location. The shortcut that lets the walk load photos now hands out photos and nothing else, and the step that builds the photo copier can only publish it from finished work, never from a draft."
+    },
+    {
+      "at": "2026-11-27T08:45+08:00",
+      "title": "A version number",
+      "text": "The end of this page now shows which version of the site you are looking at. It goes up with every change you can see: the last number for a fix, the middle one for something new, the first for a redesign. An automatic check stops a change from going live if the number was forgotten."
     }
   ],
   "speed": [

@@ -126,6 +126,15 @@ bio, the Now line, links, and a replay icon. The words come from
 Once you move past the welcome it fades out and is hidden from the Tab key, so
 keyboard users never land on a button they can't see.
 
+### Version line
+
+`.bts__version`, at the very end of the behind the scenes page, under the
+closing buttons. "Version 1.1.0" in 12px quiet ink (`--ink-quiet`), never pink,
+read from `package.json`. It is the only place the version shows, since the site
+has no footer. Raise it in every pull request that changes what visitors see:
+the last number for a fix, the middle for a feature, the first for a redesign.
+`npm test` fails when a visible change forgets.
+
 ### Focus cursor
 
 `components/Cursor.js`. Only for a mouse or trackpad; phones and tablets keep

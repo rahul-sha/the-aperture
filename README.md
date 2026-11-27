@@ -171,7 +171,11 @@ Location is handled in two ways. Each photo gets a place label (city and country
 npm test
 ```
 
-This builds the site, starts it, drives it with a real browser (Playwright), checks
+This first checks the version number: a change to what visitors see (files in
+`app/`, `components/`, `lib/`, `content/`, or `public/`) must raise the
+`version` in `package.json`, shown at the end of the behind the scenes page.
+Use the last number for a fix, the middle for a feature, the first for a
+redesign. It then builds the site, starts it, drives it with a real browser (Playwright), checks
 the walk-through, the drift (that it moves, pauses when you scroll, and
 resumes), dragging the timeline, All photos, the lightbox, keyboard focus, the
 page shown when a browser can't draw 3D, and the phone layout, and saves screenshots in `tests/screenshots/`.

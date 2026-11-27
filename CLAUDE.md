@@ -13,7 +13,7 @@ Rahul Sharma's photography portfolio: a quiet 3D walk through his photos, with a
 ## Run commands
 - Install: `npm install` (Node.js 22 or newer).
 - Start: `npm run dev`, then open http://localhost:3000.
-- Build and test: `npm test` (it builds the site first, then runs the checks). There is no way to run a single test; `tests/e2e.mjs` runs them all in order.
+- Build and test: `npm test` (it checks the version number, builds the site, then runs the checks). A change to what visitors see must raise `version` in `package.json` (shown on the behind the scenes page): last number for a fix, middle for a feature, first for a redesign. There is no way to run a single test; `tests/e2e.mjs` runs them all in order.
 - First time on a new computer: `npx playwright install chromium`.
 - Rebuild the local photo list: `npm run photos:local`. Sync from Immich: `npm run photos:sync` (needs `.env`).
 - Pushes that change only `.md` files or `docs/` skip Vercel previews (`scripts/ignore-build.sh`, set in `vercel.json`); production always builds.
