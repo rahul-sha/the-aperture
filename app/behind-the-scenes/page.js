@@ -6,6 +6,7 @@ import ContextMenu from '../../components/ContextMenu';
 import Link from 'next/link';
 import { SITE_NAME } from '../../lib/site';
 import { LARGE_EDGE, THUMB_EDGE } from '../../scripts/lib/sizes.mjs';
+import { version } from '../../package.json';
 import './scenes.css';
 
 // A public look at how the site works. Nothing links here except the
@@ -429,6 +430,7 @@ export default async function BehindTheScenes() {
             {about.instagram && <a className="btn" href={about.instagram} target="_blank" rel="noopener noreferrer">Instagram</a>}
             {about.bluesky && <a className="btn" href={about.bluesky} target="_blank" rel="noopener noreferrer">Bluesky</a>}
           </nav>
+          <p className="bts__version">Version {version}</p>
         </section>
       </main>
 

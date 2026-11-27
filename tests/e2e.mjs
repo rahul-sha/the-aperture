@@ -261,6 +261,8 @@ async function findPhoto(page, w, h) {
   check('scenes: every chart has a title', await page.locator('.bts__viz svg[role="img"]').evaluateAll((els) => els.every((el) => el.querySelector('title')?.textContent.length > 10)));
   check('scenes: the build log has entries', (await page.locator('.bts__log li').count()) > 5);
   check('scenes: no link to the code', (await page.locator('a[href*="github"]').count()) === 0);
+  const version = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version;
+  check('scenes: the version shows under the closing buttons', (await page.locator('.bts__end nav + .bts__version').textContent().catch(() => '')) === `Version ${version}`);
   await page.locator('#stop-prepared').scrollIntoViewIfNeeded();
   await page.waitForTimeout(300);
   check('scenes: the route bar follows your reading', (await page.locator('.bts__bar-nav a[aria-current="true"]').getAttribute('href')) === '#stop-prepared');

@@ -1,6 +1,6 @@
 {
   "name": "the-aperture",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "Rahul Sharma's photography portfolio",
   "scripts": {
@@ -9,7 +9,7 @@
     "start": "next start",
     "photos:local": "node scripts/build-local-manifest.mjs",
     "photos:sync": "node scripts/immich-to-r2.mjs",
-    "test": "next build && node tests/run.mjs"
+    "test": "node tests/version.test.mjs && node scripts/check-version.mjs && next build && node tests/run.mjs"
   },
   "dependencies": {
     "next": "16.4.6",

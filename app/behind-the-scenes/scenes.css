@@ -193,3 +193,4 @@ html:has(.bts) { scroll-behavior: smooth; }
 .bts__end { text-align: center; display: grid; justify-items: center; gap: 22px; }
 .bts__end blockquote { margin: 0; font-size: clamp(24px, 3.6vw, 36px); line-height: 1.25; max-width: 26ch; }
 .bts__end nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 28px; }
+.bts__version { margin: 6px 0 0; font-size: 12px; letter-spacing: .04em; color: var(--ink-quiet); }
